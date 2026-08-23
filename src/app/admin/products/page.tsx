@@ -24,7 +24,12 @@ import {
   Plus,
   Star,
   Image as ImageIcon,
-  CheckCircle2
+  CheckCircle2,
+  Cpu,
+  Camera,
+  Battery,
+  Box,
+  Settings2
 } from 'lucide-react';
 
 interface VariantDraft {
@@ -65,7 +70,7 @@ export default function AdminProductsPage() {
     is_featured: false,
     is_new_arrival: true,
     is_best_seller: false,
-    warranty_info: '1 Year Brand Warranty',
+    warranty_info: '1 Year Handset & 6 Months Accessories Warranty',
   });
 
   // Multiple Images State
@@ -93,6 +98,31 @@ export default function AdminProductsPage() {
       sku: `PROD-${Date.now().toString().slice(-4)}-128GB`,
     }
   ]);
+
+  // Technical Specifications & Hardware State
+  const [specsData, setSpecsData] = useState({
+    // Display
+    screen_size: '6.78 inches',
+    resolution: '1.5K AMOLED (2800 × 1260)',
+    refresh_rate: '120Hz LTPO',
+    peak_brightness: '4500 nits Peak',
+    // Processor & Performance
+    chipset: 'Qualcomm Snapdragon 7 Gen 3 (4nm)',
+    gpu: 'Adreno 720',
+    operating_system: 'OriginOS 4 / Funtouch OS 15 (Android 15)',
+    network: 'Dual 5G (SA/NSA) + Wi-Fi 6',
+    // Camera
+    rear_primary: '50 MP Sony IMX921 with OIS',
+    rear_secondary: '50 MP ZEISS Ultra Wide Angle',
+    front_camera: '50 MP Group Selfie with AF',
+    video_recording: '4K @ 60fps / 1080p @ 120fps Studio Mode',
+    // Battery & Charging
+    battery_capacity: '5500 mAh BlueVolt Battery',
+    charging_speed: '80W FlashCharge (0 to 100% in 35 mins)',
+    usb_port: 'Type-C USB 2.0 / OTG Support',
+    // In-The-Box
+    in_the_box: 'Handset, 80W Power Adapter, USB Type-C Cable, Transparent Protective Case, SIM Ejector Pin, Warranty Card, Quick Start Guide',
+  });
 
   // Handle Multi-file Upload to Supabase Storage
   const handleMultipleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -252,11 +282,39 @@ export default function AdminProductsPage() {
       };
     });
 
+    // Build Specifications
+    const specificationsObj = {
+      display: formData.is_phone ? {
+        screen_size: specsData.screen_size,
+        resolution: specsData.resolution,
+        refresh_rate: specsData.refresh_rate,
+        peak_brightness: specsData.peak_brightness,
+      } : undefined,
+      processor: formData.is_phone ? {
+        chipset: specsData.chipset,
+        gpu: specsData.gpu,
+        operating_system: specsData.operating_system,
+        network_connectivity: specsData.network,
+      } : undefined,
+      camera: formData.is_phone ? {
+        rear_main: specsData.rear_primary,
+        rear_secondary: specsData.rear_secondary,
+        front_camera: specsData.front_camera,
+        video_recording: specsData.video_recording,
+      } : undefined,
+      battery_charging: {
+        capacity: specsData.battery_capacity,
+        charging_speed: specsData.charging_speed,
+        usb_port: specsData.usb_port,
+      },
+      in_the_box: specsData.in_the_box.split(',').map(s => s.trim()).filter(Boolean),
+    };
+
     addProduct({
       name: formData.name,
       slug: generatedSlug,
       tagline: formData.tagline,
-      description: formData.description || `${formData.name} available at Galaxy Mobile Gallery Begampur showroom.`,
+      description: formData.description || `${formData.name} available at Galaxy Mobile Gallery Begampur showroom with Bajaj Finance 0% EMI and official warranty.`,
       brand_id: formData.brand_id,
       brand,
       category_id: formData.category_id,
@@ -270,12 +328,7 @@ export default function AdminProductsPage() {
       is_active: true,
       warranty_info: formData.warranty_info,
       sort_order: 1,
-      specifications: {
-        display: { size: '6.78 inches', resolution: '1.5K AMOLED 120Hz', refresh_rate: '120Hz' },
-        camera: { rear_main: '50 MP ZEISS / OIS', front_camera: '50 MP Group Selfie' },
-        processor: { chipset: 'Snapdragon 7 Gen 3 / Dimensity 5G' },
-        battery_charging: { capacity: '5500 mAh BlueVolt', charging_speed: '80W FlashCharge' }
-      },
+      specifications: specificationsObj,
       images: formattedImages,
       variants: formattedVariants,
     });
@@ -283,7 +336,7 @@ export default function AdminProductsPage() {
     fireConfetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
     setIsAddModalOpen(false);
 
-    // Reset Form for next product
+    // Reset Form
     setVariants([
       {
         id: `var-init-1`,
@@ -310,7 +363,7 @@ export default function AdminProductsPage() {
       is_featured: false,
       is_new_arrival: true,
       is_best_seller: false,
-      warranty_info: '1 Year Brand Warranty',
+      warranty_info: '1 Year Handset & 6 Months Accessories Warranty',
     });
   };
 
@@ -330,7 +383,7 @@ export default function AdminProductsPage() {
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-vivo-600 to-vivo-500 hover:from-vivo-500 hover:to-vivo-400 text-white text-xs font-bold shadow-glow-blue transition-all"
         >
           <PlusCircle className="w-4 h-4" />
-          <span>Add New Product (Multi-RAM & Photos)</span>
+          <span>Add New Product (Specs & Photos)</span>
         </button>
       </div>
 
@@ -487,18 +540,18 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
-      {/* Add Product Modal (Multi-Photos + Multi-RAM/Storage Variants) */}
+      {/* Add Product Modal (Multi-Photos + Multi-RAM/Storage + Full Technical Specs) */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
           <div className="w-full max-w-4xl rounded-3xl glass-panel border border-vivo-500/30 p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
             
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <div>
                 <h3 className="text-xl font-bold text-white flex items-center gap-2">
                   <Smartphone className="w-5 h-5 text-vivo-400" />
-                  <span>Add New Product & Variants</span>
+                  <span>Add New Product to Catalog</span>
                 </h3>
-                <p className="text-xs text-slate-400">Upload multiple photos (Supabase storage) & configure all RAM/Storage variants at once.</p>
+                <p className="text-xs text-slate-400">Configure multi-RAM/ROM tiers, Supabase photos & full hardware specifications.</p>
               </div>
               <button
                 type="button"
@@ -584,16 +637,28 @@ export default function AdminProductsPage() {
                 )}
               </div>
 
-              {/* Tagline */}
-              <div className="space-y-1">
-                <label className="text-slate-300 font-semibold">Tagline / Key Feature Headline</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Studio Aura Light Portrait & 50MP ZEISS Camera"
-                  value={formData.tagline}
-                  onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-vivo-500"
-                />
+              {/* Tagline & Warranty */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-slate-300 font-semibold">Tagline / Key Feature Headline</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Studio Aura Light Portrait & 50MP ZEISS Camera"
+                    value={formData.tagline}
+                    onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-vivo-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-slate-300 font-semibold">Warranty Information</label>
+                  <input
+                    type="text"
+                    value={formData.warranty_info}
+                    onChange={(e) => setFormData({ ...formData, warranty_info: e.target.value })}
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-vivo-500"
+                  />
+                </div>
               </div>
 
               {/* MULTIPLE IMAGES UPLOAD SECTION (SUPABASE) */}
@@ -912,6 +977,232 @@ export default function AdminProductsPage() {
 
               </div>
 
+              {/* TECHNICAL SPECIFICATIONS & HARDWARE FEATURES CONFIGURATOR */}
+              <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-4">
+                <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                  <div>
+                    <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                      <Settings2 className="w-4 h-4 text-origin-cyan" />
+                      <span>Technical Specifications & Hardware Features</span>
+                    </h4>
+                    <p className="text-[11px] text-slate-400">Configure hardware specs displayed on the customer detail page.</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  
+                  {/* Display Specs */}
+                  {formData.is_phone && (
+                    <div className="p-4 rounded-xl bg-slate-900/80 border border-white/5 space-y-3">
+                      <h5 className="font-bold text-vivo-400 text-xs flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5" /> 1. Display & Screen Specifications
+                      </h5>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <div className="space-y-1">
+                          <label className="text-slate-400 text-[10px]">Screen Size</label>
+                          <input
+                            type="text"
+                            value={specsData.screen_size}
+                            onChange={(e) => setSpecsData({ ...specsData, screen_size: e.target.value })}
+                            placeholder="6.78 inches"
+                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-slate-400 text-[10px]">Resolution & Panel</label>
+                          <input
+                            type="text"
+                            value={specsData.resolution}
+                            onChange={(e) => setSpecsData({ ...specsData, resolution: e.target.value })}
+                            placeholder="1.5K AMOLED (2800 × 1260)"
+                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-slate-400 text-[10px]">Refresh Rate</label>
+                          <input
+                            type="text"
+                            value={specsData.refresh_rate}
+                            onChange={(e) => setSpecsData({ ...specsData, refresh_rate: e.target.value })}
+                            placeholder="120Hz LTPO"
+                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-slate-400 text-[10px]">Peak Brightness</label>
+                          <input
+                            type="text"
+                            value={specsData.peak_brightness}
+                            onChange={(e) => setSpecsData({ ...specsData, peak_brightness: e.target.value })}
+                            placeholder="4500 nits"
+                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Processor & Performance */}
+                  {formData.is_phone && (
+                    <div className="p-4 rounded-xl bg-slate-900/80 border border-white/5 space-y-3">
+                      <h5 className="font-bold text-origin-violet text-xs flex items-center gap-1.5">
+                        <Cpu className="w-3.5 h-3.5" /> 2. Processor, OS & Network
+                      </h5>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <div className="space-y-1">
+                          <label className="text-slate-400 text-[10px]">Processor / Chipset</label>
+                          <input
+                            type="text"
+                            value={specsData.chipset}
+                            onChange={(e) => setSpecsData({ ...specsData, chipset: e.target.value })}
+                            placeholder="Snapdragon 7 Gen 3"
+                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-slate-400 text-[10px]">GPU / Graphics</label>
+                          <input
+                            type="text"
+                            value={specsData.gpu}
+                            onChange={(e) => setSpecsData({ ...specsData, gpu: e.target.value })}
+                            placeholder="Adreno 720"
+                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-slate-400 text-[10px]">Operating System</label>
+                          <input
+                            type="text"
+                            value={specsData.operating_system}
+                            onChange={(e) => setSpecsData({ ...specsData, operating_system: e.target.value })}
+                            placeholder="Funtouch OS 15 (Android 15)"
+                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-slate-400 text-[10px]">5G & Connectivity</label>
+                          <input
+                            type="text"
+                            value={specsData.network}
+                            onChange={(e) => setSpecsData({ ...specsData, network: e.target.value })}
+                            placeholder="Dual 5G (SA/NSA) + Wi-Fi 6"
+                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Camera System */}
+                  {formData.is_phone && (
+                    <div className="p-4 rounded-xl bg-slate-900/80 border border-white/5 space-y-3">
+                      <h5 className="font-bold text-cyan-400 text-xs flex items-center gap-1.5">
+                        <Camera className="w-3.5 h-3.5" /> 3. Camera System
+                      </h5>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <div className="space-y-1">
+                          <label className="text-slate-400 text-[10px]">Rear Primary Camera</label>
+                          <input
+                            type="text"
+                            value={specsData.rear_primary}
+                            onChange={(e) => setSpecsData({ ...specsData, rear_primary: e.target.value })}
+                            placeholder="50 MP Sony IMX921 with OIS"
+                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-slate-400 text-[10px]">Rear Secondary Camera</label>
+                          <input
+                            type="text"
+                            value={specsData.rear_secondary}
+                            onChange={(e) => setSpecsData({ ...specsData, rear_secondary: e.target.value })}
+                            placeholder="50 MP ZEISS Ultra Wide"
+                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-slate-400 text-[10px]">Front Selfie Camera</label>
+                          <input
+                            type="text"
+                            value={specsData.front_camera}
+                            onChange={(e) => setSpecsData({ ...specsData, front_camera: e.target.value })}
+                            placeholder="50 MP Group Selfie AF"
+                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-slate-400 text-[10px]">Video Recording</label>
+                          <input
+                            type="text"
+                            value={specsData.video_recording}
+                            onChange={(e) => setSpecsData({ ...specsData, video_recording: e.target.value })}
+                            placeholder="4K @ 60fps / Studio Mode"
+                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Battery & Charging */}
+                  <div className="p-4 rounded-xl bg-slate-900/80 border border-white/5 space-y-3">
+                    <h5 className="font-bold text-emerald-400 text-xs flex items-center gap-1.5">
+                      <Battery className="w-3.5 h-3.5" /> {formData.is_phone ? '4.' : '1.'} Battery & Charging
+                    </h5>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-slate-400 text-[10px]">Battery Capacity</label>
+                        <input
+                          type="text"
+                          value={specsData.battery_capacity}
+                          onChange={(e) => setSpecsData({ ...specsData, battery_capacity: e.target.value })}
+                          placeholder="5500 mAh BlueVolt"
+                          className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-slate-400 text-[10px]">Charging Technology</label>
+                        <input
+                          type="text"
+                          value={specsData.charging_speed}
+                          onChange={(e) => setSpecsData({ ...specsData, charging_speed: e.target.value })}
+                          placeholder="80W FlashCharge"
+                          className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-slate-400 text-[10px]">USB Port & OTG</label>
+                        <input
+                          type="text"
+                          value={specsData.usb_port}
+                          onChange={(e) => setSpecsData({ ...specsData, usb_port: e.target.value })}
+                          placeholder="USB Type-C"
+                          className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* In-The-Box Items */}
+                  <div className="p-4 rounded-xl bg-slate-900/80 border border-white/5 space-y-3">
+                    <h5 className="font-bold text-slate-300 text-xs flex items-center gap-1.5">
+                      <Box className="w-3.5 h-3.5 text-amber-400" /> {formData.is_phone ? '5.' : '2.'} In-The-Box Package Contents
+                    </h5>
+                    <div className="space-y-1">
+                      <label className="text-slate-400 text-[10px]">Comma-separated package contents</label>
+                      <input
+                        type="text"
+                        value={specsData.in_the_box}
+                        onChange={(e) => setSpecsData({ ...specsData, in_the_box: e.target.value })}
+                        placeholder="Handset, 80W Charger, Cable, Protective Case, SIM Ejector, User Manual"
+                        className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
+                      />
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
               {/* Submit Buttons */}
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
                 <button
@@ -926,7 +1217,7 @@ export default function AdminProductsPage() {
                   className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-vivo-600 to-vivo-500 hover:from-vivo-500 hover:to-vivo-400 text-white font-bold shadow-glow-blue transition-all flex items-center gap-2"
                 >
                   <Check className="w-4 h-4" />
-                  <span>Create Product with {variants.length} Variant(s) & {images.length} Photo(s)</span>
+                  <span>Publish Product with {variants.length} Variant(s) & Full Specs</span>
                 </button>
               </div>
 

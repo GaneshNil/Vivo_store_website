@@ -29,7 +29,8 @@ import {
   ChevronLeft,
   Maximize2,
   ZoomIn,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Smartphone
 } from 'lucide-react';
 import { fireConfetti } from '@/lib/utils/confetti';
 
@@ -489,14 +490,14 @@ export default function ProductDetailPage() {
 
       </div>
 
-      {/* Specifications Detailed Tabs Section */}
+      {/* Specifications Detailed Section */}
       <section className="pt-12 border-t border-white/10 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 className="text-2xl font-bold text-white font-display">
               Technical Specifications & Features
             </h2>
-            <p className="text-xs text-slate-400">Complete hardware breakdown for {product.name}</p>
+            <p className="text-xs text-slate-400">Complete hardware breakdown & features for {product.name}</p>
           </div>
 
           {product.warranty_info && (
@@ -506,12 +507,49 @@ export default function ProductDetailPage() {
           )}
         </div>
 
-        {/* Specs Table */}
+        {/* Specs Table & Cards */}
         <div className="rounded-3xl glass-panel border border-white/10 overflow-hidden">
           <div className="divide-y divide-white/5">
             
+            {/* General Overview Card */}
+            <div className="p-6 space-y-3 bg-white/[0.02]">
+              <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                <Smartphone className="w-3.5 h-3.5 text-vivo-400" /> General & Selected Variant Details
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                <div className="flex justify-between border-b border-white/5 pb-2">
+                  <span className="text-slate-400">Brand</span>
+                  <span className="text-white font-semibold">{product.brand?.name || 'VIVO'}</span>
+                </div>
+                <div className="flex justify-between border-b border-white/5 pb-2">
+                  <span className="text-slate-400">Model Name</span>
+                  <span className="text-white font-semibold">{product.name}</span>
+                </div>
+                <div className="flex justify-between border-b border-white/5 pb-2">
+                  <span className="text-slate-400">Selected Color</span>
+                  <span className="text-white font-semibold">{activeVariant?.color || 'Standard'}</span>
+                </div>
+                {activeVariant?.ram && (
+                  <div className="flex justify-between border-b border-white/5 pb-2">
+                    <span className="text-slate-400">RAM Capacity</span>
+                    <span className="text-white font-semibold">{activeVariant.ram}</span>
+                  </div>
+                )}
+                {activeVariant?.storage && (
+                  <div className="flex justify-between border-b border-white/5 pb-2">
+                    <span className="text-slate-400">Internal Storage</span>
+                    <span className="text-white font-semibold">{activeVariant.storage}</span>
+                  </div>
+                )}
+                <div className="flex justify-between border-b border-white/5 pb-2">
+                  <span className="text-slate-400">Stock Availability</span>
+                  <span className="text-emerald-400 font-semibold">{statusConfig.label} ({activeVariant?.current_stock || 0} Units In Store)</span>
+                </div>
+              </div>
+            </div>
+
             {/* Display Specs */}
-            {product.specifications.display && (
+            {product.specifications?.display && Object.keys(product.specifications.display).length > 0 && (
               <div className="p-6 space-y-3">
                 <h4 className="text-xs font-bold text-vivo-400 uppercase tracking-wider flex items-center gap-2">
                   <Sparkles className="w-3.5 h-3.5" /> Display & Screen
@@ -528,9 +566,9 @@ export default function ProductDetailPage() {
             )}
 
             {/* Camera Specs */}
-            {product.specifications.camera && (
+            {product.specifications?.camera && Object.keys(product.specifications.camera).length > 0 && (
               <div className="p-6 space-y-3">
-                <h4 className="text-xs font-bold text-origin-cyan uppercase tracking-wider flex items-center gap-2">
+                <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-2">
                   <Camera className="w-3.5 h-3.5" /> Camera System
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
@@ -545,7 +583,7 @@ export default function ProductDetailPage() {
             )}
 
             {/* Processor & Hardware */}
-            {product.specifications.processor && (
+            {product.specifications?.processor && Object.keys(product.specifications.processor).length > 0 && (
               <div className="p-6 space-y-3">
                 <h4 className="text-xs font-bold text-origin-violet uppercase tracking-wider flex items-center gap-2">
                   <Cpu className="w-3.5 h-3.5" /> Processor & Performance
@@ -562,7 +600,7 @@ export default function ProductDetailPage() {
             )}
 
             {/* Battery & Charging */}
-            {product.specifications.battery_charging && (
+            {product.specifications?.battery_charging && Object.keys(product.specifications.battery_charging).length > 0 && (
               <div className="p-6 space-y-3">
                 <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
                   <Battery className="w-3.5 h-3.5" /> Battery & Power Delivery
@@ -579,7 +617,7 @@ export default function ProductDetailPage() {
             )}
 
             {/* In the Box Items */}
-            {product.specifications.in_the_box && product.specifications.in_the_box.length > 0 && (
+            {product.specifications?.in_the_box && product.specifications.in_the_box.length > 0 && (
               <div className="p-6 space-y-2">
                 <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">In The Box Items:</h4>
                 <div className="flex flex-wrap gap-2 text-xs">
