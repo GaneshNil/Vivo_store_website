@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useStore } from '@/lib/store/store-context';
 import { StoreSettings } from '@/lib/types';
 import { Settings, Save, CheckCircle2, MapPin, Phone, Mail, Clock, CreditCard } from 'lucide-react';
-import confetti from 'canvas-confetti';
+import { fireConfetti } from '@/lib/utils/confetti';
 
 export default function AdminSettingsPage() {
   const { storeSettings, updateStoreSettings } = useStore();
@@ -15,7 +15,7 @@ export default function AdminSettingsPage() {
     e.preventDefault();
     updateStoreSettings(formData);
     setSavedSuccess(true);
-    confetti({ particleCount: 40, spread: 50, origin: { y: 0.6 } });
+    fireConfetti({ particleCount: 40, spread: 50, origin: { y: 0.6 } });
     setTimeout(() => setSavedSuccess(false), 4000);
   };
 

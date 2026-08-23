@@ -27,7 +27,7 @@ import {
   Battery,
   X
 } from 'lucide-react';
-import confetti from 'canvas-confetti';
+import { fireConfetti } from '@/lib/utils/confetti';
 
 export default function ProductDetailPage() {
   const { slug } = useParams();
@@ -93,7 +93,7 @@ export default function ProductDetailPage() {
     });
 
     setNotifySubmitted(true);
-    confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+    fireConfetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
   };
 
   const whatsappMessage = encodeURIComponent(
