@@ -99,10 +99,10 @@ export const INITIAL_STORE_SETTINGS: StoreSettings = {
 export const INITIAL_OFFERS: Offer[] = [
   {
     id: 'offer-bajaj-zero',
-    title: 'Bajaj Finance 0% EMI Scheme',
-    subtitle: 'Zero Down Payment & Easy Monthly Installments',
+    title: 'Bajaj Finance EMI Available Scheme',
+    subtitle: 'Easy Monthly Installments & Instant Approval',
     badge_text: 'STORE EXCLUSIVE',
-    discount_text: '0% Interest EMI',
+    discount_text: 'Bajaj Finance EMI Available',
     banner_url: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=1200&q=80',
     start_date: '2026-08-01T00:00:00Z',
     end_date: '2026-12-31T23:59:59Z',
@@ -988,7 +988,7 @@ export const INITIAL_REVIEWS: Review[] = [
     customer_name: 'Rahul Patil (Begampur)',
     rating: 5,
     title: 'Outstanding Portrait Camera & Instant Bajaj EMI!',
-    comment: 'Purchased the VIVO V40 Pro from Galaxy Mobile Gallery. The Aura light studio portraits are mind-blowing! Got 0% Bajaj Finance EMI approved in just 10 minutes at the store.',
+    comment: 'Purchased the VIVO V40 Pro from Galaxy Mobile Gallery. The Aura light studio portraits are mind-blowing! Got Bajaj Finance EMI approved in just 10 minutes at the store.',
     is_verified_store_buyer: true,
     is_approved: true,
     created_at: '2026-08-18T14:30:00Z'

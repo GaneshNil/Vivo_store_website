@@ -32,7 +32,7 @@ export const BajajEMIBanner: React.FC = () => {
 
               <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
                 Upgrade to Any 5G Smartphone with{' '}
-                <span className="text-gradient-gold">0% Bajaj Finance EMI</span>
+                <span className="text-gradient-gold">Bajaj Finance EMI Available</span>
               </h2>
 
               <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
@@ -43,7 +43,7 @@ export const BajajEMIBanner: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 <div className="flex items-center gap-2 text-xs text-slate-200">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                  <span>Zero Down Payment Available</span>
+                  <span>Zero Down Payment Options</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-slate-200">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
@@ -85,8 +85,8 @@ export const BajajEMIBanner: React.FC = () => {
                       In-Store EMI Estimator
                     </h4>
                   </div>
-                  <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                    0% Interest
+                  <span className="text-[10px] font-bold text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                    Bajaj Finance EMI Available
                   </span>
                 </div>
 
@@ -144,7 +144,7 @@ export const BajajEMIBanner: React.FC = () => {
                   </div>
                   <div className="text-right text-[11px] text-slate-400">
                     <p>Total: {formatPrice(selectedAmount)}</p>
-                    <p className="text-emerald-400 font-semibold">Zero Interest</p>
+                    <p className="text-amber-300 font-semibold">Bajaj Finance EMI</p>
                   </div>
                 </div>
 

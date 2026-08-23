@@ -85,7 +85,7 @@ export const VivoShowcase: React.FC = () => {
             <div>
               <h4 className="text-white font-bold text-base">Authorized VIVO Store Warranty & Demo Center</h4>
               <p className="text-xs text-slate-400 mt-0.5">
-                Every Vivo phone purchased at Galaxy Mobile Gallery comes with full manufacturer warranty and instant 0% Bajaj EMI support.
+                Every Vivo phone purchased at Galaxy Mobile Gallery comes with full manufacturer warranty and instant <strong className="text-amber-300 font-bold">Bajaj Finance EMI Available</strong> support.
               </p>
             </div>
           </div>

@@ -622,7 +622,7 @@ export default function AdminProductsPage() {
                         <div>
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-300 border border-amber-500/20 font-bold text-[10px]">
                             <CreditCard className="w-3 h-3" />
-                            <span>{emiRate === 0 ? '0% No Cost' : `${emiRate}% Interest`}</span>
+                            <span>Bajaj Finance EMI Available</span>
                           </span>
                           <p className="text-[10px] text-slate-400 mt-0.5">
                             {formatPrice(emiValue)}/mo · {emiTenure} mos
@@ -841,7 +841,7 @@ export default function AdminProductsPage() {
                         className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold focus:outline-none focus:border-amber-500"
                       />
                       <span className="text-[10px] text-slate-400">
-                        {bajajInterestRate === 0 ? '✓ 0% No Cost EMI Scheme' : `Custom ${bajajInterestRate}% Annual Interest Scheme`}
+                        {bajajInterestRate === 0 ? '✓ Bajaj Finance EMI Available (Standard Scheme)' : `Custom ${bajajInterestRate}% Annual Rate Scheme`}
                       </span>
                     </div>
 

@@ -56,7 +56,7 @@ export const Header: React.FC = () => {
             </span>
             <span>Physical Store Open Today: <strong className="text-white font-medium">10:00 AM – 09:00 PM</strong></span>
             <span className="hidden md:inline text-slate-500">|</span>
-            <span className="hidden md:inline text-amber-300">⚡ Bajaj Finance 0% EMI & Instant In-Store Approval</span>
+            <span className="hidden md:inline text-amber-300 font-bold">⚡ Bajaj Finance EMI Available & Instant In-Store Approval</span>
           </div>
 
           <div className="flex items-center gap-4 text-slate-300">

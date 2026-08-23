@@ -24,7 +24,7 @@ export default function OffersPage() {
             Store Offers & Special Schemes
           </h1>
           <p className="text-xs sm:text-sm text-slate-300">
-            Avail 0% Bajaj Finance EMI, festive gift hampers, bundle discounts, and free screen protection at our Begampur showroom.
+            Avail <strong className="text-amber-300 font-semibold">Bajaj Finance EMI Available</strong>, festive gift hampers, bundle discounts, and free screen protection at our Begampur showroom.
           </p>
         </div>
       </div>

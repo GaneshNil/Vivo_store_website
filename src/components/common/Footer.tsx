@@ -38,8 +38,8 @@ export const Footer: React.FC = () => {
                 <CreditCard className="w-6 h-6" />
               </div>
               <div>
-                <h4 className="font-semibold text-white text-base">Bajaj Finance 0% EMI</h4>
-                <p className="text-xs text-slate-400 mt-1">Instant approval at store with minimal paperwork & zero down payment schemes.</p>
+                <h4 className="font-semibold text-amber-300 text-base">Bajaj Finance EMI Available</h4>
+                <p className="text-xs text-slate-400 mt-1">Instant on-the-spot approval in store</p>
               </div>
             </div>
 

@@ -247,7 +247,7 @@ export default function HomePage() {
                 </div>
                 <div className="text-[11px] text-slate-400 space-y-1">
                   <p>✔ Live Demo Phones</p>
-                  <p>✔ 0% Bajaj Finance EMI</p>
+                  <p className="text-amber-300 font-semibold">✔ Bajaj Finance EMI Available</p>
                   <p>✔ Free Screen Guard Installation</p>
                 </div>
               </div>

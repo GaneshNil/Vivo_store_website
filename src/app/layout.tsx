@@ -7,7 +7,7 @@ import { CompareTray } from '@/components/customer/CompareTray';
 
 export const metadata: Metadata = {
   title: 'Galaxy Mobile Gallery | VIVO Authorized Showroom & Multi-Brand Mobiles Begampur',
-  description: 'Explore latest VIVO X Series, V Series, T Series & multi-brand smartphones and genuine accessories at Galaxy Mobile Gallery, Begampur, Solapur. 0% Bajaj Finance EMI available in store.',
+  description: 'Explore latest VIVO X Series, V Series, T Series & multi-brand smartphones and genuine accessories at Galaxy Mobile Gallery, Begampur, Solapur. Bajaj Finance EMI Available in store.',
   keywords: ['Galaxy Mobile Gallery', 'Vivo showroom Begampur', 'Vivo mobile shop Solapur', 'Vivo X100 Pro', 'Vivo V40 Pro', 'Bajaj Finance EMI Mobile Solapur', 'Mohol mobile store', 'Mobile accessories Begampur'],
   openGraph: {
     title: 'Galaxy Mobile Gallery | VIVO Experience Showroom Begampur',

@@ -23,7 +23,7 @@ export default function StorePage() {
 
   const inStoreServices = [
     { title: 'Live Phone Demos', desc: 'Experience touch, camera and OS performance on all flagship demo handsets before purchasing.', icon: Smartphone },
-    { title: 'Bajaj Finance 0% EMI', desc: 'Instant 10-minute on-the-spot approval with minimal documents (Aadhaar & PAN).', icon: CreditCard },
+    { title: 'Bajaj Finance EMI Available', desc: 'Instant 10-minute on-the-spot approval with minimal documents (Aadhaar & PAN).', icon: CreditCard },
     { title: 'Free UV Screen Protection', desc: 'Complimentary professional bubble-free UV liquid tempered glass installation by store technician.', icon: Layers },
     { title: 'Old-to-New Data Migration', desc: 'Free instant transfer of all your contacts, photos and apps from your old phone to the new device.', icon: Zap },
     { title: 'Official Brand Warranty', desc: 'Genuine Indian brand handsets with tax invoice and 100% manufacturer warranty.', icon: ShieldCheck },
@@ -46,7 +46,7 @@ export default function StorePage() {
           </h1>
 
           <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-            We are Solapur district&apos;s leading digital showroom for VIVO, Samsung, Oppo & Realme smartphones. Walk into our physical store for live device demonstrations, exclusive festive discounts, and instant 0% Bajaj Finance EMI.
+            We are Solapur district&apos;s leading digital showroom for VIVO, Samsung, Oppo & Realme smartphones. Walk into our physical store for live device demonstrations, exclusive festive discounts, and instant <strong className="text-amber-300">Bajaj Finance EMI Available</strong>.
           </p>
 
           <div className="flex flex-wrap gap-4 pt-2">
@@ -187,7 +187,7 @@ export default function StorePage() {
 
             <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 to-amber-600/10 border border-amber-500/20 space-y-2 text-xs">
               <p className="font-bold text-amber-300 flex items-center gap-1.5">
-                <CreditCard className="w-4 h-4" /> 0% Bajaj Finance Document Checklist:
+                <CreditCard className="w-4 h-4" /> Bajaj Finance EMI Document Checklist:
               </p>
               <ul className="text-slate-300 text-[11px] space-y-1 pl-4 list-disc">
                 <li>Aadhaar Card (Original or DigiLocker)</li>

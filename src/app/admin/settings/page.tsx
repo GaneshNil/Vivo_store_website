@@ -217,7 +217,7 @@ export default function AdminSettingsPage() {
                 })}
                 className="rounded bg-slate-900 border-white/10 text-vivo-500"
               />
-              <span className="text-slate-200 font-medium">Bajaj Finance 0% EMI</span>
+              <span className="text-slate-200 font-medium">Bajaj Finance EMI Available</span>
             </label>
 
             <label className="flex items-center gap-2.5 p-3 rounded-xl bg-white/5 border border-white/5 cursor-pointer">

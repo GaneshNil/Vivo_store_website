@@ -104,8 +104,8 @@ export const HeroSection: React.FC = () => {
                   <CreditCard className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-white">0% Bajaj EMI</p>
-                  <p className="text-[10px] text-slate-400">Instant approval</p>
+                  <p className="text-xs font-bold text-amber-300">Bajaj Finance EMI Available</p>
+                  <p className="text-[10px] text-slate-400">Instant In-Store Approval</p>
                 </div>
               </div>
 

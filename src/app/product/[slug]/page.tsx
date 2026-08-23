@@ -300,8 +300,8 @@ export default function ProductDetailPage() {
             </div>
             <div className="p-3 rounded-2xl glass-card text-center space-y-1">
               <CreditCard className="w-5 h-5 text-amber-400 mx-auto" />
-              <p className="text-xs font-bold text-white">0% Bajaj EMI</p>
-              <p className="text-[10px] text-slate-400">10-Min Approval</p>
+              <p className="text-xs font-bold text-amber-300">Bajaj EMI</p>
+              <p className="text-[10px] text-slate-400">Available in store</p>
             </div>
             <div className="p-3 rounded-2xl glass-card text-center space-y-1">
               <Zap className="w-5 h-5 text-vivo-400 mx-auto" />
@@ -382,13 +382,13 @@ export default function ProductDetailPage() {
               {product.is_phone && emiAmount > 0 && (
                 <div className="text-right">
                   <span className="text-[10px] font-bold text-amber-300 uppercase tracking-wide block">
-                    ⚡ Bajaj Finance EMI
+                    ⚡ Bajaj Finance EMI Available
                   </span>
                   <span className="text-sm font-bold text-emerald-400">
                     from {formatPrice(emiAmount)}/mo
                   </span>
-                  <span className="text-[9px] text-slate-400 block">
-                    {tenureMonths} Mos · {interestRate === 0 ? '0% No Cost EMI' : `${interestRate}% Interest`}
+                  <span className="text-[9px] text-amber-300/80 font-medium block">
+                    {tenureMonths} Months EMI Available
                   </span>
                 </div>
               )}
@@ -708,7 +708,7 @@ export default function ProductDetailPage() {
               </div>
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                <span>Payment: Bajaj Finance 0% EMI, Credit/Debit Cards, UPI & Cash.</span>
+                <span>Payment: <strong className="text-amber-300">Bajaj Finance EMI Available</strong>, Credit/Debit Cards, UPI & Cash.</span>
               </div>
             </div>
 
