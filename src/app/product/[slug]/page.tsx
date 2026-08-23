@@ -25,7 +25,11 @@ import {
   Camera,
   Cpu,
   Battery,
-  X
+  X,
+  ChevronLeft,
+  Maximize2,
+  ZoomIn,
+  Image as ImageIcon
 } from 'lucide-react';
 import { fireConfetti } from '@/lib/utils/confetti';
 
@@ -35,25 +39,36 @@ export default function ProductDetailPage() {
 
   const product = products.find(p => p.slug === slug);
 
-  if (!product) {
-    return (
-      <div className="py-24 max-w-4xl mx-auto px-4 text-center space-y-4">
-        <h2 className="text-2xl font-bold text-white">Product Not Found</h2>
-        <p className="text-sm text-slate-400">The mobile phone or accessory model you are looking for does not exist or has been discontinued.</p>
-        <Link href="/mobiles" className="inline-block px-5 py-2.5 rounded-xl bg-vivo-600 text-white text-xs font-semibold">
-          Browse Smartphone Catalog
-        </Link>
-      </div>
-    );
-  }
-
   // Active Variant State
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
-  const activeVariant = product.variants[selectedVariantIndex] || product.variants[0];
+  const activeVariant = product?.variants[selectedVariantIndex] || product?.variants[0];
 
-  // Active Image State
+  // Active Image State & Interactive Zoom
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const activeImage = product.images[activeImageIndex]?.image_url || product.images[0]?.image_url;
+  const [isZooming, setIsZooming] = useState(false);
+  const [zoomCoords, setZoomCoords] = useState({ x: 50, y: 50 });
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  const activeImage = product?.images[activeImageIndex]?.image_url || product?.images[0]?.image_url || '';
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = Math.max(0, Math.min(100, ((e.clientX - left) / width) * 100));
+    const y = Math.max(0, Math.min(100, ((e.clientY - top) / height) * 100));
+    setZoomCoords({ x, y });
+  };
+
+  const handlePrevImage = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (!product) return;
+    setActiveImageIndex(prev => (prev === 0 ? product.images.length - 1 : prev - 1));
+  };
+
+  const handleNextImage = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (!product) return;
+    setActiveImageIndex(prev => (prev === product.images.length - 1 ? 0 : prev + 1));
+  };
 
   // Active Specs Tab
   const [activeSpecTab, setActiveSpecTab] = useState<'all' | 'display' | 'camera' | 'performance' | 'battery'>('all');
@@ -67,9 +82,21 @@ export default function ProductDetailPage() {
   const [notifySubmitted, setNotifySubmitted] = useState(false);
 
   const statusConfig = getStatusBadgeConfig(activeVariant?.computed_status || 'IN_STOCK');
-  const isCompared = compareList.some(p => p.id === product.id);
-  const isWishlisted = isInWishlist(product.id);
+  const isCompared = product ? compareList.some(p => p.id === product.id) : false;
+  const isWishlisted = product ? isInWishlist(product.id) : false;
   const emiAmount = activeVariant ? calculateEMI(activeVariant.selling_price, 6) : 0;
+
+  if (!product) {
+    return (
+      <div className="py-24 max-w-4xl mx-auto px-4 text-center space-y-4">
+        <h2 className="text-2xl font-bold text-white">Product Not Found</h2>
+        <p className="text-sm text-slate-400">The mobile phone or accessory model you are looking for does not exist or has been discontinued.</p>
+        <Link href="/mobiles" className="inline-block px-5 py-2.5 rounded-xl bg-vivo-600 text-white text-xs font-semibold">
+          Browse Smartphone Catalog
+        </Link>
+      </div>
+    );
+  }
 
   // Recommended Compatible Accessories
   const compatibleAccessories = useMemo(() => {
@@ -117,69 +144,148 @@ export default function ProductDetailPage() {
       {/* Main Product Showcase: Gallery + Variant & In-Store Purchase Hub */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         
-        {/* Left Column: Multi-View Image Gallery */}
+        {/* Left Column: Flipkart / Amazon Style Multi-Angle Gallery */}
         <div className="lg:col-span-6 space-y-4">
           
-          {/* Main Stage Image */}
-          <div className="relative aspect-square w-full rounded-3xl glass-panel border border-white/10 bg-gradient-to-b from-slate-900/90 to-slate-950/90 flex items-center justify-center p-8 overflow-hidden shadow-2xl">
-            <div className="absolute inset-0 bg-radial-gradient from-vivo-500/10 via-transparent to-transparent" />
+          <div className="flex flex-col-reverse md:flex-row gap-4 items-start">
             
-            {/* Status Badge */}
-            <div className="absolute top-4 left-4 z-10">
-              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border}`}>
-                <span className={`w-2 h-2 rounded-full ${statusConfig.dot} ${statusConfig.animate ? 'pulse-badge-dot' : ''}`} />
-                {statusConfig.label}
-              </span>
-            </div>
+            {/* Multi-Angle Thumbnails Strip (Amazon/Flipkart vertical sidebar on desktop) */}
+            {product.images.length > 1 && (
+              <div className="flex md:flex-col gap-2.5 overflow-x-auto md:overflow-y-auto max-h-[480px] w-full md:w-24 flex-shrink-0 pb-2 md:pb-0 scrollbar-thin">
+                {product.images.map((img, idx) => {
+                  const isActive = idx === activeImageIndex;
+                  const viewLabel = img.view_type 
+                    ? img.view_type.toUpperCase() 
+                    : idx === 0 ? 'FRONT' : idx === 1 ? 'BACK' : idx === 2 ? 'SIDE' : `VIEW ${idx + 1}`;
 
-            {/* Discount Callout */}
-            {activeVariant && activeVariant.discount_percent > 0 && (
-              <div className="absolute top-4 right-4 z-10">
-                <span className="px-3 py-1 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                  SAVE {Math.round(activeVariant.discount_percent)}% OFF MRP
-                </span>
+                  return (
+                    <button
+                      key={img.id || idx}
+                      type="button"
+                      onMouseEnter={() => setActiveImageIndex(idx)}
+                      onClick={() => setActiveImageIndex(idx)}
+                      className={`relative w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-slate-900 overflow-hidden border-2 flex-shrink-0 transition-all text-left group p-1 flex flex-col items-center justify-center ${
+                        isActive
+                          ? 'border-vivo-500 shadow-glow-blue ring-2 ring-vivo-500/30 scale-105 bg-slate-800'
+                          : 'border-white/10 hover:border-vivo-400/50 hover:bg-slate-800/80 opacity-70 hover:opacity-100'
+                      }`}
+                    >
+                      <div className="relative w-full h-full">
+                        <Image
+                          src={img.image_url}
+                          alt={img.alt_text || `${product.name} ${viewLabel}`}
+                          fill
+                          className="object-contain p-1"
+                        />
+                      </div>
+                      <span className="absolute bottom-0.5 inset-x-0 bg-slate-950/80 text-slate-300 text-[8px] font-bold text-center tracking-tighter py-0.5 rounded-b-xl border-t border-white/5">
+                        {viewLabel}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             )}
 
-            {/* Image */}
-            <div className="relative w-72 h-72 sm:w-80 sm:h-80 transition-transform duration-300">
-              <Image
-                src={activeImage}
-                alt={product.name}
-                fill
-                className="object-contain"
-                priority
-              />
-            </div>
-          </div>
+            {/* Main Stage Image with Amazon-Style Interactive Magnifier */}
+            <div className="flex-1 w-full space-y-2">
+              <div 
+                className="relative aspect-square w-full rounded-3xl glass-panel border border-white/10 bg-gradient-to-b from-slate-900/95 to-slate-950 flex items-center justify-center p-6 overflow-hidden shadow-2xl cursor-crosshair group select-none"
+                onMouseEnter={() => setIsZooming(true)}
+                onMouseLeave={() => setIsZooming(false)}
+                onMouseMove={handleMouseMove}
+                onClick={() => setLightboxOpen(true)}
+              >
+                <div className="absolute inset-0 bg-radial-gradient from-vivo-500/10 via-transparent to-transparent pointer-events-none" />
+                
+                {/* Status Badge */}
+                <div className="absolute top-4 left-4 z-20 pointer-events-none">
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border}`}>
+                    <span className={`w-2 h-2 rounded-full ${statusConfig.dot} ${statusConfig.animate ? 'pulse-badge-dot' : ''}`} />
+                    {statusConfig.label}
+                  </span>
+                </div>
 
-          {/* Thumbnail Gallery Row */}
-          {product.images.length > 1 && (
-            <div className="flex gap-3 overflow-x-auto pb-2">
-              {product.images.map((img, idx) => {
-                const isActive = idx === activeImageIndex;
-                return (
-                  <button
-                    key={img.id || idx}
-                    type="button"
-                    onClick={() => setActiveImageIndex(idx)}
-                    className={`relative w-20 h-20 rounded-2xl bg-slate-900 overflow-hidden border-2 flex-shrink-0 transition-all ${
-                      isActive
-                        ? 'border-vivo-500 shadow-glow-blue scale-105'
-                        : 'border-white/10 hover:border-white/30'
-                    }`}
+                {/* Discount Callout */}
+                {activeVariant && activeVariant.discount_percent > 0 && (
+                  <div className="absolute top-4 right-4 z-20 pointer-events-none">
+                    <span className="px-3 py-1 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                      SAVE {Math.round(activeVariant.discount_percent)}% OFF
+                    </span>
+                  </div>
+                )}
+
+                {/* Prev / Next Arrows for Quick Angle Browsing */}
+                {product.images.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={handlePrevImage}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-slate-900/80 hover:bg-vivo-600 text-white border border-white/10 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 shadow-lg"
+                      title="Previous angle"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleNextImage}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-slate-900/80 hover:bg-vivo-600 text-white border border-white/10 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 shadow-lg"
+                      title="Next angle"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </>
+                )}
+
+                {/* Main Image with Zoom Lens */}
+                <div className="relative w-full h-full flex items-center justify-center">
+                  <div 
+                    className="relative w-72 h-72 sm:w-84 sm:h-84 transition-transform duration-150 ease-out"
+                    style={{
+                      transformOrigin: `${zoomCoords.x}% ${zoomCoords.y}%`,
+                      transform: isZooming ? 'scale(2.0)' : 'scale(1)',
+                    }}
                   >
                     <Image
-                      src={img.image_url}
-                      alt={img.alt_text || product.name}
+                      src={activeImage}
+                      alt={product.name}
                       fill
-                      className="object-contain p-2"
+                      className="object-contain pointer-events-none"
+                      priority
                     />
+                  </div>
+                </div>
+
+                {/* Bottom Control Bar */}
+                <div className="absolute bottom-3 inset-x-4 flex items-center justify-between z-20 pointer-events-none">
+                  <div className="bg-slate-950/80 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 text-[10px] text-slate-300 font-medium flex items-center gap-1.5 shadow">
+                    <ZoomIn className="w-3 h-3 text-vivo-400" />
+                    <span>{isZooming ? 'Panning HD Details' : 'Hover to Zoom · Click for Fullscreen'}</span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setLightboxOpen(true); }}
+                    className="pointer-events-auto bg-slate-900/80 hover:bg-vivo-600 text-white p-2 rounded-full border border-white/10 transition-colors shadow"
+                    title="Open Fullscreen Gallery"
+                  >
+                    <Maximize2 className="w-3.5 h-3.5" />
                   </button>
-                );
-              })}
+                </div>
+
+              </div>
+
+              {/* View Tags / Dot Indicators */}
+              <div className="flex items-center justify-between px-2 text-[11px] text-slate-400">
+                <span className="flex items-center gap-1.5 font-medium">
+                  <span className="w-2 h-2 rounded-full bg-vivo-400" />
+                  Showing: <strong className="text-white">{activeImageIndex === 0 ? 'Front View' : activeImageIndex === 1 ? 'Back View' : activeImageIndex === 2 ? 'Side Profile' : `Angle #${activeImageIndex + 1}`}</strong>
+                </span>
+                <span>{activeImageIndex + 1} of {product.images.length} Photos</span>
+              </div>
             </div>
-          )}
+
+          </div>
 
           {/* In-Store Guarantee Icons */}
           <div className="grid grid-cols-3 gap-3 pt-2">
@@ -678,6 +784,101 @@ export default function ProductDetailPage() {
             )}
 
           </div>
+        </div>
+      )}
+
+      {/* Amazon/Flipkart Fullscreen HD Lightbox Modal */}
+      {lightboxOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl flex flex-col justify-between p-4 sm:p-6"
+          onClick={() => setLightboxOpen(false)}
+        >
+          {/* Top Bar */}
+          <div className="flex items-center justify-between z-10" onClick={(e) => e.stopPropagation()}>
+            <div>
+              <h3 className="text-white font-bold text-base sm:text-lg">{product.name}</h3>
+              <p className="text-xs text-slate-400">
+                Photo {activeImageIndex + 1} of {product.images.length} · <span className="text-vivo-400 font-semibold">{activeImageIndex === 0 ? 'Front View' : activeImageIndex === 1 ? 'Back View' : activeImageIndex === 2 ? 'Side Profile' : `Angle #${activeImageIndex + 1}`}</span>
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setLightboxOpen(false)}
+              className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+              title="Close Fullscreen"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          {/* Main Stage in Lightbox */}
+          <div 
+            className="relative flex-1 flex items-center justify-center my-4 overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {product.images.length > 1 && (
+              <button
+                type="button"
+                onClick={handlePrevImage}
+                className="absolute left-2 sm:left-6 z-20 w-12 h-12 rounded-full bg-white/10 hover:bg-vivo-600 text-white flex items-center justify-center transition-colors shadow-2xl backdrop-blur-md"
+                title="Previous Image"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+            )}
+
+            <div className="relative w-full h-full max-w-4xl max-h-[70vh] flex items-center justify-center p-4">
+              <Image
+                src={activeImage}
+                alt={product.name}
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+
+            {product.images.length > 1 && (
+              <button
+                type="button"
+                onClick={handleNextImage}
+                className="absolute right-2 sm:right-6 z-20 w-12 h-12 rounded-full bg-white/10 hover:bg-vivo-600 text-white flex items-center justify-center transition-colors shadow-2xl backdrop-blur-md"
+                title="Next Image"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            )}
+          </div>
+
+          {/* Bottom Thumbnail Strip in Lightbox */}
+          <div 
+            className="flex items-center justify-center gap-3 overflow-x-auto py-2 z-10"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {product.images.map((img, idx) => {
+              const isActive = idx === activeImageIndex;
+              return (
+                <button
+                  key={img.id || idx}
+                  type="button"
+                  onClick={() => setActiveImageIndex(idx)}
+                  className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-slate-900 overflow-hidden border-2 transition-all p-1 flex-shrink-0 ${
+                    isActive
+                      ? 'border-vivo-500 shadow-glow-blue scale-110'
+                      : 'border-white/10 opacity-60 hover:opacity-100'
+                  }`}
+                >
+                  <Image
+                    src={img.image_url}
+                    alt={`${product.name} thumbnail ${idx + 1}`}
+                    fill
+                    className="object-contain p-1"
+                  />
+                </button>
+              );
+            })}
+          </div>
+
         </div>
       )}
 

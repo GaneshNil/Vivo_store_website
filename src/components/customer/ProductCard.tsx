@@ -101,17 +101,37 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </button>
         </div>
 
-        {/* Product Image */}
+        {/* Product Image Stage (Flipkart/Amazon Dual Angle Hover Effect) */}
         <Link href={`/product/${product.slug}`} className="relative w-full h-full flex items-center justify-center">
           <div className="relative w-44 h-44 transition-transform duration-500 group-hover:scale-105">
+            {/* Primary Front Image */}
             <Image
               src={primaryImage}
               alt={product.name}
               fill
-              className="object-contain"
+              className={`object-contain transition-opacity duration-300 ${
+                product.images.length > 1 ? 'group-hover:opacity-0' : 'opacity-100'
+              }`}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
+            {/* Secondary Back/Angle Image on Hover */}
+            {product.images.length > 1 && (
+              <Image
+                src={product.images[1]?.image_url || primaryImage}
+                alt={`${product.name} alternate angle`}
+                fill
+                className="object-contain opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              />
+            )}
           </div>
+
+          {/* Multiple Photos Badge Indicator */}
+          {product.images.length > 1 && (
+            <span className="absolute bottom-2 left-3 text-[9px] font-bold text-slate-400 bg-slate-950/80 px-2 py-0.5 rounded-full border border-white/10 group-hover:border-vivo-500/40 transition-colors">
+              {product.images.length} Angles
+            </span>
+          )}
         </Link>
       </div>
 
