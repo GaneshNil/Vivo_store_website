@@ -58,7 +58,8 @@ export const INITIAL_CATEGORIES: Category[] = [
   { id: 'cat-powerbanks', name: 'Power Banks', slug: 'power-banks', type: 'accessory', description: '10,000mAh to 20,000mAh Fast Charging backup power', icon: 'BatteryCharging', sort_order: 7 },
   { id: 'cat-smartwatches', name: 'Smart Watches', slug: 'smart-watches', type: 'accessory', description: 'AMOLED Calling Smartwatches & Fitness trackers', icon: 'Watch', sort_order: 8 },
   { id: 'cat-speakers', name: 'Bluetooth Speakers', slug: 'speakers', type: 'accessory', description: 'Portable waterproof high-bass wireless speakers', icon: 'Speaker', sort_order: 9 },
-  { id: 'cat-memory', name: 'Memory Cards & Pen Drives', slug: 'memory-cards', type: 'accessory', description: 'High-speed Class 10 MicroSD cards & Dual OTG drives', icon: 'HardDrive', sort_order: 10 }
+  { id: 'cat-memory', name: 'Memory Cards & Pen Drives', slug: 'memory-cards', type: 'accessory', description: 'High-speed Class 10 MicroSD cards & Dual OTG drives', icon: 'HardDrive', sort_order: 10 },
+  { id: 'cat-other-accessories', name: 'Other Accessories', slug: 'other-accessories', type: 'accessory', description: 'Car mobile holders, camera lens protectors, foldable desk stands & smart utilities', icon: 'Sparkles', sort_order: 11 }
 ];
 
 export const INITIAL_SERIES: Series[] = [
@@ -971,6 +972,102 @@ export const INITIAL_PRODUCTS: Product[] = [
         discount_percent: 44.02,
         current_stock: 14,
         low_stock_threshold: 4,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: true,
+        is_active: true
+      }
+    ]
+  },
+  {
+    id: 'prod-acc-car-holder',
+    brand_id: 'brand-boat',
+    category_id: 'cat-other-accessories',
+    name: '360° Magnetic Dashboard Car Mobile Mount',
+    slug: '360-magnetic-dashboard-car-mobile-mount',
+    tagline: 'Ultra-Strong Neodymium Magnets & One-Hand Operation',
+    description: 'Universal 360-degree rotating heavy-duty car dashboard & AC vent mobile mount holder. Features powerful neodymium magnets that securely hold any 5G smartphone on bumpy roads.',
+    is_phone: false,
+    is_featured: false,
+    is_new_arrival: true,
+    is_best_seller: false,
+    is_active: true,
+    warranty_info: '6 Months Replacement Warranty',
+    highlights: [
+      '360° Ball Joint Multi-Angle Rotation',
+      'Strong 6x N52 Neodymium Magnetic Grip',
+      'Washable Super-Sticky Gel Suction Base',
+      'Compatible with All Smartphones & GPS Devices'
+    ],
+    specifications: {
+      in_the_box: ['Magnetic Car Mount', '2x Metal Plates', 'User Guide']
+    },
+    compatible_models: ['All Smartphones & GPS Navigators'],
+    sort_order: 14,
+    images: [
+      { id: 'img-acc-car-1', product_id: 'prod-acc-car-holder', image_url: 'https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?auto=format&fit=crop&w=600&q=80', alt_text: '360 Magnetic Car Mobile Mount', view_type: 'front', is_primary: true, sort_order: 1 }
+    ],
+    variants: [
+      {
+        id: 'var-acc-car-blk',
+        product_id: 'prod-acc-car-holder',
+        sku: 'ACC-CAR-MOUNT-BLK',
+        color: 'Matte Black',
+        color_code: '#000000',
+        mrp: 999,
+        selling_price: 399,
+        discount_percent: 60.06,
+        current_stock: 18,
+        low_stock_threshold: 3,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: true,
+        is_active: true
+      }
+    ]
+  },
+  {
+    id: 'prod-acc-camera-lens-guard',
+    brand_id: 'brand-vivo',
+    category_id: 'cat-other-accessories',
+    name: 'VIVO 9H Titanium Camera Lens Protector Ring',
+    slug: 'vivo-9h-titanium-camera-lens-protector-ring',
+    tagline: 'Night Circle Anti-Glare & 9H Sapphire Hardness',
+    description: 'Individual aerospace-grade titanium alloy camera lens protective rings with 9H tempered optical glass. Preserves original camera clarity and ZEISS lens color accuracy while preventing scratches.',
+    is_phone: false,
+    is_featured: false,
+    is_new_arrival: true,
+    is_best_seller: false,
+    is_active: true,
+    warranty_info: 'Store Installation Warranty',
+    highlights: [
+      '9H Sapphire Hardness Anti-Scratch Glass',
+      'Aerospace Titanium Alloy Metal Ring Border',
+      'Ultra-HD Optical Transparency (No Flash Glare)',
+      'Free Installation at Begampur Showroom'
+    ],
+    specifications: {
+      in_the_box: ['Camera Lens Protector Set', 'Cleaning Wipe', 'Dust Sticker']
+    },
+    compatible_models: ['VIVO V40 Pro', 'VIVO V40', 'VIVO V40e', 'VIVO X100 Pro', 'VIVO T3 5G'],
+    sort_order: 15,
+    images: [
+      { id: 'img-acc-lens-1', product_id: 'prod-acc-camera-lens-guard', image_url: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80', alt_text: 'Camera Lens Protector Ring', view_type: 'front', is_primary: true, sort_order: 1 }
+    ],
+    variants: [
+      {
+        id: 'var-acc-lens-clr',
+        product_id: 'prod-acc-camera-lens-guard',
+        sku: 'ACC-LENS-PROT-SLV',
+        color: 'Titanium Silver / Blue',
+        color_code: '#94A3B8',
+        mrp: 499,
+        selling_price: 199,
+        discount_percent: 60.12,
+        current_stock: 25,
+        low_stock_threshold: 5,
         incoming_stock: 0,
         manual_status: null,
         computed_status: 'IN_STOCK',

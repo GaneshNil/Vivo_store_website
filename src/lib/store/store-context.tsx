@@ -209,7 +209,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.products) setProducts(parsed.products);
+        if (parsed.products && Array.isArray(parsed.products)) {
+          const existingIds = new Set(parsed.products.map((p: Product) => p.id));
+          const missingDefaults = INITIAL_PRODUCTS.filter(p => !existingIds.has(p.id));
+          setProducts([...parsed.products, ...missingDefaults]);
+        }
         if (parsed.stockMovements) setStockMovements(parsed.stockMovements);
         if (parsed.incomingStockList) setIncomingStockList(parsed.incomingStockList);
         if (parsed.priceHistory) setPriceHistory(parsed.priceHistory);
