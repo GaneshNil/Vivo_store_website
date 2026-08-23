@@ -662,18 +662,18 @@ export default function AdminProductsPage() {
                           <Edit3 className="w-4 h-4" />
                         </button>
 
-                        {/* Deactivate/Restore Button */}
+                        {/* Delete Button */}
                         <button
                           type="button"
-                          onClick={() => deleteProduct(prod.id, prod.is_active)}
-                          className={`p-1.5 rounded-lg border transition-colors ${
-                            prod.is_active
-                              ? 'text-slate-400 hover:text-amber-400 bg-white/5 border-white/5'
-                              : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30'
-                          }`}
-                          title={prod.is_active ? 'Deactivate (Hide from Customer)' : 'Restore Product'}
+                          onClick={() => {
+                            if (window.confirm(`Are you sure you want to delete "${prod.name}"?`)) {
+                              deleteProduct(prod.id, false);
+                            }
+                          }}
+                          className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-red-500/20 transition-colors"
+                          title="Delete Product"
                         >
-                          {prod.is_active ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
