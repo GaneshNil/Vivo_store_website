@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -9,8 +9,6 @@ import {
   Smartphone, 
   Boxes, 
   Tag, 
-  Image as ImageIcon, 
-  Star, 
   Bell, 
   ShieldAlert, 
   Settings, 
@@ -19,16 +17,78 @@ import {
   X,
   Lock,
   ChevronRight,
-  PlusCircle,
   Clock,
-  LogOut
+  LogOut,
+  UserCheck,
+  Eye,
+  EyeOff,
+  AlertCircle
 } from 'lucide-react';
 import { useStore } from '@/lib/store/store-context';
 
+const ADMIN_ID = 'Admin@9067228008';
+const ADMIN_PASS = 'Admin#9067228008';
+const AUTH_STORAGE_KEY = 'galaxy_admin_authenticated';
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { storeSettings, notifyRequests, products } = useStore();
+  const { notifyRequests, products } = useStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Authentication State
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAuthLoaded, setIsAuthLoaded] = useState<boolean>(false);
+  
+  // Login Form State
+  const [loginId, setLoginId] = useState('');
+  const [loginPass, setLoginPass] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  useEffect(() => {
+    try {
+      const storedAuth = localStorage.getItem(AUTH_STORAGE_KEY);
+      if (storedAuth === 'true') {
+        setIsAuthenticated(true);
+      }
+    } catch {
+      // Storage unavailable fallback
+    } finally {
+      setIsAuthLoaded(true);
+    }
+  }, []);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError('');
+    setIsLoggingIn(true);
+
+    setTimeout(() => {
+      if (loginId.trim() === ADMIN_ID && loginPass === ADMIN_PASS) {
+        setIsAuthenticated(true);
+        try {
+          localStorage.setItem(AUTH_STORAGE_KEY, 'true');
+        } catch {
+          // Ignore
+        }
+      } else {
+        setLoginError('Invalid Admin ID or Password. Access denied.');
+      }
+      setIsLoggingIn(false);
+    }, 400);
+  };
+
+  const handleLogout = () => {
+    try {
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+    } catch {
+      // Ignore
+    }
+    setIsAuthenticated(false);
+    setLoginPass('');
+    setLoginError('');
+  };
 
   const pendingNotifies = notifyRequests.filter(n => n.status === 'PENDING').length;
   const lowStockCount = products.flatMap(p => p.variants).filter(v => v.computed_status === 'LOW_STOCK').length;
@@ -43,6 +103,125 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { label: 'Store Settings', href: '/admin/settings', icon: Settings },
   ];
 
+  // Prevent flash while checking localStorage
+  if (!isAuthLoaded) {
+    return (
+      <div className="min-h-screen bg-[#060911] flex items-center justify-center text-slate-400">
+        <div className="flex items-center gap-3">
+          <div className="w-5 h-5 border-2 border-vivo-500 border-t-transparent rounded-full animate-spin" />
+          <span className="text-sm font-medium">Securing Admin Portal...</span>
+        </div>
+      </div>
+    );
+  }
+
+  // If Not Authenticated -> Show Login Portal
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#060911] relative flex items-center justify-center p-4">
+        {/* Background glow accents */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-vivo-600/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-origin-violet/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="w-full max-w-md relative z-10 glass-card p-8 rounded-3xl border border-white/10 shadow-2xl space-y-6">
+          
+          {/* Brand & Security Header */}
+          <div className="text-center space-y-2">
+            <div className="mx-auto w-16 h-16 rounded-2xl overflow-hidden bg-slate-900 border border-vivo-500/30 p-1 relative shadow-glow-blue flex items-center justify-center">
+              <Image 
+                src="/assets/store-logo/IMG-20260822-WA0004.jpg" 
+                alt="Logo" 
+                width={56} 
+                height={56} 
+                className="rounded-xl object-cover" 
+              />
+            </div>
+            <h1 className="text-xl font-extrabold text-white font-display pt-2">Admin Management Portal</h1>
+            <p className="text-xs text-slate-400">Galaxy Mobile Gallery · Begampur Showroom Staff Only</p>
+          </div>
+
+          {/* Login Form */}
+          <form onSubmit={handleLogin} className="space-y-4">
+            
+            {loginError && (
+              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs flex items-center gap-2 animate-shake">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                <span>{loginError}</span>
+              </div>
+            )}
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-semibold text-slate-300">Admin ID</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={loginId}
+                  onChange={(e) => setLoginId(e.target.value)}
+                  placeholder="Enter Admin ID"
+                  required
+                  className="w-full bg-slate-900/90 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-vivo-500 transition-colors"
+                />
+                <UserCheck className="absolute right-3.5 top-3.5 w-4 h-4 text-slate-500" />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-semibold text-slate-300">Admin Password</label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={loginPass}
+                  onChange={(e) => setLoginPass(e.target.value)}
+                  placeholder="Enter Password"
+                  required
+                  className="w-full bg-slate-900/90 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-vivo-500 transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-3.5 text-slate-400 hover:text-slate-200"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoggingIn}
+              className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-vivo-600 to-vivo-500 hover:from-vivo-500 hover:to-vivo-400 text-white text-sm font-semibold shadow-glow-blue transition-all disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
+            >
+              {isLoggingIn ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Verifying Credentials...</span>
+                </>
+              ) : (
+                <>
+                  <Lock className="w-4 h-4" />
+                  <span>Access Management Panel</span>
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Return to Customer Showroom */}
+          <div className="pt-2 text-center border-t border-white/5">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-vivo-400 transition-colors"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              <span>Return to Customer Showroom</span>
+            </Link>
+          </div>
+
+        </div>
+      </div>
+    );
+  }
+
+  // If Authenticated -> Render Full Admin Dashboard
   return (
     <div className="min-h-screen bg-[#060911] text-slate-100 flex flex-col lg:flex-row">
       
@@ -136,9 +315,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <ChevronRight className="w-3 h-3 text-slate-500" />
           </Link>
 
-          <div className="px-3 py-2 text-[11px] text-slate-500">
-            Logged in as: <strong className="text-slate-300">admin@galaxymobile.com</strong>
+          <div className="px-3 py-1.5 text-[11px] text-slate-500 flex items-center justify-between">
+            <span className="truncate">Admin: <strong className="text-slate-300">{ADMIN_ID}</strong></span>
           </div>
+
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-xs font-semibold transition-colors"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Log Out of Admin</span>
+          </button>
         </div>
       </aside>
 
@@ -166,6 +353,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <span>View Public Showroom</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </Link>
+
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 font-semibold transition-colors"
+              title="Log Out"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Log Out</span>
+            </button>
           </div>
         </header>
 
