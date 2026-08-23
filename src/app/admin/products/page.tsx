@@ -59,6 +59,47 @@ export default function AdminProductsPage() {
     sku: `PROD-${Date.now().toString().slice(-4)}`,
   });
 
+  // Image Upload State
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+
+  const handleImageFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingImage(true);
+    setUploadError('');
+    setUploadSuccess(false);
+
+    try {
+      const data = new FormData();
+      data.append('file', file);
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: data,
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to upload image to server storage');
+      }
+
+      const result = await res.json();
+      if (result.url) {
+        setFormData(prev => ({ ...prev, image_url: result.url }));
+        setUploadSuccess(true);
+      } else {
+        throw new Error(result.error || 'Upload failed');
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Error uploading file';
+      setUploadError(message);
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
   const filteredProducts = products.filter(p => {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
@@ -505,16 +546,86 @@ export default function AdminProductsPage() {
 
               </div>
 
-              {/* Image URL */}
-              <div className="space-y-1">
-                <label className="text-slate-300 font-medium">Image URL *</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-vivo-500"
-                />
+              {/* Product Photo Upload Section */}
+              <div className="space-y-3 p-4 rounded-2xl bg-white/5 border border-white/10">
+                <div className="flex items-center justify-between">
+                  <label className="text-slate-200 font-semibold text-xs flex items-center gap-1.5">
+                    <Upload className="w-3.5 h-3.5 text-vivo-400" />
+                    <span>Product Photo & Storage (Supabase)</span>
+                  </label>
+                  <span className="text-[10px] text-slate-400">JPG, PNG, WebP</span>
+                </div>
+
+                {uploadError && (
+                  <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                    <span>{uploadError}</span>
+                  </div>
+                )}
+
+                {uploadSuccess && (
+                  <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] flex items-center gap-1.5">
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Photo successfully uploaded to Supabase Storage!</span>
+                  </div>
+                )}
+
+                <div className="flex flex-col sm:flex-row gap-4 items-center">
+                  
+                  {/* Image Preview Box */}
+                  <div className="relative w-28 h-28 rounded-2xl overflow-hidden bg-slate-900 border-2 border-dashed border-vivo-500/40 flex-shrink-0 flex items-center justify-center group shadow-inner">
+                    {formData.image_url ? (
+                      <Image
+                        src={formData.image_url}
+                        alt="Product preview"
+                        fill
+                        className="object-contain p-1 group-hover:scale-105 transition-transform"
+                      />
+                    ) : (
+                      <div className="text-center p-2 text-slate-500">
+                        <Upload className="w-6 h-6 mx-auto mb-1 opacity-50" />
+                        <span className="text-[10px]">No Photo</span>
+                      </div>
+                    )}
+                    {isUploadingImage && (
+                      <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center text-vivo-400 gap-1.5">
+                        <div className="w-5 h-5 border-2 border-vivo-500 border-t-transparent rounded-full animate-spin" />
+                        <span className="text-[9px] font-bold">Uploading...</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Upload Controls */}
+                  <div className="flex-1 space-y-2 w-full">
+                    <div>
+                      <label className="block text-[11px] text-slate-400 mb-1">Upload from Device:</label>
+                      <label className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-vivo-600/20 hover:bg-vivo-600/30 text-vivo-300 hover:text-white border border-vivo-500/30 cursor-pointer font-semibold transition-all">
+                        <Upload className="w-4 h-4" />
+                        <span>{isUploadingImage ? 'Uploading to Supabase...' : 'Choose Product Photo File'}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          disabled={isUploadingImage}
+                          onChange={handleImageFileUpload}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] text-slate-400 mb-1">Or Direct Photo URL:</label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.image_url}
+                        onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                        placeholder="https://..."
+                        className="w-full p-2 rounded-xl bg-slate-900 border border-white/10 text-white text-xs focus:outline-none focus:border-vivo-500"
+                      />
+                    </div>
+                  </div>
+
+                </div>
               </div>
 
               {/* Submit Buttons */}
