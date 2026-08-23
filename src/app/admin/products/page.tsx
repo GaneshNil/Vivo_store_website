@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { useStore } from '@/lib/store/store-context';
 import { formatPrice, getStatusBadgeConfig } from '@/lib/utils/formatters';
-import { Product, ProductVariant } from '@/lib/types';
+import { Product, ProductVariant, ProductImage } from '@/lib/types';
+import { fireConfetti } from '@/lib/utils/confetti';
 import { 
   Smartphone, 
   PlusCircle, 
@@ -19,11 +20,30 @@ import {
   X, 
   Sparkles,
   Upload,
-  AlertCircle
+  AlertCircle,
+  Plus,
+  Star,
+  Image as ImageIcon,
+  CheckCircle2
 } from 'lucide-react';
 
+interface VariantDraft {
+  id: string;
+  ram: string;
+  storage: string;
+  color: string;
+  mrp: number;
+  selling_price: number;
+  current_stock: number;
+  low_stock_threshold: number;
+  sku: string;
+}
+
+const RAM_OPTIONS = ['4GB', '6GB', '8GB', '12GB', '16GB'];
+const STORAGE_OPTIONS = ['64GB', '128GB', '256GB', '512GB', '1TB'];
+
 export default function AdminProductsPage() {
-  const { products, brands, categories, series, addProduct, updateProduct, deleteProduct } = useStore();
+  const { products, brands, categories, series, addProduct, deleteProduct } = useStore();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBrand, setSelectedBrand] = useState('all');
@@ -31,9 +51,8 @@ export default function AdminProductsPage() {
   
   // Modal states
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-  // Form State
+  // Form Base State
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
@@ -47,57 +66,129 @@ export default function AdminProductsPage() {
     is_new_arrival: true,
     is_best_seller: false,
     warranty_info: '1 Year Brand Warranty',
-    image_url: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80',
-    // Variant 1
-    ram: '8GB',
-    storage: '256GB',
-    color: 'Titanium Blue',
-    mrp: 34999,
-    selling_price: 29999,
-    current_stock: 5,
-    low_stock_threshold: 2,
-    sku: `PROD-${Date.now().toString().slice(-4)}`,
   });
 
-  // Image Upload State
-  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  // Multiple Images State
+  const [images, setImages] = useState<string[]>([
+    'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80'
+  ]);
+  const [primaryImageIndex, setPrimaryImageIndex] = useState<number>(0);
+  const [manualImageUrl, setManualImageUrl] = useState<string>('');
+  const [isUploadingImages, setIsUploadingImages] = useState(false);
+  const [uploadProgressText, setUploadProgressText] = useState('');
   const [uploadError, setUploadError] = useState('');
   const [uploadSuccess, setUploadSuccess] = useState(false);
 
-  const handleImageFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // Multiple RAM & Storage Variants State
+  const [variants, setVariants] = useState<VariantDraft[]>([
+    {
+      id: `var-init-1`,
+      ram: '8GB',
+      storage: '128GB',
+      color: 'Titanium Blue',
+      mrp: 34999,
+      selling_price: 29999,
+      current_stock: 5,
+      low_stock_threshold: 2,
+      sku: `PROD-${Date.now().toString().slice(-4)}-128GB`,
+    }
+  ]);
 
-    setIsUploadingImage(true);
+  // Handle Multi-file Upload to Supabase Storage
+  const handleMultipleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setIsUploadingImages(true);
     setUploadError('');
     setUploadSuccess(false);
 
+    const uploadedUrls: string[] = [];
+    const totalFiles = files.length;
+
     try {
-      const data = new FormData();
-      data.append('file', file);
+      for (let i = 0; i < totalFiles; i++) {
+        const file = files[i];
+        setUploadProgressText(`Uploading photo ${i + 1} of ${totalFiles} to Supabase...`);
 
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: data,
-      });
+        const data = new FormData();
+        data.append('file', file);
 
-      if (!res.ok) {
-        throw new Error('Failed to upload image to server storage');
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: data,
+        });
+
+        if (!res.ok) {
+          throw new Error(`Failed to upload ${file.name}`);
+        }
+
+        const result = await res.json();
+        if (result.url) {
+          uploadedUrls.push(result.url);
+        }
       }
 
-      const result = await res.json();
-      if (result.url) {
-        setFormData(prev => ({ ...prev, image_url: result.url }));
+      if (uploadedUrls.length > 0) {
+        setImages(prev => [...prev.filter(url => !url.includes('photo-1598327105666')), ...uploadedUrls]);
         setUploadSuccess(true);
-      } else {
-        throw new Error(result.error || 'Upload failed');
       }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Error uploading file';
+      const message = err instanceof Error ? err.message : 'Error uploading images';
       setUploadError(message);
     } finally {
-      setIsUploadingImage(false);
+      setIsUploadingImages(false);
+      setUploadProgressText('');
     }
+  };
+
+  const handleAddManualImage = () => {
+    if (!manualImageUrl.trim()) return;
+    setImages(prev => [...prev, manualImageUrl.trim()]);
+    setManualImageUrl('');
+  };
+
+  const handleRemoveImage = (indexToRemove: number) => {
+    if (images.length <= 1) return;
+    setImages(prev => prev.filter((_, idx) => idx !== indexToRemove));
+    if (primaryImageIndex >= indexToRemove && primaryImageIndex > 0) {
+      setPrimaryImageIndex(prev => prev - 1);
+    }
+  };
+
+  const handleSetPrimaryImage = (index: number) => {
+    setPrimaryImageIndex(index);
+  };
+
+  // Add Another Variant (RAM / Storage / Color)
+  const handleAddVariant = () => {
+    const lastVar = variants[variants.length - 1];
+    const newVariant: VariantDraft = {
+      id: `var-${Date.now()}-${variants.length + 1}`,
+      ram: lastVar?.ram || '8GB',
+      storage: lastVar?.storage === '128GB' ? '256GB' : lastVar?.storage === '256GB' ? '512GB' : '256GB',
+      color: lastVar?.color || 'Titanium Black',
+      mrp: lastVar ? lastVar.mrp + 3000 : 37999,
+      selling_price: lastVar ? lastVar.selling_price + 3000 : 32999,
+      current_stock: 5,
+      low_stock_threshold: 2,
+      sku: `PROD-${Date.now().toString().slice(-4)}-${variants.length + 1}`,
+    };
+    setVariants(prev => [...prev, newVariant]);
+  };
+
+  const handleRemoveVariant = (indexToRemove: number) => {
+    if (variants.length <= 1) return;
+    setVariants(prev => prev.filter((_, idx) => idx !== indexToRemove));
+  };
+
+  const handleUpdateVariant = (index: number, field: keyof VariantDraft, value: any) => {
+    setVariants(prev => prev.map((v, idx) => {
+      if (idx === index) {
+        return { ...v, [field]: value };
+      }
+      return v;
+    }));
   };
 
   const filteredProducts = products.filter(p => {
@@ -121,11 +212,51 @@ export default function AdminProductsPage() {
 
     const generatedSlug = formData.slug.trim() || formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
+    // Build Product Images
+    const formattedImages: ProductImage[] = images.map((url, idx) => ({
+      id: `img-${Date.now()}-${idx}`,
+      product_id: '',
+      image_url: url,
+      alt_text: `${formData.name} photo ${idx + 1}`,
+      view_type: idx === 0 ? 'front' : idx === 1 ? 'back' : idx === 2 ? 'side' : 'lifestyle',
+      is_primary: idx === primaryImageIndex,
+      sort_order: idx + 1,
+    }));
+
+    // Build Product Variants
+    const formattedVariants: ProductVariant[] = variants.map((v, idx) => {
+      const computedStock = Number(v.current_stock) || 0;
+      const lowThreshold = Number(v.low_stock_threshold) || 2;
+      const computedStatus = computedStock <= 0 ? 'OUT_OF_STOCK' : computedStock <= lowThreshold ? 'LOW_STOCK' : 'IN_STOCK';
+      const mrpNum = Number(v.mrp) || 0;
+      const sellingNum = Number(v.selling_price) || 0;
+      const discount = mrpNum > sellingNum ? Math.round(((mrpNum - sellingNum) / mrpNum) * 100) : 0;
+
+      return {
+        id: `var-${Date.now()}-${idx}`,
+        product_id: '',
+        sku: v.sku.trim() || `SKU-${Date.now().toString().slice(-6)}-${idx + 1}`,
+        ram: formData.is_phone ? v.ram : undefined,
+        storage: formData.is_phone ? v.storage : undefined,
+        color: v.color,
+        mrp: mrpNum,
+        selling_price: sellingNum,
+        discount_percent: discount,
+        current_stock: computedStock,
+        low_stock_threshold: lowThreshold,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: computedStatus,
+        is_default: idx === 0,
+        is_active: true,
+      };
+    });
+
     addProduct({
       name: formData.name,
       slug: generatedSlug,
       tagline: formData.tagline,
-      description: formData.description || `${formData.name} available at Galaxy Mobile Gallery.`,
+      description: formData.description || `${formData.name} available at Galaxy Mobile Gallery Begampur showroom.`,
       brand_id: formData.brand_id,
       brand,
       category_id: formData.category_id,
@@ -140,45 +271,47 @@ export default function AdminProductsPage() {
       warranty_info: formData.warranty_info,
       sort_order: 1,
       specifications: {
-        display: { size: '6.7 inches', resolution: 'FHD+ AMOLED', refresh_rate: '120Hz' },
-        camera: { rear_main: '50 MP OIS', front_camera: '32 MP' },
-        processor: { chipset: 'Octa-core 5G Chipset' },
-        battery_charging: { capacity: '5000 mAh', charging_speed: '44W FlashCharge' }
+        display: { size: '6.78 inches', resolution: '1.5K AMOLED 120Hz', refresh_rate: '120Hz' },
+        camera: { rear_main: '50 MP ZEISS / OIS', front_camera: '50 MP Group Selfie' },
+        processor: { chipset: 'Snapdragon 7 Gen 3 / Dimensity 5G' },
+        battery_charging: { capacity: '5500 mAh BlueVolt', charging_speed: '80W FlashCharge' }
       },
-      images: [
-        {
-          id: `img-${Date.now()}`,
-          product_id: '',
-          image_url: formData.image_url,
-          alt_text: formData.name,
-          view_type: 'front',
-          is_primary: true,
-          sort_order: 1,
-        }
-      ],
-      variants: [
-        {
-          id: `var-${Date.now()}`,
-          product_id: '',
-          sku: formData.sku || `SKU-${Date.now().toString().slice(-6)}`,
-          ram: formData.is_phone ? formData.ram : undefined,
-          storage: formData.is_phone ? formData.storage : undefined,
-          color: formData.color,
-          mrp: Number(formData.mrp),
-          selling_price: Number(formData.selling_price),
-          discount_percent: 0,
-          current_stock: Number(formData.current_stock),
-          low_stock_threshold: Number(formData.low_stock_threshold),
-          incoming_stock: 0,
-          manual_status: null,
-          computed_status: 'IN_STOCK',
-          is_default: true,
-          is_active: true,
-        }
-      ]
+      images: formattedImages,
+      variants: formattedVariants,
     });
 
+    fireConfetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
     setIsAddModalOpen(false);
+
+    // Reset Form for next product
+    setVariants([
+      {
+        id: `var-init-1`,
+        ram: '8GB',
+        storage: '128GB',
+        color: 'Titanium Blue',
+        mrp: 34999,
+        selling_price: 29999,
+        current_stock: 5,
+        low_stock_threshold: 2,
+        sku: `PROD-${Date.now().toString().slice(-4)}-128GB`,
+      }
+    ]);
+    setImages(['https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80']);
+    setFormData({
+      name: '',
+      slug: '',
+      tagline: '',
+      description: '',
+      brand_id: brands[0]?.id || 'brand-vivo',
+      category_id: categories[0]?.id || 'cat-smartphones',
+      series_id: series[0]?.id || '',
+      is_phone: true,
+      is_featured: false,
+      is_new_arrival: true,
+      is_best_seller: false,
+      warranty_info: '1 Year Brand Warranty',
+    });
   };
 
   return (
@@ -188,96 +321,105 @@ export default function AdminProductsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold text-white font-display">Products & Variants</h1>
-          <p className="text-xs text-slate-400">Add, edit, deactivate and manage specifications for mobiles & accessories.</p>
+          <p className="text-xs text-slate-400">Add, edit, deactivate and manage multi-RAM/Storage specifications for mobiles & accessories.</p>
         </div>
-
+        
         <button
           type="button"
           onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-vivo-600 hover:bg-vivo-500 text-white text-xs font-semibold shadow-glow-blue transition-all"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-vivo-600 to-vivo-500 hover:from-vivo-500 hover:to-vivo-400 text-white text-xs font-bold shadow-glow-blue transition-all"
         >
           <PlusCircle className="w-4 h-4" />
-          <span>Add New Product</span>
+          <span>Add New Product (Multi-RAM & Photos)</span>
         </button>
       </div>
 
-      {/* Search & Filter Strip */}
-      <div className="p-4 rounded-2xl glass-panel border border-white/10 flex flex-wrap items-center justify-between gap-4">
+      {/* Filter and Search Bar */}
+      <div className="p-4 rounded-2xl glass-card border border-white/5 flex flex-col md:flex-row gap-4 justify-between items-center">
         
-        {/* Search */}
-        <div className="relative flex-1 min-w-[240px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        <div className="relative w-full md:w-80">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
           <input
             type="text"
             placeholder="Search by product name or slug..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-900 border border-white/10 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-vivo-500"
+            className="w-full bg-slate-900 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-vivo-500"
           />
         </div>
 
-        {/* Brand Filter */}
-        <div className="flex items-center gap-2 text-xs">
-          <span className="text-slate-400">Brand:</span>
-          <select
-            value={selectedBrand}
-            onChange={(e) => setSelectedBrand(e.target.value)}
-            className="bg-slate-900 border border-white/10 rounded-xl px-3 py-1.5 text-white text-xs"
-          >
-            <option value="all">All Brands</option>
-            {brands.map(b => (
-              <option key={b.id} value={b.id}>{b.name}</option>
-            ))}
-          </select>
-        </div>
+        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-slate-400">Type:</span>
+            <select
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value as any)}
+              className="bg-slate-900 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-vivo-500"
+            >
+              <option value="all">All Catalog</option>
+              <option value="phone">Smartphones Only</option>
+              <option value="accessory">Accessories Only</option>
+            </select>
+          </div>
 
-        {/* Type Filter */}
-        <div className="flex items-center gap-2 text-xs">
-          <span className="text-slate-400">Type:</span>
-          <select
-            value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value as any)}
-            className="bg-slate-900 border border-white/10 rounded-xl px-3 py-1.5 text-white text-xs"
-          >
-            <option value="all">All Products</option>
-            <option value="phone">Smartphones Only</option>
-            <option value="accessory">Accessories Only</option>
-          </select>
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-slate-400">Brand:</span>
+            <select
+              value={selectedBrand}
+              onChange={(e) => setSelectedBrand(e.target.value)}
+              className="bg-slate-900 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-vivo-500"
+            >
+              <option value="all">All Brands</option>
+              {brands.map(b => (
+                <option key={b.id} value={b.id}>{b.name}</option>
+              ))}
+            </select>
+          </div>
         </div>
 
       </div>
 
       {/* Products Table */}
-      <div className="rounded-2xl glass-panel border border-white/10 overflow-hidden shadow-xl">
+      <div className="rounded-2xl glass-card border border-white/5 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead className="bg-slate-900/90 border-b border-white/10 text-slate-400 uppercase tracking-wider">
+          <table className="w-full text-left text-xs text-slate-300">
+            <thead className="bg-slate-900/80 border-b border-white/10 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
               <tr>
-                <th className="p-4">Product</th>
+                <th className="p-4">Product Info</th>
                 <th className="p-4">Brand / Series</th>
-                <th className="p-4">Variants</th>
-                <th className="p-4">Price / MRP</th>
-                <th className="p-4">Total Stock</th>
-                <th className="p-4">Status</th>
+                <th className="p-4">Configured Variants (RAM / ROM)</th>
+                <th className="p-4">Starting Price</th>
+                <th className="p-4">Stock Status</th>
                 <th className="p-4 text-right">Actions</th>
               </tr>
             </thead>
-
             <tbody className="divide-y divide-white/5">
               {filteredProducts.map(prod => {
-                const defaultVar = prod.variants[0];
-                const primaryImg = prod.images[0]?.image_url;
+                const defaultVar = prod.variants.find(v => v.is_default) || prod.variants[0];
                 const totalStock = prod.variants.reduce((acc, v) => acc + v.current_stock, 0);
                 const statusConfig = getStatusBadgeConfig(defaultVar?.computed_status || 'IN_STOCK');
+                const primaryImg = prod.images.find(img => img.is_primary) || prod.images[0];
 
                 return (
-                  <tr key={prod.id} className={`hover:bg-white/[0.02] ${!prod.is_active ? 'opacity-50' : ''}`}>
+                  <tr key={prod.id} className="hover:bg-white/5 transition-colors">
                     
-                    {/* Product Media & Title */}
+                    {/* Image & Title */}
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <div className="relative w-10 h-10 rounded-xl bg-slate-900 overflow-hidden border border-white/10 flex-shrink-0">
-                          {primaryImg && <Image src={primaryImg} alt={prod.name} fill className="object-contain p-1" />}
+                        <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-slate-900 border border-white/10 flex-shrink-0">
+                          {primaryImg && (
+                            <Image
+                              src={primaryImg.image_url}
+                              alt={prod.name}
+                              fill
+                              className="object-contain p-1"
+                            />
+                          )}
+                          {prod.images.length > 1 && (
+                            <span className="absolute bottom-0.5 right-0.5 bg-vivo-600 text-white text-[8px] font-bold px-1 rounded">
+                              +{prod.images.length - 1}
+                            </span>
+                          )}
                         </div>
                         <div>
                           <p className="font-bold text-white text-sm">{prod.name}</p>
@@ -294,10 +436,10 @@ export default function AdminProductsPage() {
 
                     {/* Variants */}
                     <td className="p-4">
-                      <div className="flex flex-wrap gap-1">
+                      <div className="flex flex-wrap gap-1.5">
                         {prod.variants.map((v, i) => (
-                          <span key={i} className="px-2 py-0.5 rounded bg-white/5 text-[10px] text-slate-300 border border-white/5">
-                            {v.ram ? `${v.ram}/` : ''}{v.storage || v.color} ({v.current_stock})
+                          <span key={i} className="px-2 py-0.5 rounded-lg bg-white/5 text-[10px] text-slate-200 border border-white/10 font-medium">
+                            {v.ram ? `${v.ram}/` : ''}{v.storage || v.color} · <strong className="text-emerald-400">{formatPrice(v.selling_price)}</strong> ({v.current_stock} pcs)
                           </span>
                         ))}
                       </div>
@@ -311,16 +453,11 @@ export default function AdminProductsPage() {
                       )}
                     </td>
 
-                    {/* Total Stock */}
-                    <td className="p-4">
-                      <span className="font-bold text-white text-sm">{totalStock}</span> units
-                    </td>
-
                     {/* Status */}
                     <td className="p-4">
                       <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border}`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${statusConfig.dot} ${statusConfig.animate ? 'pulse-badge-dot' : ''}`} />
-                        {statusConfig.label}
+                        {statusConfig.label} ({totalStock} Total)
                       </span>
                     </td>
 
@@ -350,31 +487,34 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
-      {/* Add Product Modal */}
+      {/* Add Product Modal (Multi-Photos + Multi-RAM/Storage Variants) */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-full max-w-2xl rounded-3xl glass-panel border border-vivo-500/30 p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-4xl rounded-3xl glass-panel border border-vivo-500/30 p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
             
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <div>
-                <h3 className="text-lg font-bold text-white">Add New Product to Catalog</h3>
-                <p className="text-xs text-slate-400">Database-driven product creation with automated status triggers</p>
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                  <Smartphone className="w-5 h-5 text-vivo-400" />
+                  <span>Add New Product & Variants</span>
+                </h3>
+                <p className="text-xs text-slate-400">Upload multiple photos (Supabase storage) & configure all RAM/Storage variants at once.</p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsAddModalOpen(false)}
-                className="p-1 text-slate-400 hover:text-white"
+                className="p-1.5 text-slate-400 hover:text-white rounded-lg bg-white/5"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateProduct} className="space-y-4 text-xs">
+            <form onSubmit={handleCreateProduct} className="space-y-6 text-xs">
               
               {/* Product Basic Info */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-medium">Product Name *</label>
+                  <label className="text-slate-300 font-semibold">Product Model Name *</label>
                   <input
                     type="text"
                     required
@@ -386,7 +526,7 @@ export default function AdminProductsPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-medium">Slug (Optional)</label>
+                  <label className="text-slate-300 font-semibold">URL Slug (Auto-generated if blank)</label>
                   <input
                     type="text"
                     placeholder="e.g. vivo-v50-5g"
@@ -397,10 +537,10 @@ export default function AdminProductsPage() {
                 </div>
               </div>
 
-              {/* Brand & Category */}
+              {/* Brand & Category & Series */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-medium">Brand *</label>
+                  <label className="text-slate-300 font-semibold">Brand *</label>
                   <select
                     value={formData.brand_id}
                     onChange={(e) => setFormData({ ...formData, brand_id: e.target.value })}
@@ -413,7 +553,7 @@ export default function AdminProductsPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-medium">Category *</label>
+                  <label className="text-slate-300 font-semibold">Category *</label>
                   <select
                     value={formData.category_id}
                     onChange={(e) => {
@@ -430,7 +570,7 @@ export default function AdminProductsPage() {
 
                 {formData.is_phone && (
                   <div className="space-y-1">
-                    <label className="text-slate-300 font-medium">Series</label>
+                    <label className="text-slate-300 font-semibold">Series</label>
                     <select
                       value={formData.series_id}
                       onChange={(e) => setFormData({ ...formData, series_id: e.target.value })}
@@ -446,114 +586,29 @@ export default function AdminProductsPage() {
 
               {/* Tagline */}
               <div className="space-y-1">
-                <label className="text-slate-300 font-medium">Tagline / Key Feature Headline</label>
+                <label className="text-slate-300 font-semibold">Tagline / Key Feature Headline</label>
                 <input
                   type="text"
-                  placeholder="e.g. Studio Aura Light Portrait & 50MP Camera"
+                  placeholder="e.g. Studio Aura Light Portrait & 50MP ZEISS Camera"
                   value={formData.tagline}
                   onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
                   className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-vivo-500"
                 />
               </div>
 
-              {/* Initial Variant Details */}
-              <div className="p-4 rounded-2xl bg-white/5 border border-white/5 space-y-4">
-                <h4 className="font-bold text-white uppercase tracking-wider text-[11px]">Default Variant & Stock</h4>
-                
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {formData.is_phone && (
-                    <>
-                      <div className="space-y-1">
-                        <label className="text-slate-400">RAM</label>
-                        <input
-                          type="text"
-                          value={formData.ram}
-                          onChange={(e) => setFormData({ ...formData, ram: e.target.value })}
-                          className="w-full p-2 rounded-lg bg-slate-900 border border-white/10 text-white"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-slate-400">Storage</label>
-                        <input
-                          type="text"
-                          value={formData.storage}
-                          onChange={(e) => setFormData({ ...formData, storage: e.target.value })}
-                          className="w-full p-2 rounded-lg bg-slate-900 border border-white/10 text-white"
-                        />
-                      </div>
-                    </>
-                  )}
-                  <div className="space-y-1">
-                    <label className="text-slate-400">Color</label>
-                    <input
-                      type="text"
-                      value={formData.color}
-                      onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                      className="w-full p-2 rounded-lg bg-slate-900 border border-white/10 text-white"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-slate-400">SKU</label>
-                    <input
-                      type="text"
-                      value={formData.sku}
-                      onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
-                      className="w-full p-2 rounded-lg bg-slate-900 border border-white/10 text-white"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-slate-400">MRP (₹) *</label>
-                    <input
-                      type="number"
-                      required
-                      value={formData.mrp}
-                      onChange={(e) => setFormData({ ...formData, mrp: Number(e.target.value) })}
-                      className="w-full p-2 rounded-lg bg-slate-900 border border-white/10 text-white font-bold"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-slate-400">Selling Price (₹) *</label>
-                    <input
-                      type="number"
-                      required
-                      value={formData.selling_price}
-                      onChange={(e) => setFormData({ ...formData, selling_price: Number(e.target.value) })}
-                      className="w-full p-2 rounded-lg bg-slate-900 border border-white/10 text-white font-bold text-emerald-400"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-slate-400">Initial Stock</label>
-                    <input
-                      type="number"
-                      value={formData.current_stock}
-                      onChange={(e) => setFormData({ ...formData, current_stock: Number(e.target.value) })}
-                      className="w-full p-2 rounded-lg bg-slate-900 border border-white/10 text-white"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-slate-400">Low Stock Alert Threshold</label>
-                    <input
-                      type="number"
-                      value={formData.low_stock_threshold}
-                      onChange={(e) => setFormData({ ...formData, low_stock_threshold: Number(e.target.value) })}
-                      className="w-full p-2 rounded-lg bg-slate-900 border border-white/10 text-white"
-                    />
-                  </div>
-                </div>
-
-              </div>
-
-              {/* Product Photo Upload Section */}
-              <div className="space-y-3 p-4 rounded-2xl bg-white/5 border border-white/10">
+              {/* MULTIPLE IMAGES UPLOAD SECTION (SUPABASE) */}
+              <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-4">
                 <div className="flex items-center justify-between">
-                  <label className="text-slate-200 font-semibold text-xs flex items-center gap-1.5">
-                    <Upload className="w-3.5 h-3.5 text-vivo-400" />
-                    <span>Product Photo & Storage (Supabase)</span>
-                  </label>
-                  <span className="text-[10px] text-slate-400">JPG, PNG, WebP</span>
+                  <div>
+                    <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                      <ImageIcon className="w-4 h-4 text-vivo-400" />
+                      <span>Product Photos Gallery (Supabase Storage)</span>
+                    </h4>
+                    <p className="text-[11px] text-slate-400">Upload multiple photos at once. Click &apos;Set as Primary&apos; on the main display shot.</p>
+                  </div>
+                  <span className="text-[10px] text-vivo-400 font-bold bg-vivo-600/20 px-2.5 py-1 rounded-full border border-vivo-500/30">
+                    {images.length} Photos Selected
+                  </span>
                 </div>
 
                 {uploadError && (
@@ -564,68 +619,297 @@ export default function AdminProductsPage() {
                 )}
 
                 {uploadSuccess && (
-                  <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5" />
-                    <span>Photo successfully uploaded to Supabase Storage!</span>
+                  <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                    <span>Images uploaded and saved to Supabase storage successfully!</span>
                   </div>
                 )}
 
-                <div className="flex flex-col sm:flex-row gap-4 items-center">
-                  
-                  {/* Image Preview Box */}
-                  <div className="relative w-28 h-28 rounded-2xl overflow-hidden bg-slate-900 border-2 border-dashed border-vivo-500/40 flex-shrink-0 flex items-center justify-center group shadow-inner">
-                    {formData.image_url ? (
-                      <Image
-                        src={formData.image_url}
-                        alt="Product preview"
-                        fill
-                        className="object-contain p-1 group-hover:scale-105 transition-transform"
-                      />
-                    ) : (
-                      <div className="text-center p-2 text-slate-500">
-                        <Upload className="w-6 h-6 mx-auto mb-1 opacity-50" />
-                        <span className="text-[10px]">No Photo</span>
-                      </div>
-                    )}
-                    {isUploadingImage && (
-                      <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center text-vivo-400 gap-1.5">
-                        <div className="w-5 h-5 border-2 border-vivo-500 border-t-transparent rounded-full animate-spin" />
-                        <span className="text-[9px] font-bold">Uploading...</span>
-                      </div>
-                    )}
+                {/* Upload Buttons & Manual Add */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+                  <label className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-vivo-600/30 to-vivo-500/20 hover:from-vivo-600/40 hover:to-vivo-500/30 text-vivo-300 hover:text-white border border-vivo-500/40 cursor-pointer font-bold transition-all text-xs">
+                    <Upload className="w-4 h-4" />
+                    <span>{isUploadingImages ? uploadProgressText : 'Upload Multiple Photos from Device'}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      disabled={isUploadingImages}
+                      onChange={handleMultipleImageUpload}
+                      className="hidden"
+                    />
+                  </label>
+
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Or paste Direct Image URL..."
+                      value={manualImageUrl}
+                      onChange={(e) => setManualImageUrl(e.target.value)}
+                      className="flex-1 p-2 rounded-xl bg-slate-900 border border-white/10 text-white text-xs focus:outline-none focus:border-vivo-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddManualImage}
+                      className="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold flex items-center gap-1"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add</span>
+                    </button>
                   </div>
-
-                  {/* Upload Controls */}
-                  <div className="flex-1 space-y-2 w-full">
-                    <div>
-                      <label className="block text-[11px] text-slate-400 mb-1">Upload from Device:</label>
-                      <label className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-vivo-600/20 hover:bg-vivo-600/30 text-vivo-300 hover:text-white border border-vivo-500/30 cursor-pointer font-semibold transition-all">
-                        <Upload className="w-4 h-4" />
-                        <span>{isUploadingImage ? 'Uploading to Supabase...' : 'Choose Product Photo File'}</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          disabled={isUploadingImage}
-                          onChange={handleImageFileUpload}
-                          className="hidden"
-                        />
-                      </label>
-                    </div>
-
-                    <div>
-                      <label className="block text-[11px] text-slate-400 mb-1">Or Direct Photo URL:</label>
-                      <input
-                        type="text"
-                        required
-                        value={formData.image_url}
-                        onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                        placeholder="https://..."
-                        className="w-full p-2 rounded-xl bg-slate-900 border border-white/10 text-white text-xs focus:outline-none focus:border-vivo-500"
-                      />
-                    </div>
-                  </div>
-
                 </div>
+
+                {/* Photos Gallery Previews */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3 pt-2">
+                  {images.map((imgUrl, idx) => {
+                    const isPrimary = idx === primaryImageIndex;
+
+                    return (
+                      <div 
+                        key={idx} 
+                        className={`relative rounded-2xl overflow-hidden bg-slate-900 border-2 transition-all group aspect-square flex flex-col items-center justify-center p-1 ${
+                          isPrimary ? 'border-vivo-500 shadow-glow-blue ring-2 ring-vivo-500/30' : 'border-white/10 hover:border-white/30'
+                        }`}
+                      >
+                        <div className="relative w-full h-full">
+                          <Image
+                            src={imgUrl}
+                            alt={`Photo ${idx + 1}`}
+                            fill
+                            className="object-contain p-1"
+                          />
+                        </div>
+
+                        {/* Top Badges */}
+                        <div className="absolute top-1.5 left-1.5 right-1.5 flex items-center justify-between">
+                          {isPrimary ? (
+                            <span className="bg-vivo-600 text-white text-[8px] font-extrabold px-1.5 py-0.5 rounded-md flex items-center gap-0.5 shadow">
+                              <Star className="w-2.5 h-2.5 fill-white" /> Primary
+                            </span>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => handleSetPrimaryImage(idx)}
+                              className="bg-black/60 hover:bg-vivo-600 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-md transition-colors"
+                            >
+                              Set Primary
+                            </button>
+                          )}
+
+                          {images.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveImage(idx)}
+                              className="w-5 h-5 rounded-full bg-red-500/80 hover:bg-red-500 text-white flex items-center justify-center transition-colors"
+                              title="Delete photo"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          )}
+                        </div>
+
+                        <span className="absolute bottom-1 right-1 text-[9px] text-slate-400 bg-slate-950/80 px-1 rounded">
+                          #{idx + 1}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+
+              </div>
+
+              {/* MULTIPLE RAM & STORAGE VARIANTS SECTION */}
+              <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-vivo-400" />
+                      <span>Configure Multiple RAM & Storage Variants</span>
+                    </h4>
+                    <p className="text-[11px] text-slate-400">Add multiple specs (e.g. 8GB+128GB, 8GB+256GB, 12GB+256GB) with custom prices and stock.</p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleAddVariant}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-vivo-600 hover:bg-vivo-500 text-white text-xs font-bold shadow transition-all"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Another Variant</span>
+                  </button>
+                </div>
+
+                {/* Variants List */}
+                <div className="space-y-4">
+                  {variants.map((v, index) => {
+                    const discount = v.mrp > v.selling_price ? Math.round(((v.mrp - v.selling_price) / v.mrp) * 100) : 0;
+
+                    return (
+                      <div 
+                        key={v.id} 
+                        className="p-4 rounded-2xl bg-slate-900/90 border border-white/10 space-y-3 relative group"
+                      >
+                        <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="w-5 h-5 rounded-full bg-vivo-600 text-white font-bold text-[10px] flex items-center justify-center">
+                              {index + 1}
+                            </span>
+                            <span className="font-bold text-white text-xs">
+                              Variant #{index + 1} {formData.is_phone ? `(${v.ram || '8GB'} + ${v.storage || '128GB'})` : ''} - {v.color}
+                            </span>
+                            {discount > 0 && (
+                              <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-[10px] border border-emerald-500/30">
+                                {discount}% OFF
+                              </span>
+                            )}
+                          </div>
+
+                          {variants.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveVariant(index)}
+                              className="text-red-400 hover:text-red-300 p-1 text-xs flex items-center gap-1 rounded bg-red-500/10 px-2"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                              <span>Remove</span>
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Specs Grid */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                          {formData.is_phone && (
+                            <>
+                              <div className="space-y-1">
+                                <label className="text-slate-400 text-[11px]">RAM Type *</label>
+                                <div className="flex gap-1">
+                                  <input
+                                    type="text"
+                                    required
+                                    value={v.ram}
+                                    onChange={(e) => handleUpdateVariant(index, 'ram', e.target.value)}
+                                    placeholder="8GB"
+                                    className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white font-semibold"
+                                  />
+                                </div>
+                                <div className="flex gap-1 pt-1 flex-wrap">
+                                  {RAM_OPTIONS.map(ramOpt => (
+                                    <button
+                                      key={ramOpt}
+                                      type="button"
+                                      onClick={() => handleUpdateVariant(index, 'ram', ramOpt)}
+                                      className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
+                                        v.ram === ramOpt ? 'bg-vivo-600 text-white' : 'bg-white/5 text-slate-400 hover:text-white'
+                                      }`}
+                                    >
+                                      {ramOpt}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+
+                              <div className="space-y-1">
+                                <label className="text-slate-400 text-[11px]">Storage *</label>
+                                <input
+                                  type="text"
+                                  required
+                                  value={v.storage}
+                                  onChange={(e) => handleUpdateVariant(index, 'storage', e.target.value)}
+                                  placeholder="256GB"
+                                  className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white font-semibold"
+                                />
+                                <div className="flex gap-1 pt-1 flex-wrap">
+                                  {STORAGE_OPTIONS.map(stOpt => (
+                                    <button
+                                      key={stOpt}
+                                      type="button"
+                                      onClick={() => handleUpdateVariant(index, 'storage', stOpt)}
+                                      className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
+                                        v.storage === stOpt ? 'bg-vivo-600 text-white' : 'bg-white/5 text-slate-400 hover:text-white'
+                                      }`}
+                                    >
+                                      {stOpt}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            </>
+                          )}
+
+                          <div className="space-y-1">
+                            <label className="text-slate-400 text-[11px]">Color Name *</label>
+                            <input
+                              type="text"
+                              required
+                              value={v.color}
+                              onChange={(e) => handleUpdateVariant(index, 'color', e.target.value)}
+                              placeholder="e.g. Titanium Blue"
+                              className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white font-semibold"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="text-slate-400 text-[11px]">SKU Code</label>
+                            <input
+                              type="text"
+                              value={v.sku}
+                              onChange={(e) => handleUpdateVariant(index, 'sku', e.target.value)}
+                              className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white font-mono text-[10px]"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Pricing & Stock Grid */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+                          <div className="space-y-1">
+                            <label className="text-slate-400 text-[11px]">MRP (₹) *</label>
+                            <input
+                              type="number"
+                              required
+                              value={v.mrp}
+                              onChange={(e) => handleUpdateVariant(index, 'mrp', Number(e.target.value))}
+                              className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white font-bold"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="text-slate-400 text-[11px]">Selling Price (₹) *</label>
+                            <input
+                              type="number"
+                              required
+                              value={v.selling_price}
+                              onChange={(e) => handleUpdateVariant(index, 'selling_price', Number(e.target.value))}
+                              className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-emerald-400 font-bold"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="text-slate-400 text-[11px]">Available Stock (pcs) *</label>
+                            <input
+                              type="number"
+                              required
+                              value={v.current_stock}
+                              onChange={(e) => handleUpdateVariant(index, 'current_stock', Number(e.target.value))}
+                              className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white font-bold"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="text-slate-400 text-[11px]">Low Stock Threshold</label>
+                            <input
+                              type="number"
+                              value={v.low_stock_threshold}
+                              onChange={(e) => handleUpdateVariant(index, 'low_stock_threshold', Number(e.target.value))}
+                              className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
+                            />
+                          </div>
+                        </div>
+
+                      </div>
+                    );
+                  })}
+                </div>
+
               </div>
 
               {/* Submit Buttons */}
@@ -633,15 +917,16 @@ export default function AdminProductsPage() {
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-semibold"
+                  className="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-vivo-600 hover:bg-vivo-500 text-white font-bold shadow-glow-blue"
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-vivo-600 to-vivo-500 hover:from-vivo-500 hover:to-vivo-400 text-white font-bold shadow-glow-blue transition-all flex items-center gap-2"
                 >
-                  Create Product & Save to Database
+                  <Check className="w-4 h-4" />
+                  <span>Create Product with {variants.length} Variant(s) & {images.length} Photo(s)</span>
                 </button>
               </div>
 
