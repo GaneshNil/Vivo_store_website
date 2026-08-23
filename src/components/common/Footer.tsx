@@ -168,16 +168,6 @@ export const Footer: React.FC = () => {
                 <ExternalLink className="w-3 h-3" />
               </Link>
             </div>
-
-            <div className="pt-2">
-              <Link
-                href="/admin"
-                className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors"
-              >
-                <Lock className="w-3.5 h-3.5" />
-                <span>Admin Management System</span>
-              </Link>
-            </div>
           </div>
 
         </div>

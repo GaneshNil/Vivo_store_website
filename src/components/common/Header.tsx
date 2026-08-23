@@ -67,14 +67,6 @@ export const Header: React.FC = () => {
               <Phone className="w-3.5 h-3.5 text-vivo-400" />
               <span>Call: {storeSettings.phone}</span>
             </a>
-            <Link 
-              href="/admin" 
-              className="flex items-center gap-1 text-slate-400 hover:text-white transition-colors bg-white/5 px-2 py-0.5 rounded text-[11px] border border-white/10"
-              title="Store Owner / Staff Management Portal"
-            >
-              <Lock className="w-3 h-3 text-slate-400" />
-              <span>Admin</span>
-            </Link>
           </div>
         </div>
       </div>
@@ -223,14 +215,6 @@ export const Header: React.FC = () => {
               >
                 <span>💬 WhatsApp Store Inquiry</span>
               </a>
-              <Link
-                href="/admin"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-center gap-2 py-2 text-xs text-slate-400 hover:text-white"
-              >
-                <Lock className="w-3.5 h-3.5" />
-                <span>Store Staff & Admin Login</span>
-              </Link>
             </div>
           </div>
         )}
