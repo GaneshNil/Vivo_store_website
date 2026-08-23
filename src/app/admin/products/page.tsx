@@ -31,7 +31,9 @@ import {
   Box,
   Settings2,
   Percent,
-  CreditCard
+  CreditCard,
+  ToggleLeft,
+  ToggleRight
 } from 'lucide-react';
 
 interface VariantDraft {
@@ -77,7 +79,8 @@ export default function AdminProductsPage() {
     warranty_info: '1 Year Handset & 6 Months Accessories Warranty',
   });
 
-  // Bajaj Finance EMI Settings per Product
+  // Bajaj Finance EMI Settings per Product (Default ON, can be manually turned OFF)
+  const [isBajajEmiEnabled, setIsBajajEmiEnabled] = useState<boolean>(true);
   const [bajajInterestRate, setBajajInterestRate] = useState<number>(0);
   const [bajajTenureMonths, setBajajTenureMonths] = useState<number>(6);
 
@@ -149,6 +152,7 @@ export default function AdminProductsPage() {
       is_best_seller: false,
       warranty_info: '1 Year Handset & 6 Months Accessories Warranty',
     });
+    setIsBajajEmiEnabled(true);
     setBajajInterestRate(0);
     setBajajTenureMonths(6);
     setImages(['https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80']);
@@ -205,6 +209,7 @@ export default function AdminProductsPage() {
       warranty_info: product.warranty_info || '1 Year Handset Warranty',
     });
 
+    setIsBajajEmiEnabled(product.is_bajaj_emi_enabled !== false);
     setBajajInterestRate(product.bajaj_emi_interest_rate ?? 0);
     setBajajTenureMonths(product.bajaj_emi_tenure_months || 6);
 
@@ -445,7 +450,7 @@ export default function AdminProductsPage() {
       name: formData.name,
       slug: generatedSlug,
       tagline: formData.tagline,
-      description: formData.description || `${formData.name} available at Galaxy Mobile Gallery Begampur showroom with Bajaj Finance EMI.`,
+      description: formData.description || `${formData.name} available at Galaxy Mobile Gallery Begampur showroom.`,
       brand_id: formData.brand_id,
       brand,
       category_id: formData.category_id,
@@ -458,6 +463,7 @@ export default function AdminProductsPage() {
       is_best_seller: formData.is_best_seller,
       is_active: true,
       warranty_info: formData.warranty_info,
+      is_bajaj_emi_enabled: isBajajEmiEnabled,
       bajaj_emi_interest_rate: Number(bajajInterestRate) || 0,
       bajaj_emi_tenure_months: Number(bajajTenureMonths) || 6,
       sort_order: 1,
@@ -488,7 +494,7 @@ export default function AdminProductsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold text-white font-display">Products & Variants</h1>
-          <p className="text-xs text-slate-400">Add, edit hardware specifications, Bajaj EMI rates, photos & stock for mobiles & accessories.</p>
+          <p className="text-xs text-slate-400">Add, edit hardware specifications, Bajaj EMI ON/OFF toggle, photos & stock for mobiles & accessories.</p>
         </div>
         
         <button
@@ -555,7 +561,7 @@ export default function AdminProductsPage() {
                 <th className="p-4">Product Info</th>
                 <th className="p-4">Brand / Series</th>
                 <th className="p-4">Configured Variants (RAM / ROM)</th>
-                <th className="p-4">Bajaj EMI Scheme</th>
+                <th className="p-4">Bajaj EMI Status</th>
                 <th className="p-4">Starting Price</th>
                 <th className="p-4">Stock Status</th>
                 <th className="p-4 text-right">Actions</th>
@@ -567,6 +573,7 @@ export default function AdminProductsPage() {
                 const totalStock = prod.variants.reduce((acc, v) => acc + v.current_stock, 0);
                 const statusConfig = getStatusBadgeConfig(defaultVar?.computed_status || 'IN_STOCK');
                 const primaryImg = prod.images.find(img => img.is_primary) || prod.images[0];
+                const isEmiOn = prod.is_bajaj_emi_enabled !== false;
                 const emiRate = prod.bajaj_emi_interest_rate ?? 0;
                 const emiTenure = prod.bajaj_emi_tenure_months || 6;
                 const emiValue = defaultVar ? calculateEMI(defaultVar.selling_price, emiTenure, emiRate) : 0;
@@ -625,7 +632,7 @@ export default function AdminProductsPage() {
 
                     {/* Bajaj EMI Scheme */}
                     <td className="p-4">
-                      {prod.is_phone ? (
+                      {isEmiOn ? (
                         <div>
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-300 border border-amber-500/20 font-bold text-[10px]">
                             <CreditCard className="w-3 h-3" />
@@ -636,7 +643,9 @@ export default function AdminProductsPage() {
                           </p>
                         </div>
                       ) : (
-                        <span className="text-slate-500 text-[10px]">N/A</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-800 text-slate-400 border border-white/5 font-semibold text-[10px]">
+                          Disabled (OFF)
+                        </span>
                       )}
                     </td>
 
@@ -725,8 +734,8 @@ export default function AdminProductsPage() {
                 </h3>
                 <p className="text-xs text-slate-400">
                   {editingProductId 
-                    ? 'Update name, prices, variants, photos, Bajaj EMI rates and full hardware breakdown.' 
-                    : 'Configure multi-RAM/ROM tiers, Supabase photos, Bajaj EMI scheme & full specifications.'}
+                    ? 'Update name, prices, variants, photos, Bajaj EMI ON/OFF status and full hardware breakdown.' 
+                    : 'Configure multi-RAM/ROM tiers, Supabase photos, Bajaj EMI ON/OFF switch & full specifications.'}
                 </p>
               </div>
               <button
@@ -837,19 +846,39 @@ export default function AdminProductsPage() {
                 </div>
               </div>
 
-              {/* BAJAJ FINANCE EMI SCHEME CONFIGURATOR */}
-              {formData.is_phone && (
-                <div className="p-5 rounded-2xl bg-amber-500/[0.04] border border-amber-500/20 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-bold text-amber-300 text-sm flex items-center gap-2">
-                      <CreditCard className="w-4 h-4 text-amber-400" />
-                      <span>Bajaj Finance In-Store EMI Configuration</span>
-                    </h4>
-                    <span className="text-[10px] text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
-                      Product-Level Setting
-                    </span>
+              {/* BAJAJ FINANCE EMI SCHEME CONFIGURATOR (WITH ON / OFF TOGGLE) */}
+              <div className={`p-5 rounded-2xl border transition-all ${
+                isBajajEmiEnabled ? 'bg-amber-500/[0.04] border-amber-500/20' : 'bg-slate-900/50 border-white/10 opacity-80'
+              } space-y-3`}>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-3">
+                  <div className="flex items-center gap-2">
+                    <CreditCard className={`w-4 h-4 ${isBajajEmiEnabled ? 'text-amber-400' : 'text-slate-400'}`} />
+                    <div>
+                      <h4 className="font-bold text-white text-sm">
+                        Bajaj Finance EMI Option
+                      </h4>
+                      <p className="text-[10px] text-slate-400">
+                        Enable or disable Bajaj Finance EMI for this product (Default is ON).
+                      </p>
+                    </div>
                   </div>
 
+                  {/* Manual ON / OFF Toggle Switch */}
+                  <label className="inline-flex items-center gap-2 cursor-pointer bg-slate-900 px-3 py-1.5 rounded-xl border border-white/10 hover:border-white/20 transition-all select-none">
+                    <input
+                      type="checkbox"
+                      checked={isBajajEmiEnabled}
+                      onChange={(e) => setIsBajajEmiEnabled(e.target.checked)}
+                      className="sr-only"
+                    />
+                    <span className={`w-3 h-3 rounded-full ${isBajajEmiEnabled ? 'bg-emerald-400 shadow-glow-green' : 'bg-slate-500'}`} />
+                    <span className={`text-xs font-bold ${isBajajEmiEnabled ? 'text-amber-300' : 'text-slate-400'}`}>
+                      {isBajajEmiEnabled ? '⚡ Bajaj EMI: ON' : '✕ Bajaj EMI: OFF (Disabled)'}
+                    </span>
+                  </label>
+                </div>
+
+                {isBajajEmiEnabled ? (
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
                     <div className="space-y-1">
                       <label className="text-slate-300 font-semibold flex items-center gap-1">
@@ -863,11 +892,11 @@ export default function AdminProductsPage() {
                         max="30"
                         value={bajajInterestRate}
                         onChange={(e) => setBajajInterestRate(Number(e.target.value))}
-                        placeholder="0 for No Cost EMI"
+                        placeholder="0 for Standard Scheme"
                         className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold focus:outline-none focus:border-amber-500"
                       />
                       <span className="text-[10px] text-slate-400">
-                        {bajajInterestRate === 0 ? '✓ Bajaj Finance EMI Available (Standard Scheme)' : `Custom ${bajajInterestRate}% Annual Rate Scheme`}
+                        {bajajInterestRate === 0 ? '✓ Standard Bajaj Finance EMI Scheme' : `Custom ${bajajInterestRate}% Annual Rate Scheme`}
                       </span>
                     </div>
 
@@ -891,12 +920,16 @@ export default function AdminProductsPage() {
                         {formatPrice(calculatedSampleEMI)} / month
                       </span>
                       <span className="text-[9px] text-slate-400">
-                        Based on {formatPrice(sampleSellingPrice)} price for {bajajTenureMonths} mos @ {bajajInterestRate}%
+                        Based on {formatPrice(sampleSellingPrice)} price for {bajajTenureMonths} mos
                       </span>
                     </div>
                   </div>
-                </div>
-              )}
+                ) : (
+                  <p className="text-[11px] text-slate-400 italic pt-1">
+                    Bajaj Finance EMI is disabled for this product. Customers will not see EMI options on this product page.
+                  </p>
+                )}
+              </div>
 
               {/* MULTIPLE IMAGES UPLOAD SECTION (SUPABASE) */}
               <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-4">

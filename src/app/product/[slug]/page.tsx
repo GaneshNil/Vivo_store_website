@@ -379,7 +379,7 @@ export default function ProductDetailPage() {
                 </div>
               </div>
 
-              {product.is_phone && emiAmount > 0 && (
+              {product.is_bajaj_emi_enabled !== false && emiAmount > 0 && (
                 <div className="text-right">
                   <span className="text-[10px] font-bold text-amber-300 uppercase tracking-wide block">
                     ⚡ Bajaj Finance EMI Available
