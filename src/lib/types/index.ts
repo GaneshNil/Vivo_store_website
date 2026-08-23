@@ -149,6 +149,8 @@ export interface Product {
   is_best_seller: boolean;
   is_active: boolean;
   warranty_info: string;
+  bajaj_emi_interest_rate?: number; // e.g. 0 for 0% No Cost EMI, or 5.5, 9.9, etc.
+  bajaj_emi_tenure_months?: number; // e.g. 3, 6, 9, 12, 18, 24
   specifications: Specifications;
   compatible_models?: string[];
   highlights?: string[];

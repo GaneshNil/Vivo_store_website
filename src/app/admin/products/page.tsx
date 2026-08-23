@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { useStore } from '@/lib/store/store-context';
-import { formatPrice, getStatusBadgeConfig } from '@/lib/utils/formatters';
+import { formatPrice, getStatusBadgeConfig, calculateEMI } from '@/lib/utils/formatters';
 import { Product, ProductVariant, ProductImage } from '@/lib/types';
 import { fireConfetti } from '@/lib/utils/confetti';
 import { 
@@ -29,7 +29,9 @@ import {
   Camera,
   Battery,
   Box,
-  Settings2
+  Settings2,
+  Percent,
+  CreditCard
 } from 'lucide-react';
 
 interface VariantDraft {
@@ -46,16 +48,18 @@ interface VariantDraft {
 
 const RAM_OPTIONS = ['4GB', '6GB', '8GB', '12GB', '16GB'];
 const STORAGE_OPTIONS = ['64GB', '128GB', '256GB', '512GB', '1TB'];
+const TENURE_OPTIONS = [3, 6, 9, 12, 18, 24];
 
 export default function AdminProductsPage() {
-  const { products, brands, categories, series, addProduct, deleteProduct } = useStore();
+  const { products, brands, categories, series, addProduct, updateProduct, deleteProduct } = useStore();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBrand, setSelectedBrand] = useState('all');
   const [selectedType, setSelectedType] = useState<'all' | 'phone' | 'accessory'>('all');
   
-  // Modal states
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  // Modal states (Add & Edit)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
 
   // Form Base State
   const [formData, setFormData] = useState({
@@ -72,6 +76,10 @@ export default function AdminProductsPage() {
     is_best_seller: false,
     warranty_info: '1 Year Handset & 6 Months Accessories Warranty',
   });
+
+  // Bajaj Finance EMI Settings per Product
+  const [bajajInterestRate, setBajajInterestRate] = useState<number>(0);
+  const [bajajTenureMonths, setBajajTenureMonths] = useState<number>(6);
 
   // Multiple Images State
   const [images, setImages] = useState<string[]>([
@@ -123,6 +131,129 @@ export default function AdminProductsPage() {
     // In-The-Box
     in_the_box: 'Handset, 80W Power Adapter, USB Type-C Cable, Transparent Protective Case, SIM Ejector Pin, Warranty Card, Quick Start Guide',
   });
+
+  // Open Modal for New Product
+  const handleOpenAddModal = () => {
+    setEditingProductId(null);
+    setFormData({
+      name: '',
+      slug: '',
+      tagline: '',
+      description: '',
+      brand_id: brands[0]?.id || 'brand-vivo',
+      category_id: categories[0]?.id || 'cat-smartphones',
+      series_id: series[0]?.id || '',
+      is_phone: true,
+      is_featured: false,
+      is_new_arrival: true,
+      is_best_seller: false,
+      warranty_info: '1 Year Handset & 6 Months Accessories Warranty',
+    });
+    setBajajInterestRate(0);
+    setBajajTenureMonths(6);
+    setImages(['https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80']);
+    setPrimaryImageIndex(0);
+    setVariants([
+      {
+        id: `var-init-1`,
+        ram: '8GB',
+        storage: '128GB',
+        color: 'Titanium Blue',
+        mrp: 34999,
+        selling_price: 29999,
+        current_stock: 5,
+        low_stock_threshold: 2,
+        sku: `PROD-${Date.now().toString().slice(-4)}-128GB`,
+      }
+    ]);
+    setSpecsData({
+      screen_size: '6.78 inches',
+      resolution: '1.5K AMOLED (2800 × 1260)',
+      refresh_rate: '120Hz LTPO',
+      peak_brightness: '4500 nits Peak',
+      chipset: 'Qualcomm Snapdragon 7 Gen 3 (4nm)',
+      gpu: 'Adreno 720',
+      operating_system: 'OriginOS 4 / Funtouch OS 15 (Android 15)',
+      network: 'Dual 5G (SA/NSA) + Wi-Fi 6',
+      rear_primary: '50 MP Sony IMX921 with OIS',
+      rear_secondary: '50 MP ZEISS Ultra Wide Angle',
+      front_camera: '50 MP Group Selfie with AF',
+      video_recording: '4K @ 60fps / 1080p @ 120fps Studio Mode',
+      battery_capacity: '5500 mAh BlueVolt Battery',
+      charging_speed: '80W FlashCharge (0 to 100% in 35 mins)',
+      usb_port: 'Type-C USB 2.0 / OTG Support',
+      in_the_box: 'Handset, 80W Power Adapter, USB Type-C Cable, Transparent Protective Case, SIM Ejector Pin, Warranty Card, Quick Start Guide',
+    });
+    setIsModalOpen(true);
+  };
+
+  // Open Modal to Edit Existing Product & Specs
+  const handleOpenEditModal = (product: Product) => {
+    setEditingProductId(product.id);
+    setFormData({
+      name: product.name,
+      slug: product.slug,
+      tagline: product.tagline || '',
+      description: product.description,
+      brand_id: product.brand_id,
+      category_id: product.category_id,
+      series_id: product.series_id || '',
+      is_phone: product.is_phone,
+      is_featured: product.is_featured,
+      is_new_arrival: product.is_new_arrival,
+      is_best_seller: product.is_best_seller,
+      warranty_info: product.warranty_info || '1 Year Handset Warranty',
+    });
+
+    setBajajInterestRate(product.bajaj_emi_interest_rate ?? 0);
+    setBajajTenureMonths(product.bajaj_emi_tenure_months || 6);
+
+    // Images
+    const prodImages = product.images && product.images.length > 0
+      ? product.images.map(img => img.image_url)
+      : ['https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80'];
+    setImages(prodImages);
+    const primaryIdx = product.images.findIndex(img => img.is_primary);
+    setPrimaryImageIndex(primaryIdx >= 0 ? primaryIdx : 0);
+
+    // Variants
+    if (product.variants && product.variants.length > 0) {
+      setVariants(product.variants.map((v, i) => ({
+        id: v.id || `var-edit-${i}`,
+        ram: v.ram || '8GB',
+        storage: v.storage || '128GB',
+        color: v.color || 'Standard',
+        mrp: v.mrp,
+        selling_price: v.selling_price,
+        current_stock: v.current_stock,
+        low_stock_threshold: v.low_stock_threshold,
+        sku: v.sku,
+      })));
+    }
+
+    // Specifications
+    const s: any = product.specifications || {};
+    setSpecsData({
+      screen_size: s.display?.size || s.display?.screen_size || '6.78 inches',
+      resolution: s.display?.resolution || '1.5K AMOLED',
+      refresh_rate: s.display?.refresh_rate || '120Hz',
+      peak_brightness: s.display?.brightness || s.display?.peak_brightness || '4500 nits',
+      chipset: s.processor?.chipset || 'Snapdragon 5G',
+      gpu: s.processor?.gpu || 'Adreno',
+      operating_system: s.operating_system?.os_name || s.processor?.operating_system || 'Android 15',
+      network: s.connectivity?.network || s.processor?.network_connectivity || '5G Dual SIM',
+      rear_primary: s.camera?.rear_main || '50 MP with OIS',
+      rear_secondary: s.camera?.rear_secondary || '50 MP Ultra Wide',
+      front_camera: s.camera?.front_camera || '50 MP Selfie',
+      video_recording: s.camera?.video_recording || '4K @ 60fps',
+      battery_capacity: s.battery_charging?.capacity || '5500 mAh',
+      charging_speed: s.battery_charging?.charging_speed || '80W FlashCharge',
+      usb_port: s.connectivity?.usb_type || s.battery_charging?.usb_port || 'USB Type-C',
+      in_the_box: Array.isArray(s.in_the_box) ? s.in_the_box.join(', ') : 'Handset, Charger, Cable, Case, SIM Pin, Manual',
+    });
+
+    setIsModalOpen(true);
+  };
 
   // Handle Multi-file Upload to Supabase Storage
   const handleMultipleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -190,7 +321,7 @@ export default function AdminProductsPage() {
     setPrimaryImageIndex(index);
   };
 
-  // Add Another Variant (RAM / Storage / Color)
+  // Add Another Variant
   const handleAddVariant = () => {
     const lastVar = variants[variants.length - 1];
     const newVariant: VariantDraft = {
@@ -232,7 +363,7 @@ export default function AdminProductsPage() {
     return true;
   });
 
-  const handleCreateProduct = (e: React.FormEvent) => {
+  const handleSaveProduct = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim()) return;
 
@@ -245,7 +376,7 @@ export default function AdminProductsPage() {
     // Build Product Images
     const formattedImages: ProductImage[] = images.map((url, idx) => ({
       id: `img-${Date.now()}-${idx}`,
-      product_id: '',
+      product_id: editingProductId || '',
       image_url: url,
       alt_text: `${formData.name} photo ${idx + 1}`,
       view_type: idx === 0 ? 'front' : idx === 1 ? 'back' : idx === 2 ? 'side' : 'lifestyle',
@@ -263,8 +394,8 @@ export default function AdminProductsPage() {
       const discount = mrpNum > sellingNum ? Math.round(((mrpNum - sellingNum) / mrpNum) * 100) : 0;
 
       return {
-        id: `var-${Date.now()}-${idx}`,
-        product_id: '',
+        id: v.id.startsWith('var-') ? v.id : `var-${Date.now()}-${idx}`,
+        product_id: editingProductId || '',
         sku: v.sku.trim() || `SKU-${Date.now().toString().slice(-6)}-${idx + 1}`,
         ram: formData.is_phone ? v.ram : undefined,
         storage: formData.is_phone ? v.storage : undefined,
@@ -310,11 +441,11 @@ export default function AdminProductsPage() {
       in_the_box: specsData.in_the_box.split(',').map(s => s.trim()).filter(Boolean),
     };
 
-    addProduct({
+    const productPayload = {
       name: formData.name,
       slug: generatedSlug,
       tagline: formData.tagline,
-      description: formData.description || `${formData.name} available at Galaxy Mobile Gallery Begampur showroom with Bajaj Finance 0% EMI and official warranty.`,
+      description: formData.description || `${formData.name} available at Galaxy Mobile Gallery Begampur showroom with Bajaj Finance EMI.`,
       brand_id: formData.brand_id,
       brand,
       category_id: formData.category_id,
@@ -327,45 +458,28 @@ export default function AdminProductsPage() {
       is_best_seller: formData.is_best_seller,
       is_active: true,
       warranty_info: formData.warranty_info,
+      bajaj_emi_interest_rate: Number(bajajInterestRate) || 0,
+      bajaj_emi_tenure_months: Number(bajajTenureMonths) || 6,
       sort_order: 1,
       specifications: specificationsObj,
       images: formattedImages,
       variants: formattedVariants,
-    });
+    };
+
+    if (editingProductId) {
+      updateProduct(editingProductId, productPayload);
+    } else {
+      addProduct(productPayload);
+    }
 
     fireConfetti({ particleCount: 50, spread: 60, origin: { y: 0.6 } });
-    setIsAddModalOpen(false);
-
-    // Reset Form
-    setVariants([
-      {
-        id: `var-init-1`,
-        ram: '8GB',
-        storage: '128GB',
-        color: 'Titanium Blue',
-        mrp: 34999,
-        selling_price: 29999,
-        current_stock: 5,
-        low_stock_threshold: 2,
-        sku: `PROD-${Date.now().toString().slice(-4)}-128GB`,
-      }
-    ]);
-    setImages(['https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80']);
-    setFormData({
-      name: '',
-      slug: '',
-      tagline: '',
-      description: '',
-      brand_id: brands[0]?.id || 'brand-vivo',
-      category_id: categories[0]?.id || 'cat-smartphones',
-      series_id: series[0]?.id || '',
-      is_phone: true,
-      is_featured: false,
-      is_new_arrival: true,
-      is_best_seller: false,
-      warranty_info: '1 Year Handset & 6 Months Accessories Warranty',
-    });
+    setIsModalOpen(false);
+    setEditingProductId(null);
   };
+
+  // Sample calculated EMI for display in form
+  const sampleSellingPrice = variants[0]?.selling_price || 29999;
+  const calculatedSampleEMI = calculateEMI(sampleSellingPrice, bajajTenureMonths, bajajInterestRate);
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
@@ -374,16 +488,16 @@ export default function AdminProductsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold text-white font-display">Products & Variants</h1>
-          <p className="text-xs text-slate-400">Add, edit, deactivate and manage multi-RAM/Storage specifications for mobiles & accessories.</p>
+          <p className="text-xs text-slate-400">Add, edit hardware specifications, Bajaj EMI rates, photos & stock for mobiles & accessories.</p>
         </div>
         
         <button
           type="button"
-          onClick={() => setIsAddModalOpen(true)}
+          onClick={handleOpenAddModal}
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-vivo-600 to-vivo-500 hover:from-vivo-500 hover:to-vivo-400 text-white text-xs font-bold shadow-glow-blue transition-all"
         >
           <PlusCircle className="w-4 h-4" />
-          <span>Add New Product (Specs & Photos)</span>
+          <span>Add New Product (Specs & EMI)</span>
         </button>
       </div>
 
@@ -441,6 +555,7 @@ export default function AdminProductsPage() {
                 <th className="p-4">Product Info</th>
                 <th className="p-4">Brand / Series</th>
                 <th className="p-4">Configured Variants (RAM / ROM)</th>
+                <th className="p-4">Bajaj EMI Scheme</th>
                 <th className="p-4">Starting Price</th>
                 <th className="p-4">Stock Status</th>
                 <th className="p-4 text-right">Actions</th>
@@ -452,6 +567,9 @@ export default function AdminProductsPage() {
                 const totalStock = prod.variants.reduce((acc, v) => acc + v.current_stock, 0);
                 const statusConfig = getStatusBadgeConfig(defaultVar?.computed_status || 'IN_STOCK');
                 const primaryImg = prod.images.find(img => img.is_primary) || prod.images[0];
+                const emiRate = prod.bajaj_emi_interest_rate ?? 0;
+                const emiTenure = prod.bajaj_emi_tenure_months || 6;
+                const emiValue = defaultVar ? calculateEMI(defaultVar.selling_price, emiTenure, emiRate) : 0;
 
                 return (
                   <tr key={prod.id} className="hover:bg-white/5 transition-colors">
@@ -498,6 +616,23 @@ export default function AdminProductsPage() {
                       </div>
                     </td>
 
+                    {/* Bajaj EMI Scheme */}
+                    <td className="p-4">
+                      {prod.is_phone ? (
+                        <div>
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-300 border border-amber-500/20 font-bold text-[10px]">
+                            <CreditCard className="w-3 h-3" />
+                            <span>{emiRate === 0 ? '0% No Cost' : `${emiRate}% Interest`}</span>
+                          </span>
+                          <p className="text-[10px] text-slate-400 mt-0.5">
+                            {formatPrice(emiValue)}/mo · {emiTenure} mos
+                          </p>
+                        </div>
+                      ) : (
+                        <span className="text-slate-500 text-[10px]">N/A</span>
+                      )}
+                    </td>
+
                     {/* Price */}
                     <td className="p-4">
                       <p className="font-bold text-white">{formatPrice(defaultVar?.selling_price || 0)}</p>
@@ -517,6 +652,17 @@ export default function AdminProductsPage() {
                     {/* Actions */}
                     <td className="p-4 text-right">
                       <div className="flex items-center justify-end gap-2">
+                        {/* Edit Button */}
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEditModal(prod)}
+                          className="p-1.5 rounded-lg bg-vivo-600/20 hover:bg-vivo-600/40 text-vivo-300 border border-vivo-500/30 transition-colors"
+                          title="Edit Product, Specs & Bajaj EMI"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+
+                        {/* Deactivate/Restore Button */}
                         <button
                           type="button"
                           onClick={() => deleteProduct(prod.id, prod.is_active)}
@@ -540,29 +686,33 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
-      {/* Add Product Modal (Multi-Photos + Multi-RAM/Storage + Full Technical Specs) */}
-      {isAddModalOpen && (
+      {/* Product Modal (Add & Full Edit Mode) */}
+      {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
           <div className="w-full max-w-4xl rounded-3xl glass-panel border border-vivo-500/30 p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
             
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <div>
                 <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                  <Smartphone className="w-5 h-5 text-vivo-400" />
-                  <span>Add New Product to Catalog</span>
+                  {editingProductId ? <Edit3 className="w-5 h-5 text-vivo-400" /> : <Smartphone className="w-5 h-5 text-vivo-400" />}
+                  <span>{editingProductId ? 'Edit Product & Technical Specifications' : 'Add New Product to Catalog'}</span>
                 </h3>
-                <p className="text-xs text-slate-400">Configure multi-RAM/ROM tiers, Supabase photos & full hardware specifications.</p>
+                <p className="text-xs text-slate-400">
+                  {editingProductId 
+                    ? 'Update name, prices, variants, photos, Bajaj EMI rates and full hardware breakdown.' 
+                    : 'Configure multi-RAM/ROM tiers, Supabase photos, Bajaj EMI scheme & full specifications.'}
+                </p>
               </div>
               <button
                 type="button"
-                onClick={() => setIsAddModalOpen(false)}
+                onClick={() => setIsModalOpen(false)}
                 className="p-1.5 text-slate-400 hover:text-white rounded-lg bg-white/5"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateProduct} className="space-y-6 text-xs">
+            <form onSubmit={handleSaveProduct} className="space-y-6 text-xs">
               
               {/* Product Basic Info */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -660,6 +810,67 @@ export default function AdminProductsPage() {
                   />
                 </div>
               </div>
+
+              {/* BAJAJ FINANCE EMI SCHEME CONFIGURATOR */}
+              {formData.is_phone && (
+                <div className="p-5 rounded-2xl bg-amber-500/[0.04] border border-amber-500/20 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-bold text-amber-300 text-sm flex items-center gap-2">
+                      <CreditCard className="w-4 h-4 text-amber-400" />
+                      <span>Bajaj Finance In-Store EMI Configuration</span>
+                    </h4>
+                    <span className="text-[10px] text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                      Product-Level Setting
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+                    <div className="space-y-1">
+                      <label className="text-slate-300 font-semibold flex items-center gap-1">
+                        <Percent className="w-3.5 h-3.5 text-amber-400" />
+                        <span>Annual Interest Rate (%) *</span>
+                      </label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        max="30"
+                        value={bajajInterestRate}
+                        onChange={(e) => setBajajInterestRate(Number(e.target.value))}
+                        placeholder="0 for No Cost EMI"
+                        className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold focus:outline-none focus:border-amber-500"
+                      />
+                      <span className="text-[10px] text-slate-400">
+                        {bajajInterestRate === 0 ? '✓ 0% No Cost EMI Scheme' : `Custom ${bajajInterestRate}% Annual Interest Scheme`}
+                      </span>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-slate-300 font-semibold">Tenure Period (Months) *</label>
+                      <select
+                        value={bajajTenureMonths}
+                        onChange={(e) => setBajajTenureMonths(Number(e.target.value))}
+                        className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold focus:outline-none focus:border-amber-500"
+                      >
+                        {TENURE_OPTIONS.map(m => (
+                          <option key={m} value={m}>{m} Months EMI</option>
+                        ))}
+                      </select>
+                      <span className="text-[10px] text-slate-400">Default showroom tenure breakdown</span>
+                    </div>
+
+                    <div className="p-3 rounded-xl bg-slate-900/90 border border-white/10 flex flex-col justify-center space-y-0.5">
+                      <span className="text-[10px] text-slate-400 font-medium">Customer EMI Preview:</span>
+                      <span className="text-sm font-extrabold text-emerald-400">
+                        {formatPrice(calculatedSampleEMI)} / month
+                      </span>
+                      <span className="text-[9px] text-slate-400">
+                        Based on {formatPrice(sampleSellingPrice)} price for {bajajTenureMonths} mos @ {bajajInterestRate}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* MULTIPLE IMAGES UPLOAD SECTION (SUPABASE) */}
               <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-4">
@@ -983,7 +1194,7 @@ export default function AdminProductsPage() {
                   <div>
                     <h4 className="font-bold text-white text-sm flex items-center gap-2">
                       <Settings2 className="w-4 h-4 text-origin-cyan" />
-                      <span>Technical Specifications & Hardware Features</span>
+                      <span>Technical Specifications & Hardware Features (Fully Editable)</span>
                     </h4>
                     <p className="text-[11px] text-slate-400">Configure hardware specs displayed on the customer detail page.</p>
                   </div>
@@ -1207,7 +1418,7 @@ export default function AdminProductsPage() {
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
                 <button
                   type="button"
-                  onClick={() => setIsAddModalOpen(false)}
+                  onClick={() => setIsModalOpen(false)}
                   className="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-semibold"
                 >
                   Cancel
@@ -1217,7 +1428,7 @@ export default function AdminProductsPage() {
                   className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-vivo-600 to-vivo-500 hover:from-vivo-500 hover:to-vivo-400 text-white font-bold shadow-glow-blue transition-all flex items-center gap-2"
                 >
                   <Check className="w-4 h-4" />
-                  <span>Publish Product with {variants.length} Variant(s) & Full Specs</span>
+                  <span>{editingProductId ? 'Save & Update Product Specifications' : 'Publish Product to Catalog'}</span>
                 </button>
               </div>
 

@@ -100,6 +100,13 @@ export function getStatusBadgeConfig(status: ProductStatus) {
   }
 }
 
-export function calculateEMI(price: number, months: number = 6): number {
-  return Math.round(price / months);
+export function calculateEMI(price: number, months: number = 6, annualInterestRate: number = 0): number {
+  if (!price || price <= 0) return 0;
+  if (!annualInterestRate || annualInterestRate <= 0) {
+    return Math.round(price / (months || 6));
+  }
+  const tenure = months || 6;
+  const monthlyRate = annualInterestRate / (12 * 100);
+  const emi = (price * monthlyRate * Math.pow(1 + monthlyRate, tenure)) / (Math.pow(1 + monthlyRate, tenure) - 1);
+  return Math.round(emi);
 }

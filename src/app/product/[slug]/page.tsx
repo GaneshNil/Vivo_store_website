@@ -85,7 +85,10 @@ export default function ProductDetailPage() {
   const statusConfig = getStatusBadgeConfig(activeVariant?.computed_status || 'IN_STOCK');
   const isCompared = product ? compareList.some(p => p.id === product.id) : false;
   const isWishlisted = product ? isInWishlist(product.id) : false;
-  const emiAmount = activeVariant ? calculateEMI(activeVariant.selling_price, 6) : 0;
+  
+  const interestRate = product?.bajaj_emi_interest_rate ?? 0;
+  const tenureMonths = product?.bajaj_emi_tenure_months || 6;
+  const emiAmount = activeVariant ? calculateEMI(activeVariant.selling_price, tenureMonths, interestRate) : 0;
 
   if (!product) {
     return (
@@ -379,10 +382,13 @@ export default function ProductDetailPage() {
               {product.is_phone && emiAmount > 0 && (
                 <div className="text-right">
                   <span className="text-[10px] font-bold text-amber-300 uppercase tracking-wide block">
-                    Bajaj Finance EMI
+                    ⚡ Bajaj Finance EMI
                   </span>
                   <span className="text-sm font-bold text-emerald-400">
                     from {formatPrice(emiAmount)}/mo
+                  </span>
+                  <span className="text-[9px] text-slate-400 block">
+                    {tenureMonths} Mos · {interestRate === 0 ? '0% No Cost EMI' : `${interestRate}% Interest`}
                   </span>
                 </div>
               )}
