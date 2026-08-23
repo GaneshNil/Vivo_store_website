@@ -58,10 +58,10 @@ interface StoreContextType {
   addIncomingStock: (item: Omit<IncomingStock, 'id' | 'status' | 'created_at' | 'admin_email'>) => void;
   receiveIncomingStock: (incomingId: string) => void;
 
-  // Customer Actions
   submitNotifyRequest: (req: Omit<NotifyRequest, 'id' | 'status' | 'created_at'>) => void;
   submitReview: (rev: Omit<Review, 'id' | 'created_at' | 'is_approved'>) => void;
   updateStoreSettings: (settings: StoreSettings) => void;
+  setHeroFlagshipProduct: (productId: string) => void;
   
   // Compare & Wishlist
   addToCompare: (product: Product) => boolean;
@@ -660,6 +660,24 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     ]);
   };
 
+  const setHeroFlagshipProduct = (productId: string) => {
+    setStoreSettings(prev => ({
+      ...prev,
+      hero_flagship_product_id: productId,
+    }));
+    setAuditLogs(prev => [
+      {
+        id: `audit-${Date.now()}`,
+        admin_email: 'admin@galaxymobile.com',
+        action: 'HERO_FLAGSHIP_CHANGED',
+        entity_type: 'STORE_SETTINGS',
+        entity_id: productId,
+        created_at: new Date().toISOString(),
+      },
+      ...prev,
+    ]);
+  };
+
   // 11. Compare Management
   const addToCompare = (product: Product): boolean => {
     if (compareList.length >= 3) {
@@ -724,6 +742,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       submitNotifyRequest,
       submitReview,
       updateStoreSettings,
+      setHeroFlagshipProduct,
       addToCompare,
       removeFromCompare,
       clearCompare,

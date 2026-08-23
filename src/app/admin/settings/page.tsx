@@ -3,11 +3,11 @@
 import React, { useState } from 'react';
 import { useStore } from '@/lib/store/store-context';
 import { StoreSettings } from '@/lib/types';
-import { Settings, Save, CheckCircle2, MapPin, Phone, Mail, Clock, CreditCard } from 'lucide-react';
+import { Settings, Save, CheckCircle2, MapPin, Phone, Mail, Clock, CreditCard, Star } from 'lucide-react';
 import { fireConfetti } from '@/lib/utils/confetti';
 
 export default function AdminSettingsPage() {
-  const { storeSettings, updateStoreSettings } = useStore();
+  const { products, storeSettings, updateStoreSettings } = useStore();
   const [formData, setFormData] = useState<StoreSettings>(storeSettings);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
@@ -77,6 +77,28 @@ export default function AdminSettingsPage() {
               onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
               className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white"
             />
+          </div>
+
+          {/* Hero Section Flagship Model Selector */}
+          <div className="p-4 rounded-2xl bg-amber-500/[0.05] border border-amber-500/20 space-y-1.5">
+            <label className="text-amber-300 font-bold flex items-center gap-1.5 text-xs">
+              <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+              <span>Hero Section Flagship Showcase Phone Model</span>
+            </label>
+            <select
+              value={formData.hero_flagship_product_id || ''}
+              onChange={(e) => setFormData({ ...formData, hero_flagship_product_id: e.target.value })}
+              className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold text-xs focus:border-amber-500"
+            >
+              {products.filter(p => p.is_phone).map(p => (
+                <option key={p.id} value={p.id}>
+                  {p.name} ({p.brand?.name || 'VIVO'}) - Starting at ₹{p.variants[0]?.selling_price || 0}
+                </option>
+              ))}
+            </select>
+            <p className="text-[11px] text-slate-400">
+              Selected smartphone will be dynamically showcased with live specs, photography & price on the homepage hero section.
+            </p>
           </div>
         </div>
 

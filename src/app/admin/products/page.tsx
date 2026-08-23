@@ -51,7 +51,7 @@ const STORAGE_OPTIONS = ['64GB', '128GB', '256GB', '512GB', '1TB'];
 const TENURE_OPTIONS = [3, 6, 9, 12, 18, 24];
 
 export default function AdminProductsPage() {
-  const { products, brands, categories, series, addProduct, updateProduct, deleteProduct } = useStore();
+  const { products, brands, categories, series, storeSettings, addProduct, updateProduct, deleteProduct, setHeroFlagshipProduct } = useStore();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBrand, setSelectedBrand] = useState('all');
@@ -593,7 +593,14 @@ export default function AdminProductsPage() {
                           )}
                         </div>
                         <div>
-                          <p className="font-bold text-white text-sm">{prod.name}</p>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <p className="font-bold text-white text-sm">{prod.name}</p>
+                            {storeSettings.hero_flagship_product_id === prod.id && (
+                              <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-extrabold text-[9px] border border-amber-500/30 flex items-center gap-0.5 shadow-sm">
+                                <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400" /> Hero Flagship
+                              </span>
+                            )}
+                          </div>
                           <p className="text-[11px] text-slate-400">/{prod.slug}</p>
                         </div>
                       </div>
@@ -652,6 +659,25 @@ export default function AdminProductsPage() {
                     {/* Actions */}
                     <td className="p-4 text-right">
                       <div className="flex items-center justify-end gap-2">
+                        {/* Set as Hero Flagship Button */}
+                        {prod.is_phone && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setHeroFlagshipProduct(prod.id);
+                              fireConfetti({ particleCount: 35, spread: 60, origin: { y: 0.6 } });
+                            }}
+                            className={`p-1.5 rounded-lg border transition-colors ${
+                              storeSettings.hero_flagship_product_id === prod.id
+                                ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-sm'
+                                : 'bg-white/5 hover:bg-white/10 text-slate-400 hover:text-amber-300 border-white/5'
+                            }`}
+                            title={storeSettings.hero_flagship_product_id === prod.id ? 'Current Hero Flagship Model' : 'Set as Hero Section Flagship Model'}
+                          >
+                            <Star className={`w-4 h-4 ${storeSettings.hero_flagship_product_id === prod.id ? 'fill-amber-400 text-amber-400' : ''}`} />
+                          </button>
+                        )}
+
                         {/* Edit Button */}
                         <button
                           type="button"

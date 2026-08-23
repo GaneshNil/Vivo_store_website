@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -14,12 +14,37 @@ import {
   CreditCard,
   Camera,
   Cpu,
-  Layers
+  Layers,
+  Star
 } from 'lucide-react';
 import { useStore } from '@/lib/store/store-context';
+import { formatPrice, getStatusBadgeConfig } from '@/lib/utils/formatters';
 
 export const HeroSection: React.FC = () => {
-  const { storeSettings } = useStore();
+  const { storeSettings, products } = useStore();
+
+  // Dynamically resolve flagship model selected in Admin settings or default to top flagship
+  const heroProduct = useMemo(() => {
+    if (storeSettings.hero_flagship_product_id) {
+      const found = products.find(p => p.id === storeSettings.hero_flagship_product_id && p.is_active);
+      if (found) return found;
+    }
+    return (
+      products.find(p => p.brand_id === 'brand-vivo' && p.is_featured && p.is_phone && p.is_active) ||
+      products.find(p => p.is_phone && p.is_featured && p.is_active) ||
+      products.find(p => p.is_phone && p.is_active) ||
+      products[0]
+    );
+  }, [products, storeSettings.hero_flagship_product_id]);
+
+  const defaultVariant = heroProduct?.variants?.find(v => v.is_default) || heroProduct?.variants?.[0];
+  const primaryImage = heroProduct?.images?.find(img => img.is_primary) || heroProduct?.images?.[0];
+  const statusConfig = getStatusBadgeConfig(defaultVariant?.computed_status || 'IN_STOCK');
+
+  const s = (heroProduct?.specifications || {}) as any;
+  const cameraText = s.camera?.rear_main || '50 MP ZEISS Studio OIS';
+  const processorText = s.processor?.chipset || 'Flagship 5G Chipset';
+  const batteryText = s.battery_charging?.capacity || '5500 mAh BlueVolt';
 
   return (
     <section className="relative overflow-hidden pt-6 pb-16 md:py-20">
@@ -65,7 +90,7 @@ export const HeroSection: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed"
             >
-              Explore live demo units of the latest <strong className="text-white">VIVO X100 Pro</strong>, <strong className="text-white">V40 Pro</strong>, and <strong className="text-white">T3 5G</strong> series along with Samsung, Oppo & Realme. Compare specifications online, check live store stock, and visit our Begampur showroom for instant purchase.
+              Explore live demo units of the latest <strong className="text-white">{heroProduct?.name || 'VIVO Flagship'}</strong> and popular multi-brand smartphones. Compare specifications online, check live store stock, and visit our Begampur showroom for instant purchase.
             </motion.p>
 
             {/* In-Store CTAs */}
@@ -132,81 +157,101 @@ export const HeroSection: React.FC = () => {
 
           </div>
 
-          {/* Right Column: Hero Cinematic Product Card */}
+          {/* Right Column: Hero Cinematic Product Card (Dynamic Admin Configured) */}
           <div className="lg:col-span-5 relative flex items-center justify-center">
             
             {/* Ambient Studio Ring */}
             <div className="absolute inset-0 bg-gradient-to-tr from-vivo-500/20 via-origin-violet/20 to-transparent rounded-3xl blur-2xl transform rotate-3" />
 
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="relative w-full max-w-md rounded-3xl glass-panel border border-white/10 p-6 shadow-2xl shadow-black/80 space-y-6"
-            >
-              
-              {/* Card Header */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-vivo-500/20 text-vivo-300 border border-vivo-500/30">
-                    FLAGSHIP SHOWCASE
+            {heroProduct && (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.7, delay: 0.2 }}
+                className="relative w-full max-w-md rounded-3xl glass-panel border border-white/10 p-6 shadow-2xl shadow-black/80 space-y-6"
+              >
+                
+                {/* Card Header */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-vivo-500/20 text-vivo-300 border border-vivo-500/30 flex items-center gap-1 shadow">
+                      <Star className="w-3 h-3 fill-vivo-400 text-vivo-400" />
+                      <span>FLAGSHIP SHOWCASE</span>
+                    </span>
+                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border}`}>
+                      {statusConfig.label}
+                    </span>
+                  </div>
+                  <span className="text-xs font-semibold text-slate-300 truncate max-w-[140px]">
+                    {heroProduct.name}
                   </span>
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                    IN STOCK AT STORE
-                  </span>
-                </div>
-                <span className="text-xs font-semibold text-slate-400">VIVO X100 PRO</span>
-              </div>
-
-              {/* Showcase Image with Floating Light */}
-              <div className="relative aspect-square w-full rounded-2xl bg-gradient-to-b from-slate-900 to-slate-950 flex items-center justify-center p-6 border border-white/5 overflow-hidden">
-                <div className="absolute inset-0 bg-radial-gradient from-vivo-500/15 via-transparent to-transparent pointer-events-none" />
-                <div className="relative w-64 h-64 animate-float">
-                  <Image
-                    src="https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=800&q=80"
-                    alt="VIVO X100 Pro 5G Flagship"
-                    fill
-                    className="object-contain"
-                    priority
-                  />
-                </div>
-              </div>
-
-              {/* Spec Hotspots */}
-              <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="p-2.5 bg-white/5 rounded-xl border border-white/5">
-                  <Camera className="w-4 h-4 text-vivo-400 mx-auto mb-1" />
-                  <p className="text-xs font-bold text-white">50MP 1-inch</p>
-                  <p className="text-[10px] text-slate-400">Sony IMX989 ZEISS</p>
-                </div>
-                <div className="p-2.5 bg-white/5 rounded-xl border border-white/5">
-                  <Cpu className="w-4 h-4 text-origin-violet mx-auto mb-1" />
-                  <p className="text-xs font-bold text-white">Dimensity 9300</p>
-                  <p className="text-[10px] text-slate-400">4nm TSMC</p>
-                </div>
-                <div className="p-2.5 bg-white/5 rounded-xl border border-white/5">
-                  <Zap className="w-4 h-4 text-amber-400 mx-auto mb-1" />
-                  <p className="text-xs font-bold text-white">100W Flash</p>
-                  <p className="text-[10px] text-slate-400">5400mAh BlueVolt</p>
-                </div>
-              </div>
-
-              {/* Pricing & Store CTA */}
-              <div className="pt-2 flex items-center justify-between border-t border-white/10">
-                <div>
-                  <p className="text-[11px] text-slate-400">In-Store Starting Price</p>
-                  <p className="text-xl font-bold text-white">₹89,999</p>
                 </div>
 
-                <Link
-                  href="/product/vivo-x100-pro-5g"
-                  className="px-4 py-2 rounded-xl bg-vivo-600 hover:bg-vivo-500 text-white text-xs font-semibold shadow-glow-blue transition-all"
-                >
-                  View Details & Stock
-                </Link>
-              </div>
+                {/* Showcase Image with Floating Light */}
+                <div className="relative aspect-square w-full rounded-2xl bg-gradient-to-b from-slate-900 to-slate-950 flex items-center justify-center p-6 border border-white/5 overflow-hidden">
+                  <div className="absolute inset-0 bg-radial-gradient from-vivo-500/15 via-transparent to-transparent pointer-events-none" />
+                  <div className="relative w-64 h-64 animate-float">
+                    {primaryImage ? (
+                      <Image
+                        src={primaryImage.image_url}
+                        alt={heroProduct.name}
+                        fill
+                        className="object-contain"
+                        priority
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-slate-600">
+                        No Image
+                      </div>
+                    )}
+                  </div>
+                </div>
 
-            </motion.div>
+                {/* Spec Hotspots */}
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  <div className="p-2.5 bg-white/5 rounded-xl border border-white/5">
+                    <Camera className="w-4 h-4 text-vivo-400 mx-auto mb-1" />
+                    <p className="text-xs font-bold text-white truncate" title={cameraText}>
+                      {cameraText.length > 14 ? cameraText.slice(0, 14) + '...' : cameraText}
+                    </p>
+                    <p className="text-[10px] text-slate-400">Camera System</p>
+                  </div>
+                  <div className="p-2.5 bg-white/5 rounded-xl border border-white/5">
+                    <Cpu className="w-4 h-4 text-origin-violet mx-auto mb-1" />
+                    <p className="text-xs font-bold text-white truncate" title={processorText}>
+                      {processorText.length > 14 ? processorText.slice(0, 14) + '...' : processorText}
+                    </p>
+                    <p className="text-[10px] text-slate-400">Performance</p>
+                  </div>
+                  <div className="p-2.5 bg-white/5 rounded-xl border border-white/5">
+                    <Zap className="w-4 h-4 text-amber-400 mx-auto mb-1" />
+                    <p className="text-xs font-bold text-white truncate" title={batteryText}>
+                      {batteryText.length > 14 ? batteryText.slice(0, 14) + '...' : batteryText}
+                    </p>
+                    <p className="text-[10px] text-slate-400">Battery & Power</p>
+                  </div>
+                </div>
+
+                {/* Pricing & Store CTA */}
+                <div className="pt-2 flex items-center justify-between border-t border-white/10">
+                  <div>
+                    <p className="text-[11px] text-slate-400">In-Store Starting Price</p>
+                    <p className="text-xl font-bold text-white">
+                      {formatPrice(defaultVariant?.selling_price || 0)}
+                    </p>
+                  </div>
+
+                  <Link
+                    href={`/product/${heroProduct.slug}`}
+                    className="px-4 py-2 rounded-xl bg-vivo-600 hover:bg-vivo-500 text-white text-xs font-semibold shadow-glow-blue transition-all flex items-center gap-1.5"
+                  >
+                    <span>View Details & Stock</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+
+              </motion.div>
+            )}
 
           </div>
 

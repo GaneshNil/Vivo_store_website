@@ -94,6 +94,7 @@ export const INITIAL_STORE_SETTINGS: StoreSettings = {
     upi: true,
     cash: true
   },
+  hero_flagship_product_id: 'prod-vivo-x100-pro',
   google_maps_url: 'https://maps.google.com/?q=Begampur,Mohol,Solapur,Maharashtra,413253'
 };
 

@@ -283,6 +283,7 @@ export interface StoreSettings {
     upi: boolean;
     cash: boolean;
   };
+  hero_flagship_product_id?: string;
   google_maps_url: string;
 }
 
