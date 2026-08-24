@@ -7,6 +7,7 @@ import { formatPrice, getStatusBadgeConfig, calculateEMI } from '@/lib/utils/for
 import { Product, ProductVariant, ProductImage } from '@/lib/types';
 import { fireConfetti } from '@/lib/utils/confetti';
 import { compressImageForUpload } from '@/lib/utils/image-compression';
+import { getCategorySpecSchema, CategorySpecGroup } from '@/lib/data/category-specs-schema';
 import { 
   Smartphone, 
   PlusCircle, 
@@ -35,7 +36,17 @@ import {
   CreditCard,
   ToggleLeft,
   ToggleRight,
-  Loader2
+  Loader2,
+  Zap,
+  Cable,
+  Shield,
+  Headphones,
+  BatteryCharging,
+  Watch,
+  Speaker,
+  HardDrive,
+  Sliders,
+  Tag
 } from 'lucide-react';
 
 interface VariantDraft {
@@ -270,6 +281,38 @@ export default function AdminProductsPage() {
     in_the_box: 'Handset, 80W Power Adapter, USB Type-C Cable, Transparent Protective Case, SIM Ejector Pin, Warranty Card, Quick Start Guide',
   });
 
+  // Dynamic Category Specifications & Custom Key-Value Specs
+  const [categorySpecs, setCategorySpecs] = useState<Record<string, string>>({});
+  const [customSpecs, setCustomSpecs] = useState<Array<{ id: string; key: string; value: string }>>([]);
+
+  // Active Category Specification Schema based on selected category
+  const selectedCategoryObj = categories.find(c => c.id === formData.category_id);
+  const activeSpecSchema: CategorySpecGroup = getCategorySpecSchema(
+    selectedCategoryObj?.slug || formData.category_id || selectedCategoryObj?.name
+  );
+
+  // Custom Spec Handlers
+  const handleAddCustomSpec = () => {
+    setCustomSpecs(prev => [
+      ...prev,
+      { id: `cs-${Date.now()}-${prev.length + 1}`, key: '', value: '' }
+    ]);
+  };
+
+  const handleUpdateCustomSpec = (index: number, field: 'key' | 'value', val: string) => {
+    setCustomSpecs(prev => {
+      const copy = [...prev];
+      if (copy[index]) {
+        copy[index] = { ...copy[index], [field]: val };
+      }
+      return copy;
+    });
+  };
+
+  const handleRemoveCustomSpec = (index: number) => {
+    setCustomSpecs(prev => prev.filter((_, idx) => idx !== index));
+  };
+
   // Open Modal for New Product
   const handleOpenAddModal = () => {
     setEditingProductId(null);
@@ -323,6 +366,8 @@ export default function AdminProductsPage() {
       usb_port: 'Type-C USB 2.0 / OTG Support',
       in_the_box: 'Handset, 80W Power Adapter, USB Type-C Cable, Transparent Protective Case, SIM Ejector Pin, Warranty Card, Quick Start Guide',
     });
+    setCategorySpecs({});
+    setCustomSpecs([]);
     setIsModalOpen(true);
   };
 
@@ -391,6 +436,70 @@ export default function AdminProductsPage() {
       usb_port: s.connectivity?.usb_type || s.battery_charging?.usb_port || 'USB Type-C',
       in_the_box: Array.isArray(s.in_the_box) ? s.in_the_box.join(', ') : 'Handset, Charger, Cable, Case, SIM Pin, Manual',
     });
+
+    // Populate Category-Specific Specs & Custom Key/Values
+    const initialCategorySpecs: Record<string, string> = {};
+    const initialCustomSpecs: Array<{ id: string; key: string; value: string }> = [];
+
+    const productCat = categories.find(c => c.id === product.category_id);
+    const schema = getCategorySpecSchema(productCat?.slug || product.category_id || productCat?.name);
+
+    if (schema.id === 'cat-smartphones' || product.is_phone) {
+      initialCategorySpecs['display'] = s.display 
+        ? (typeof s.display === 'string' ? s.display : `${s.display.size || s.display.screen_size || ''} ${s.display.resolution || ''} ${s.display.refresh_rate || ''}`.trim()) 
+        : (s.display_specs || '');
+      initialCategorySpecs['processor'] = s.processor 
+        ? (typeof s.processor === 'string' ? s.processor : `${s.processor.chipset || ''} ${s.processor.gpu ? `(${s.processor.gpu})` : ''}`.trim()) 
+        : (s.processor_specs || '');
+      initialCategorySpecs['ram'] = s.ram || (product.variants?.[0]?.ram ? `${product.variants[0].ram} LPDDR5X` : '');
+      initialCategorySpecs['storage'] = s.storage || (product.variants?.[0]?.storage ? `${product.variants[0].storage} UFS 3.1` : '');
+      initialCategorySpecs['camera'] = s.camera 
+        ? (typeof s.camera === 'string' ? s.camera : `${s.camera.rear_main || ''} + ${s.camera.rear_secondary || ''} / ${s.camera.front_camera || ''}`.trim()) 
+        : (s.camera_specs || '');
+      initialCategorySpecs['battery'] = s.battery_charging?.capacity || s.battery || '';
+      initialCategorySpecs['charging'] = s.battery_charging?.charging_speed || s.charging || '';
+      initialCategorySpecs['connectivity'] = s.connectivity?.network || s.processor?.network_connectivity || s.connectivity || '';
+      initialCategorySpecs['os'] = s.operating_system?.os_name || s.processor?.operating_system || s.os || '';
+      initialCategorySpecs['sensors'] = s.sensors || '';
+    } else {
+      schema.fields.forEach(f => {
+        if (s[f.key] !== undefined) {
+          initialCategorySpecs[f.key] = String(s[f.key]);
+        } else if (s[f.label] !== undefined) {
+          initialCategorySpecs[f.key] = String(s[f.label]);
+        }
+      });
+    }
+
+    // Extract custom specs
+    if (Array.isArray(s.custom_specs)) {
+      s.custom_specs.forEach((cs: any, idx: number) => {
+        if (cs && cs.key) {
+          initialCustomSpecs.push({
+            id: `cs-${Date.now()}-${idx}`,
+            key: cs.key,
+            value: cs.value || '',
+          });
+        }
+      });
+    } else {
+      const knownKeys = new Set([
+        ...schema.fields.map(f => f.key), 
+        'display', 'processor', 'camera', 'battery_charging', 'in_the_box', 'custom_specs', 'specifications', 'warranty_info', 'highlights'
+      ]);
+      Object.entries(s).forEach(([k, v]) => {
+        if (!knownKeys.has(k) && typeof v === 'string' && v.trim()) {
+          initialCustomSpecs.push({
+            id: `cs-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+            key: k.replace(/_/g, ' '),
+            value: v,
+          });
+        }
+      });
+    }
+
+    setCategorySpecs(initialCategorySpecs);
+    setCustomSpecs(initialCustomSpecs);
 
     setIsModalOpen(true);
   };
@@ -565,33 +674,54 @@ export default function AdminProductsPage() {
       };
     });
 
-    // Build Specifications
-    const specificationsObj = {
-      display: formData.is_phone ? {
-        screen_size: specsData.screen_size,
-        resolution: specsData.resolution,
-        refresh_rate: specsData.refresh_rate,
-        peak_brightness: specsData.peak_brightness,
-      } : undefined,
-      processor: formData.is_phone ? {
-        chipset: specsData.chipset,
-        gpu: specsData.gpu,
-        operating_system: specsData.operating_system,
-        network_connectivity: specsData.network,
-      } : undefined,
-      camera: formData.is_phone ? {
-        rear_main: specsData.rear_primary,
-        rear_secondary: specsData.rear_secondary,
-        front_camera: specsData.front_camera,
-        video_recording: specsData.video_recording,
-      } : undefined,
-      battery_charging: {
-        capacity: specsData.battery_capacity,
-        charging_speed: specsData.charging_speed,
-        usb_port: specsData.usb_port,
-      },
+    // Build Specifications Object dynamically based on category and custom specs
+    let specificationsObj: any = {
+      ...categorySpecs,
       in_the_box: specsData.in_the_box.split(',').map(s => s.trim()).filter(Boolean),
     };
+
+    if (formData.is_phone || activeSpecSchema.id === 'cat-smartphones') {
+      specificationsObj = {
+        ...specificationsObj,
+        display: {
+          screen_size: categorySpecs.display || specsData.screen_size,
+          resolution: specsData.resolution,
+          refresh_rate: specsData.refresh_rate,
+          peak_brightness: specsData.peak_brightness,
+        },
+        processor: {
+          chipset: categorySpecs.processor || specsData.chipset,
+          gpu: specsData.gpu,
+          operating_system: categorySpecs.os || specsData.operating_system,
+          network_connectivity: categorySpecs.connectivity || specsData.network,
+        },
+        camera: {
+          rear_main: categorySpecs.camera || specsData.rear_primary,
+          rear_secondary: specsData.rear_secondary,
+          front_camera: specsData.front_camera,
+          video_recording: specsData.video_recording,
+        },
+        battery_charging: {
+          capacity: categorySpecs.battery || specsData.battery_capacity,
+          charging_speed: categorySpecs.charging || specsData.charging_speed,
+          usb_port: specsData.usb_port,
+        },
+        in_the_box: specsData.in_the_box.split(',').map(s => s.trim()).filter(Boolean),
+      };
+    }
+
+    if (customSpecs.length > 0) {
+      const validCustom = customSpecs.filter(cs => cs.key.trim() && cs.value.trim());
+      if (validCustom.length > 0) {
+        specificationsObj.custom_specs = validCustom.map(cs => ({
+          key: cs.key.trim(),
+          value: cs.value.trim(),
+        }));
+        validCustom.forEach(cs => {
+          specificationsObj[cs.key.trim().toLowerCase().replace(/\s+/g, '_')] = cs.value.trim();
+        });
+      }
+    }
 
     const productPayload = {
       name: formData.name,
@@ -1417,227 +1547,129 @@ export default function AdminProductsPage() {
 
               </div>
 
-              {/* TECHNICAL SPECIFICATIONS & HARDWARE FEATURES CONFIGURATOR */}
+              {/* DYNAMIC CATEGORY-SPECIFIC PRODUCT SPECIFICATIONS */}
               <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-4">
-                <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-3">
                   <div>
                     <h4 className="font-bold text-white text-sm flex items-center gap-2">
                       <Settings2 className="w-4 h-4 text-origin-cyan" />
-                      <span>Technical Specifications & Hardware Features (Fully Editable)</span>
+                      <span>Product Specifications & Features</span>
+                      <span className="px-2.5 py-0.5 rounded-full bg-vivo-500/20 text-vivo-300 border border-vivo-500/30 text-[10px] font-bold">
+                        {activeSpecSchema.name}
+                      </span>
                     </h4>
-                    <p className="text-[11px] text-slate-400">Configure hardware specs displayed on the customer detail page.</p>
+                    <p className="text-[11px] text-slate-400">{activeSpecSchema.description}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-slate-400 bg-slate-900 px-2.5 py-1 rounded-lg border border-white/5">
+                      {activeSpecSchema.fields.length} Category Fields
+                    </span>
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   
-                  {/* Display Specs */}
-                  {formData.is_phone && (
-                    <div className="p-4 rounded-xl bg-slate-900/80 border border-white/5 space-y-3">
-                      <h5 className="font-bold text-vivo-400 text-xs flex items-center gap-1.5">
-                        <Sparkles className="w-3.5 h-3.5" /> 1. Display & Screen Specifications
-                      </h5>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                        <div className="space-y-1">
-                          <label className="text-slate-400 text-[10px]">Screen Size</label>
+                  {/* Category-Adaptive Form Fields in 2-Column Grid */}
+                  {activeSpecSchema.fields.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                      {activeSpecSchema.fields.map(field => (
+                        <div 
+                          key={field.key} 
+                          className="space-y-1 p-3 rounded-xl bg-slate-900/90 border border-white/5 hover:border-white/10 transition-colors"
+                        >
+                          <div className="flex items-center justify-between">
+                            <label className="text-slate-300 font-semibold text-[11px] flex items-center gap-1.5">
+                              <span className="w-1.5 h-1.5 rounded-full bg-vivo-400" />
+                              <span>{field.label}</span>
+                            </label>
+                            <span className="text-[9px] font-mono text-slate-500 uppercase">{field.key}</span>
+                          </div>
                           <input
                             type="text"
-                            value={specsData.screen_size}
-                            onChange={(e) => setSpecsData({ ...specsData, screen_size: e.target.value })}
-                            placeholder="6.78 inches"
-                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
+                            value={categorySpecs[field.key] || ''}
+                            onChange={(e) => setCategorySpecs(prev => ({ ...prev, [field.key]: e.target.value }))}
+                            placeholder={field.placeholder}
+                            className="w-full p-2.5 rounded-lg bg-slate-950 border border-white/10 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-vivo-500 transition-colors"
                           />
                         </div>
-                        <div className="space-y-1">
-                          <label className="text-slate-400 text-[10px]">Resolution & Panel</label>
-                          <input
-                            type="text"
-                            value={specsData.resolution}
-                            onChange={(e) => setSpecsData({ ...specsData, resolution: e.target.value })}
-                            placeholder="1.5K AMOLED (2800 × 1260)"
-                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-slate-400 text-[10px]">Refresh Rate</label>
-                          <input
-                            type="text"
-                            value={specsData.refresh_rate}
-                            onChange={(e) => setSpecsData({ ...specsData, refresh_rate: e.target.value })}
-                            placeholder="120Hz LTPO"
-                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-slate-400 text-[10px]">Peak Brightness</label>
-                          <input
-                            type="text"
-                            value={specsData.peak_brightness}
-                            onChange={(e) => setSpecsData({ ...specsData, peak_brightness: e.target.value })}
-                            placeholder="4500 nits"
-                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
-                          />
-                        </div>
-                      </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-4 rounded-xl bg-slate-900/60 border border-white/5 text-center text-xs text-slate-400 space-y-1">
+                      <p className="font-semibold text-slate-300">Custom Accessory Category</p>
+                      <p className="text-[11px] text-slate-500">Add custom specifications below using the &quot;+ Add Specification&quot; button.</p>
                     </div>
                   )}
-
-                  {/* Processor & Performance */}
-                  {formData.is_phone && (
-                    <div className="p-4 rounded-xl bg-slate-900/80 border border-white/5 space-y-3">
-                      <h5 className="font-bold text-origin-violet text-xs flex items-center gap-1.5">
-                        <Cpu className="w-3.5 h-3.5" /> 2. Processor, OS & Network
-                      </h5>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                        <div className="space-y-1">
-                          <label className="text-slate-400 text-[10px]">Processor / Chipset</label>
-                          <input
-                            type="text"
-                            value={specsData.chipset}
-                            onChange={(e) => setSpecsData({ ...specsData, chipset: e.target.value })}
-                            placeholder="Snapdragon 7 Gen 3"
-                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-slate-400 text-[10px]">GPU / Graphics</label>
-                          <input
-                            type="text"
-                            value={specsData.gpu}
-                            onChange={(e) => setSpecsData({ ...specsData, gpu: e.target.value })}
-                            placeholder="Adreno 720"
-                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-slate-400 text-[10px]">Operating System</label>
-                          <input
-                            type="text"
-                            value={specsData.operating_system}
-                            onChange={(e) => setSpecsData({ ...specsData, operating_system: e.target.value })}
-                            placeholder="Funtouch OS 15 (Android 15)"
-                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-slate-400 text-[10px]">5G & Connectivity</label>
-                          <input
-                            type="text"
-                            value={specsData.network}
-                            onChange={(e) => setSpecsData({ ...specsData, network: e.target.value })}
-                            placeholder="Dual 5G (SA/NSA) + Wi-Fi 6"
-                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Camera System */}
-                  {formData.is_phone && (
-                    <div className="p-4 rounded-xl bg-slate-900/80 border border-white/5 space-y-3">
-                      <h5 className="font-bold text-cyan-400 text-xs flex items-center gap-1.5">
-                        <Camera className="w-3.5 h-3.5" /> 3. Camera System
-                      </h5>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                        <div className="space-y-1">
-                          <label className="text-slate-400 text-[10px]">Rear Primary Camera</label>
-                          <input
-                            type="text"
-                            value={specsData.rear_primary}
-                            onChange={(e) => setSpecsData({ ...specsData, rear_primary: e.target.value })}
-                            placeholder="50 MP Sony IMX921 with OIS"
-                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-slate-400 text-[10px]">Rear Secondary Camera</label>
-                          <input
-                            type="text"
-                            value={specsData.rear_secondary}
-                            onChange={(e) => setSpecsData({ ...specsData, rear_secondary: e.target.value })}
-                            placeholder="50 MP ZEISS Ultra Wide"
-                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-slate-400 text-[10px]">Front Selfie Camera</label>
-                          <input
-                            type="text"
-                            value={specsData.front_camera}
-                            onChange={(e) => setSpecsData({ ...specsData, front_camera: e.target.value })}
-                            placeholder="50 MP Group Selfie AF"
-                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-slate-400 text-[10px]">Video Recording</label>
-                          <input
-                            type="text"
-                            value={specsData.video_recording}
-                            onChange={(e) => setSpecsData({ ...specsData, video_recording: e.target.value })}
-                            placeholder="4K @ 60fps / Studio Mode"
-                            className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Battery & Charging */}
-                  <div className="p-4 rounded-xl bg-slate-900/80 border border-white/5 space-y-3">
-                    <h5 className="font-bold text-emerald-400 text-xs flex items-center gap-1.5">
-                      <Battery className="w-3.5 h-3.5" /> {formData.is_phone ? '4.' : '1.'} Battery & Charging
-                    </h5>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <div className="space-y-1">
-                        <label className="text-slate-400 text-[10px]">Battery Capacity</label>
-                        <input
-                          type="text"
-                          value={specsData.battery_capacity}
-                          onChange={(e) => setSpecsData({ ...specsData, battery_capacity: e.target.value })}
-                          placeholder="5500 mAh BlueVolt"
-                          className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-slate-400 text-[10px]">Charging Technology</label>
-                        <input
-                          type="text"
-                          value={specsData.charging_speed}
-                          onChange={(e) => setSpecsData({ ...specsData, charging_speed: e.target.value })}
-                          placeholder="80W FlashCharge"
-                          className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-slate-400 text-[10px]">USB Port & OTG</label>
-                        <input
-                          type="text"
-                          value={specsData.usb_port}
-                          onChange={(e) => setSpecsData({ ...specsData, usb_port: e.target.value })}
-                          placeholder="USB Type-C"
-                          className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
-                        />
-                      </div>
-                    </div>
-                  </div>
 
                   {/* In-The-Box Items */}
-                  <div className="p-4 rounded-xl bg-slate-900/80 border border-white/5 space-y-3">
+                  <div className="p-4 rounded-xl bg-slate-900/80 border border-white/5 space-y-2">
                     <h5 className="font-bold text-slate-300 text-xs flex items-center gap-1.5">
-                      <Box className="w-3.5 h-3.5 text-amber-400" /> {formData.is_phone ? '5.' : '2.'} In-The-Box Package Contents
+                      <Box className="w-3.5 h-3.5 text-amber-400" />
+                      <span>In-The-Box Package Contents</span>
                     </h5>
                     <div className="space-y-1">
-                      <label className="text-slate-400 text-[10px]">Comma-separated package contents</label>
                       <input
                         type="text"
                         value={specsData.in_the_box}
                         onChange={(e) => setSpecsData({ ...specsData, in_the_box: e.target.value })}
-                        placeholder="Handset, 80W Charger, Cable, Protective Case, SIM Ejector, User Manual"
-                        className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
+                        placeholder="e.g. Handset / Accessory, Charging Cable, User Manual, Warranty Card"
+                        className="w-full p-2.5 rounded-lg bg-slate-950 border border-white/10 text-white text-xs focus:outline-none focus:border-vivo-500"
                       />
+                      <span className="text-[10px] text-slate-500">Enter comma-separated items included in retail packaging</span>
                     </div>
+                  </div>
+
+                  {/* CUSTOM SPECIFICATIONS BUILDER (+ ADD SPECIFICATION) */}
+                  <div className="p-4 rounded-xl bg-slate-900/80 border border-white/5 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-slate-300">
+                        <Sliders className="w-3.5 h-3.5 text-amber-400" />
+                        <span>Additional / Custom Specifications ({customSpecs.length})</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleAddCustomSpec}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-vivo-600/20 hover:bg-vivo-600/30 text-vivo-300 hover:text-white text-xs font-bold border border-vivo-500/30 transition-all shadow-sm"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>+ Add Specification</span>
+                      </button>
+                    </div>
+
+                    {customSpecs.length > 0 ? (
+                      <div className="space-y-2 pt-1">
+                        {customSpecs.map((cs, idx) => (
+                          <div key={cs.id} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-2.5 rounded-xl bg-slate-950 border border-white/10">
+                            <input
+                              type="text"
+                              placeholder="Specification Name (e.g. Weight, Frequency Response, Fast Pairing)"
+                              value={cs.key}
+                              onChange={(e) => handleUpdateCustomSpec(idx, 'key', e.target.value)}
+                              className="w-full sm:w-1/3 p-2 rounded-lg bg-slate-900 border border-white/10 text-white text-xs font-semibold focus:outline-none focus:border-vivo-500"
+                            />
+                            <input
+                              type="text"
+                              placeholder="Specification Value (e.g. 185g, 20Hz - 20kHz, Yes Google Fast Pair)"
+                              value={cs.value}
+                              onChange={(e) => handleUpdateCustomSpec(idx, 'value', e.target.value)}
+                              className="flex-1 p-2 rounded-lg bg-slate-900 border border-white/10 text-white text-xs focus:outline-none focus:border-vivo-500"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveCustomSpec(idx)}
+                              className="p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 transition-colors flex items-center justify-center"
+                              title="Remove specification"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-[11px] text-slate-500 italic">
+                        Need extra specs not listed above? Click &quot;+ Add Specification&quot; to add custom key-value details.
+                      </p>
+                    )}
                   </div>
 
                 </div>

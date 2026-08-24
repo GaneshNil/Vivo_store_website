@@ -30,7 +30,9 @@ import {
   Maximize2,
   ZoomIn,
   Image as ImageIcon,
-  Smartphone
+  Smartphone,
+  Sliders,
+  Check
 } from 'lucide-react';
 import { fireConfetti } from '@/lib/utils/confetti';
 
@@ -621,6 +623,50 @@ export default function ProductDetailPage() {
                 </div>
               </div>
             )}
+
+            {/* Additional / Category-Specific Specifications */}
+            {(() => {
+              const specs: any = product.specifications || {};
+              const ignoredKeys = new Set(['display', 'processor', 'camera', 'battery_charging', 'in_the_box', 'custom_specs', 'specifications', 'warranty_info', 'highlights']);
+              const flatCategorySpecs: Array<{ label: string; value: string }> = Object.entries(specs)
+                .filter(([key, val]) => !ignoredKeys.has(key) && typeof val === 'string' && val.trim().length > 0)
+                .map(([key, val]) => ({
+                  label: key.replace(/_/g, ' '),
+                  value: String(val),
+                }));
+
+              const customSpecsList: Array<{ label: string; value: string }> = Array.isArray(specs.custom_specs)
+                ? specs.custom_specs.filter((cs: any) => cs?.key && cs?.value).map((cs: any) => ({
+                    label: String(cs.key),
+                    value: String(cs.value),
+                  }))
+                : [];
+
+              const combined = [...flatCategorySpecs];
+              customSpecsList.forEach(cs => {
+                if (!combined.some(s => s.label.toLowerCase() === cs.label.toLowerCase())) {
+                  combined.push(cs);
+                }
+              });
+
+              if (combined.length === 0) return null;
+
+              return (
+                <div className="p-6 space-y-3">
+                  <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
+                    <Sliders className="w-3.5 h-3.5" /> Technical Specifications & Features
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    {combined.map((spec, idx) => (
+                      <div key={idx} className="flex justify-between border-b border-white/5 pb-2">
+                        <span className="text-slate-400 capitalize">{spec.label}</span>
+                        <span className="text-white font-medium text-right">{spec.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* In the Box Items */}
             {product.specifications?.in_the_box && product.specifications.in_the_box.length > 0 && (
