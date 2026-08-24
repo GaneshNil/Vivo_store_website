@@ -284,12 +284,23 @@ export default function AdminProductsPage() {
   // Dynamic Category Specifications & Custom Key-Value Specs
   const [categorySpecs, setCategorySpecs] = useState<Record<string, string>>({});
   const [customSpecs, setCustomSpecs] = useState<Array<{ id: string; key: string; value: string }>>([]);
+  const [specValidationError, setSpecValidationError] = useState<string>('');
 
   // Active Category Specification Schema based on selected category
   const selectedCategoryObj = categories.find(c => c.id === formData.category_id);
   const activeSpecSchema: CategorySpecGroup = getCategorySpecSchema(
     selectedCategoryObj?.slug || formData.category_id || selectedCategoryObj?.name
   );
+
+  // Real-time counter of filled specification fields (category fields + custom fields + in-the-box)
+  const filledCategorySpecsCount = Object.values(categorySpecs).filter(
+    v => typeof v === 'string' && v.trim().length > 0
+  ).length;
+  const filledCustomSpecsCount = customSpecs.filter(
+    cs => cs.key.trim().length > 0 && cs.value.trim().length > 0
+  ).length;
+  const filledInTheBoxCount = specsData.in_the_box && specsData.in_the_box.trim().length > 0 ? 1 : 0;
+  const totalFilledSpecs = filledCategorySpecsCount + filledCustomSpecsCount + filledInTheBoxCount;
 
   // Custom Spec Handlers
   const handleAddCustomSpec = () => {
@@ -316,6 +327,7 @@ export default function AdminProductsPage() {
   // Open Modal for New Product
   const handleOpenAddModal = () => {
     setEditingProductId(null);
+    setSpecValidationError('');
     setFormData({
       name: '',
       slug: '',
@@ -374,6 +386,7 @@ export default function AdminProductsPage() {
   // Open Modal to Edit Existing Product & Specs
   const handleOpenEditModal = (product: Product) => {
     setEditingProductId(product.id);
+    setSpecValidationError('');
     setFormData({
       name: product.name,
       slug: product.slug,
@@ -451,8 +464,6 @@ export default function AdminProductsPage() {
       initialCategorySpecs['processor'] = s.processor 
         ? (typeof s.processor === 'string' ? s.processor : `${s.processor.chipset || ''} ${s.processor.gpu ? `(${s.processor.gpu})` : ''}`.trim()) 
         : (s.processor_specs || '');
-      initialCategorySpecs['ram'] = s.ram || (product.variants?.[0]?.ram ? `${product.variants[0].ram} LPDDR5X` : '');
-      initialCategorySpecs['storage'] = s.storage || (product.variants?.[0]?.storage ? `${product.variants[0].storage} UFS 3.1` : '');
       initialCategorySpecs['camera'] = s.camera 
         ? (typeof s.camera === 'string' ? s.camera : `${s.camera.rear_main || ''} + ${s.camera.rear_secondary || ''} / ${s.camera.front_camera || ''}`.trim()) 
         : (s.camera_specs || '');
@@ -627,6 +638,26 @@ export default function AdminProductsPage() {
   const handleSaveProduct = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim()) return;
+
+    // Minimum 3 specification fields validation
+    const filledCatCount = Object.values(categorySpecs).filter(
+      v => typeof v === 'string' && v.trim().length > 0
+    ).length;
+    const filledCustomCount = customSpecs.filter(
+      cs => cs.key.trim().length > 0 && cs.value.trim().length > 0
+    ).length;
+    const filledBoxCount = specsData.in_the_box && specsData.in_the_box.trim().length > 0 ? 1 : 0;
+    const totalFilled = filledCatCount + filledCustomCount + filledBoxCount;
+
+    if (totalFilled < 3) {
+      setSpecValidationError(`Please fill in at least 3 specification fields before publishing (currently filled: ${totalFilled}/3).`);
+      const specEl = document.getElementById('specificationsSection');
+      if (specEl) {
+        specEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
+    setSpecValidationError('');
 
     const brand = brands.find(b => b.id === formData.brand_id);
     const category = categories.find(c => c.id === formData.category_id);
@@ -1548,7 +1579,7 @@ export default function AdminProductsPage() {
               </div>
 
               {/* DYNAMIC CATEGORY-SPECIFIC PRODUCT SPECIFICATIONS */}
-              <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-4">
+              <div id="specificationsSection" className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-4 scroll-mt-20">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-3">
                   <div>
                     <h4 className="font-bold text-white text-sm flex items-center gap-2">
@@ -1561,11 +1592,30 @@ export default function AdminProductsPage() {
                     <p className="text-[11px] text-slate-400">{activeSpecSchema.description}</p>
                   </div>
                   <div className="flex items-center gap-2">
+                    {totalFilledSpecs >= 3 ? (
+                      <span className="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold flex items-center gap-1.5 shadow-sm">
+                        <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                        <span>{totalFilledSpecs} Specs (Publish Ready)</span>
+                      </span>
+                    ) : (
+                      <span className="px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[10px] font-bold flex items-center gap-1.5 shadow-sm">
+                        <AlertCircle className="w-3 h-3 text-amber-400" />
+                        <span>{totalFilledSpecs} / 3 Minimum Specs</span>
+                      </span>
+                    )}
                     <span className="text-[10px] text-slate-400 bg-slate-900 px-2.5 py-1 rounded-lg border border-white/5">
                       {activeSpecSchema.fields.length} Category Fields
                     </span>
                   </div>
                 </div>
+
+                {/* Validation Error Banner if fewer than 3 specs are filled */}
+                {specValidationError && (
+                  <div className="p-3 rounded-xl bg-amber-500/15 border border-amber-500/40 flex items-center gap-2.5 text-amber-200 text-xs animate-in fade-in slide-in-from-top-1">
+                    <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                    <span className="font-semibold">{specValidationError}</span>
+                  </div>
+                )}
 
                 <div className="space-y-4">
                   

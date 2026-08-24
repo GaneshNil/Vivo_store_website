@@ -21,15 +21,13 @@ export const CATEGORY_SPECS_SCHEMAS: Record<string, CategorySpecGroup> = {
   smartphones: {
     id: 'cat-smartphones',
     name: 'Smartphones',
-    slugs: ['smartphones', 'cat-smartphones', 'phones', 'mobiles', 'mobile'],
+    slugs: ['smartphones', 'cat-smartphones', 'smart-phones', 'smart_phones', 'mobiles', 'mobile', 'handsets', 'handset'],
     icon: 'Smartphone',
     badge: 'Mobile Hardware Specs',
     description: 'Hardware, display, processor, camera & battery features',
     fields: [
       { key: 'display', label: 'Display', placeholder: 'e.g. 6.78" 1.5K AMOLED, 120Hz LTPO, 4500 nits' },
       { key: 'processor', label: 'Processor', placeholder: 'e.g. Qualcomm Snapdragon 7 Gen 3 (4nm)' },
-      { key: 'ram', label: 'RAM', placeholder: 'e.g. 8GB / 12GB LPDDR5X (+8GB Extended RAM)' },
-      { key: 'storage', label: 'Storage', placeholder: 'e.g. 128GB / 256GB / 512GB UFS 3.1' },
       { key: 'camera', label: 'Camera', placeholder: 'e.g. 50MP Sony IMX921 OIS + 50MP ZEISS Ultra Wide / 50MP Selfie' },
       { key: 'battery', label: 'Battery', placeholder: 'e.g. 5500 mAh BlueVolt Silicon-Carbon Battery' },
       { key: 'charging', label: 'Charging', placeholder: 'e.g. 80W FlashCharge (0-100% in 35 mins)' },
@@ -42,7 +40,7 @@ export const CATEGORY_SPECS_SCHEMAS: Record<string, CategorySpecGroup> = {
   chargers: {
     id: 'cat-chargers',
     name: 'Chargers & Adapters',
-    slugs: ['chargers', 'cat-chargers', 'chargers-adapters', 'adapters', 'charger', 'adapter'],
+    slugs: ['chargers', 'cat-chargers', 'chargers-adapters', 'adapters', 'charger', 'adapter', 'power-adapter'],
     icon: 'Zap',
     badge: 'Power & Charging Specs',
     description: 'Output power, ports, protocol & safety features',
@@ -60,7 +58,7 @@ export const CATEGORY_SPECS_SCHEMAS: Record<string, CategorySpecGroup> = {
   cables: {
     id: 'cat-cables',
     name: 'Cables & OTG',
-    slugs: ['cables', 'cat-cables', 'cables-otg', 'otg', 'cable'],
+    slugs: ['cables', 'cat-cables', 'cables-otg', 'otg', 'cable', 'data-cable'],
     icon: 'Cable',
     badge: 'Cable & Data Specs',
     description: 'Connector, length, power rating & data speed',
@@ -77,7 +75,7 @@ export const CATEGORY_SPECS_SCHEMAS: Record<string, CategorySpecGroup> = {
   cases: {
     id: 'cat-cases',
     name: 'Cases & Covers',
-    slugs: ['cases', 'cat-cases', 'cases-covers', 'covers', 'case', 'cover'],
+    slugs: ['cases', 'cat-cases', 'cases-covers', 'covers', 'case', 'cover', 'back-cover'],
     icon: 'Shield',
     badge: 'Protection & Fit Specs',
     description: 'Fit model, materials, camera protection & finish',
@@ -94,7 +92,7 @@ export const CATEGORY_SPECS_SCHEMAS: Record<string, CategorySpecGroup> = {
   tempered: {
     id: 'cat-tempered',
     name: 'Tempered Glass',
-    slugs: ['tempered-glass', 'cat-tempered', 'tempered', 'screen-guards', 'screen-protector'],
+    slugs: ['tempered-glass', 'cat-tempered', 'tempered', 'screen-guards', 'screen-protector', 'screen-guard'],
     icon: 'Layers',
     badge: 'Screen Protection Specs',
     description: 'Curved glass, hardness, thickness & coating',
@@ -111,7 +109,7 @@ export const CATEGORY_SPECS_SCHEMAS: Record<string, CategorySpecGroup> = {
   tws: {
     id: 'cat-tws',
     name: 'TWS & Earphones',
-    slugs: ['tws-earphones', 'cat-tws', 'tws', 'earphones', 'earbuds', 'headphones', 'audio'],
+    slugs: ['tws-earphones', 'cat-tws', 'tws', 'earphones', 'earbuds', 'headphones', 'audio', 'earphone', 'headphone', 'headset'],
     icon: 'Headphones',
     badge: 'Acoustics & Audio Specs',
     description: 'Driver, ANC/ENC, Bluetooth, latency & battery life',
@@ -148,7 +146,7 @@ export const CATEGORY_SPECS_SCHEMAS: Record<string, CategorySpecGroup> = {
   smartwatches: {
     id: 'cat-smartwatches',
     name: 'Smart Watches',
-    slugs: ['smart-watches', 'cat-smartwatches', 'smartwatches', 'watch', 'wearables'],
+    slugs: ['smart-watches', 'cat-smartwatches', 'smartwatches', 'watch', 'wearables', 'smartwatch'],
     icon: 'Watch',
     badge: 'Wearable & Fitness Specs',
     description: 'Display, health sensors, Bluetooth calling & battery',
@@ -216,24 +214,45 @@ export function getCategorySpecSchema(categoryIdentifier?: string): CategorySpec
 
   const needle = categoryIdentifier.toLowerCase().trim();
 
-  // 1. Direct key match
+  // 1. Direct dictionary key match (e.g. 'tws', 'smartphones', 'chargers')
   if (CATEGORY_SPECS_SCHEMAS[needle]) {
     return CATEGORY_SPECS_SCHEMAS[needle];
   }
 
-  // 2. Match by id or slugs
+  // 2. Strict ID match across all groups (e.g. 'cat-tws', 'cat-smartphones')
   for (const group of Object.values(CATEGORY_SPECS_SCHEMAS)) {
     if (group.id.toLowerCase() === needle) return group;
-    if (group.slugs.some(s => s.toLowerCase() === needle || needle.includes(s.toLowerCase()))) {
+  }
+
+  // 3. Strict exact slug match across all groups (e.g. 'tws-earphones')
+  for (const group of Object.values(CATEGORY_SPECS_SCHEMAS)) {
+    if (group.slugs.some(s => s.toLowerCase() === needle)) {
       return group;
     }
   }
 
-  // 3. Match by name
+  // 4. Strict exact category name match (e.g. 'TWS & Earphones')
   for (const group of Object.values(CATEGORY_SPECS_SCHEMAS)) {
+    if (group.name.toLowerCase() === needle) {
+      return group;
+    }
+  }
+
+  // 5. Delimited token / keyword matching (prioritizing accessories before mobile fallback)
+  const groups = Object.values(CATEGORY_SPECS_SCHEMAS);
+  for (const group of groups) {
+    if (group.id === 'cat-smartphones' || group.id === 'cat-other-accessories') continue;
+    if (group.slugs.some(s => needle.includes(s.toLowerCase()) || s.toLowerCase().includes(needle))) {
+      return group;
+    }
     if (needle.includes(group.name.toLowerCase()) || group.name.toLowerCase().includes(needle)) {
       return group;
     }
+  }
+
+  // 6. Check for smartphones explicitly
+  if (needle.includes('smart') || needle.includes('phone') || needle.includes('mobile') || needle.includes('handset')) {
+    return CATEGORY_SPECS_SCHEMAS.smartphones;
   }
 
   return CATEGORY_SPECS_SCHEMAS.other;
