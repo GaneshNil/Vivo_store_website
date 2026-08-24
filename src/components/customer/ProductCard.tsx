@@ -70,8 +70,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </div>
         )}
 
-        {/* Action Buttons Overlay */}
-        <div className="absolute bottom-3 right-3 z-10 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        {/* Action Buttons Overlay - Visible on mobile touch screens and hover on desktop */}
+        <div className="absolute bottom-3 right-3 z-10 flex items-center gap-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
           {product.is_phone && (
             <button
               type="button"
@@ -79,9 +79,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               className={`p-2 rounded-xl border backdrop-blur-md transition-all ${
                 isCompared
                   ? 'bg-origin-violet text-white border-origin-violet shadow-glow-violet'
-                  : 'bg-slate-900/80 text-slate-300 border-white/10 hover:text-white hover:bg-slate-800'
+                  : 'bg-slate-900/90 text-slate-300 border-white/20 hover:text-white hover:bg-slate-800'
               }`}
               title={isCompared ? 'Remove from compare' : 'Add to compare'}
+              aria-label="Add to compare"
             >
               <Layers className="w-4 h-4" />
             </button>
@@ -93,9 +94,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             className={`p-2 rounded-xl border backdrop-blur-md transition-all ${
               isWishlisted
                 ? 'bg-rose-600 text-white border-rose-500'
-                : 'bg-slate-900/80 text-slate-300 border-white/10 hover:text-white hover:bg-slate-800'
+                : 'bg-slate-900/90 text-slate-300 border-white/20 hover:text-white hover:bg-slate-800'
             }`}
             title={isWishlisted ? 'Saved in wishlist' : 'Save to wishlist'}
+            aria-label="Save to wishlist"
           >
             <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-current' : ''}`} />
           </button>

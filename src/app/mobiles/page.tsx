@@ -160,69 +160,103 @@ function MobilesContent() {
       </div>
 
       {/* Top Search & Filter Bar */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-        
-        {/* Instant Search Box */}
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search vivo 5g, 256GB, X100, V40, Snapdragon..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/80 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-vivo-500 transition-colors"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
-        </div>
-
-        {/* Sort & Mobile Filter Trigger */}
-        <div className="flex items-center gap-3 justify-between md:justify-end">
+      <div className="space-y-3">
+        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
           
-          <button
-            type="button"
-            onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
-            className="lg:hidden flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-medium"
-          >
-            <SlidersHorizontal className="w-4 h-4 text-vivo-400" />
-            <span>Filters {hasActiveFilters && '(Active)'}</span>
-          </button>
-
-          {/* Sort Selector */}
-          <div className="flex items-center gap-2 text-xs text-slate-400">
-            <span className="hidden sm:inline">Sort:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-vivo-500"
-            >
-              <option value="featured">Featured First</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="discount">Highest Discount</option>
-            </select>
+          {/* Instant Search Box */}
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search vivo 5g, 256GB, X100, V40, Snapdragon..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/80 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-vivo-500 transition-colors"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
 
-          {hasActiveFilters && (
+          {/* Sort & Mobile Filter Trigger */}
+          <div className="flex items-center gap-3 justify-between md:justify-end">
+            
             <button
               type="button"
-              onClick={resetFilters}
-              className="p-2 text-slate-400 hover:text-white text-xs flex items-center gap-1"
-              title="Reset all filters"
+              onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+              className="lg:hidden flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-medium"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Reset</span>
+              <SlidersHorizontal className="w-4 h-4 text-vivo-400" />
+              <span>Filters {hasActiveFilters && '(Active)'}</span>
             </button>
-          )}
+
+            {/* Sort Selector */}
+            <div className="flex items-center gap-2 text-xs text-slate-400">
+              <span className="hidden sm:inline">Sort:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-vivo-500"
+              >
+                <option value="featured">Featured First</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="discount">Highest Discount</option>
+              </select>
+            </div>
+
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="p-2 text-slate-400 hover:text-white text-xs flex items-center gap-1"
+                title="Reset all filters"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Reset</span>
+              </button>
+            )}
+
+          </div>
 
         </div>
 
+        {/* Quick Brand Touch Filter Strip for Mobile / Desktop */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 text-xs">
+          <button
+            type="button"
+            onClick={() => setSelectedBrand('all')}
+            className={`px-3 py-1.5 rounded-xl font-semibold whitespace-nowrap transition-all border ${
+              selectedBrand === 'all'
+                ? 'bg-vivo-600 text-white border-vivo-500 shadow-glow-blue'
+                : 'bg-slate-900/80 text-slate-400 border-white/10 hover:text-white'
+            }`}
+          >
+            All Brands
+          </button>
+          {availableBrands.map(b => (
+            <button
+              key={b.id}
+              type="button"
+              onClick={() => setSelectedBrand(b.slug)}
+              className={`px-3 py-1.5 rounded-xl font-semibold whitespace-nowrap transition-all border flex items-center gap-1.5 ${
+                selectedBrand === b.slug
+                  ? 'bg-vivo-600 text-white border-vivo-500 shadow-glow-blue'
+                  : 'bg-slate-900/80 text-slate-400 border-white/10 hover:text-white'
+              }`}
+            >
+              <span>{b.name}</span>
+              {b.is_primary && (
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+              )}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Main Layout: Filters Sidebar + Products Grid */}

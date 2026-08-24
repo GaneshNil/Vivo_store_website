@@ -53,11 +53,96 @@ const STORAGE_OPTIONS = ['64GB', '128GB', '256GB', '512GB', '1TB'];
 const TENURE_OPTIONS = [3, 6, 9, 12, 18, 24];
 
 export default function AdminProductsPage() {
-  const { products, brands, categories, series, storeSettings, addProduct, updateProduct, deleteProduct, setHeroFlagshipProduct } = useStore();
+  const { products, brands, categories, series, storeSettings, addProduct, updateProduct, deleteProduct, setHeroFlagshipProduct, addBrand, updateBrand, deleteBrand } = useStore();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBrand, setSelectedBrand] = useState('all');
   const [selectedType, setSelectedType] = useState<'all' | 'phone' | 'accessory'>('all');
+  
+  // Brand Management Modal State
+  const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
+  const [editingBrandId, setEditingBrandId] = useState<string | null>(null);
+  const [brandDeleteConfirmId, setBrandDeleteConfirmId] = useState<string | null>(null);
+  const [brandFormData, setBrandFormData] = useState({
+    name: '',
+    slug: '',
+    logo_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Vivo_mobile_logo.png/800px-Vivo_mobile_logo.png',
+    description: '',
+    is_primary: false,
+    sort_order: 1,
+  });
+
+  const BRAND_LOGO_PRESETS = [
+    { name: 'VIVO', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Vivo_mobile_logo.png/800px-Vivo_mobile_logo.png' },
+    { name: 'Samsung', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Samsung_Logo.svg/800px-Samsung_Logo.svg.png' },
+    { name: 'OPPO', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/OPPO_Logo.svg/800px-OPPO_Logo.svg.png' },
+    { name: 'Realme', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Realme_logo.svg/800px-Realme_logo.svg.png' },
+    { name: 'Apple', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/800px-Apple_logo_black.svg.png' },
+    { name: 'OnePlus', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/OnePlus_Logo.svg/800px-OnePlus_Logo.svg.png' },
+    { name: 'Xiaomi', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Xiaomi_logo_%282021-%29.svg/800px-Xiaomi_logo_%282021-%29.svg.png' },
+    { name: 'Nothing', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Nothing_Technology_logo.svg/800px-Nothing_Technology_logo.svg.png' },
+    { name: 'Motorola', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Motorola_new_logo.svg/800px-Motorola_new_logo.svg.png' },
+    { name: 'Google Pixel', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/800px-Google_2015_logo.svg.png' },
+    { name: 'iQOO', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/IQOO_logo.png/800px-IQOO_logo.png' },
+    { name: 'Store Genuine', logo: '/assets/store-logo/IMG-20260822-WA0004.jpg' },
+  ];
+
+  const handleOpenBrandModal = (brandToEdit?: typeof brands[0]) => {
+    if (brandToEdit) {
+      setEditingBrandId(brandToEdit.id);
+      setBrandFormData({
+        name: brandToEdit.name,
+        slug: brandToEdit.slug,
+        logo_url: brandToEdit.logo_url,
+        description: brandToEdit.description || '',
+        is_primary: brandToEdit.is_primary,
+        sort_order: brandToEdit.sort_order || 1,
+      });
+    } else {
+      setEditingBrandId(null);
+      setBrandFormData({
+        name: '',
+        slug: '',
+        logo_url: BRAND_LOGO_PRESETS[0].logo,
+        description: '',
+        is_primary: false,
+        sort_order: brands.length + 1,
+      });
+    }
+    setIsBrandModalOpen(true);
+  };
+
+  const handleSaveBrand = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!brandFormData.name.trim() || !brandFormData.logo_url.trim()) return;
+
+    if (editingBrandId) {
+      updateBrand(editingBrandId, {
+        name: brandFormData.name.trim(),
+        slug: brandFormData.slug.trim() || brandFormData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        logo_url: brandFormData.logo_url.trim(),
+        description: brandFormData.description.trim(),
+        is_primary: brandFormData.is_primary,
+        sort_order: Number(brandFormData.sort_order) || 1,
+      });
+    } else {
+      const created = addBrand({
+        name: brandFormData.name.trim(),
+        slug: brandFormData.slug.trim() || brandFormData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        logo_url: brandFormData.logo_url.trim(),
+        description: brandFormData.description.trim(),
+        is_primary: brandFormData.is_primary,
+        sort_order: Number(brandFormData.sort_order) || brands.length + 1,
+      });
+      // If product modal is open, auto-select newly created brand
+      if (isModalOpen) {
+        setFormData(prev => ({ ...prev, brand_id: created.id }));
+      }
+    }
+
+    fireConfetti({ particleCount: 35, spread: 50, origin: { y: 0.6 } });
+    setIsBrandModalOpen(false);
+  };
   
   // Modal states (Add & Edit)
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -497,14 +582,25 @@ export default function AdminProductsPage() {
           <p className="text-xs text-slate-400">Add, edit hardware specifications, Bajaj EMI ON/OFF toggle, photos & stock for mobiles & accessories.</p>
         </div>
         
-        <button
-          type="button"
-          onClick={handleOpenAddModal}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-vivo-600 to-vivo-500 hover:from-vivo-500 hover:to-vivo-400 text-white text-xs font-bold shadow-glow-blue transition-all"
-        >
-          <PlusCircle className="w-4 h-4" />
-          <span>Add New Product (Specs & EMI)</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => handleOpenBrandModal()}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-white/10 text-slate-200 text-xs font-semibold hover:border-vivo-500/50 transition-all"
+          >
+            <Layers className="w-4 h-4 text-vivo-400" />
+            <span>Manage Brands ({brands.length})</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleOpenAddModal}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-vivo-600 to-vivo-500 hover:from-vivo-500 hover:to-vivo-400 text-white text-xs font-bold shadow-glow-blue transition-all"
+          >
+            <PlusCircle className="w-4 h-4" />
+            <span>Add New Product</span>
+          </button>
+        </div>
       </div>
 
       {/* Filter and Search Bar */}
@@ -778,14 +874,23 @@ export default function AdminProductsPage() {
               {/* Brand & Category & Series */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-semibold">Brand *</label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-slate-300 font-semibold">Brand *</label>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenBrandModal()}
+                      className="text-[10px] text-vivo-400 hover:underline font-bold"
+                    >
+                      + Add New Brand
+                    </button>
+                  </div>
                   <select
                     value={formData.brand_id}
                     onChange={(e) => setFormData({ ...formData, brand_id: e.target.value })}
-                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-vivo-500"
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-vivo-500 font-medium"
                   >
                     {brands.map(b => (
-                      <option key={b.id} value={b.id}>{b.name}</option>
+                      <option key={b.id} value={b.id}>{b.name} {b.is_primary ? '(Primary Flagship Partner)' : ''}</option>
                     ))}
                   </select>
                 </div>
@@ -1493,6 +1598,289 @@ export default function AdminProductsPage() {
 
             </form>
 
+          </div>
+        </div>
+      )}
+
+      {/* Brand Management Modal */}
+      {isBrandModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="w-full max-w-2xl bg-[#0a0f1d] border border-white/10 rounded-3xl shadow-2xl overflow-hidden my-8 animate-in zoom-in-95">
+            
+            {/* Header */}
+            <div className="p-6 border-b border-white/10 flex items-center justify-between bg-slate-900/50">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-vivo-600/20 border border-vivo-500/30 flex items-center justify-center text-vivo-400">
+                  <Layers className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white font-display">
+                    {editingBrandId ? 'Edit Brand Details' : 'Brand Management & Addition'}
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Add new phone or accessory brands to sell in the showroom and attach new products.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsBrandModalOpen(false)}
+                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Existing Brands List */}
+            {!editingBrandId && (
+              <div className="p-6 border-b border-white/5 space-y-3">
+                <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                  Current Store Brands ({brands.length})
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-48 overflow-y-auto pr-1">
+                  {brands.map(b => {
+                    const prodCount = products.filter(p => p.brand_id === b.id).length;
+                    return (
+                      <div
+                        key={b.id}
+                        className="p-2.5 rounded-xl bg-slate-900 border border-white/5 flex items-center justify-between gap-3 group"
+                      >
+                        <div className="flex items-center gap-2.5 overflow-hidden">
+                          <div className="relative w-8 h-8 rounded-lg overflow-hidden bg-slate-950 border border-white/10 flex-shrink-0 p-1 flex items-center justify-center">
+                            <Image src={b.logo_url} alt={b.name} fill className="object-contain p-1" />
+                          </div>
+                          <div className="truncate">
+                            <span className="font-bold text-white text-xs block truncate">{b.name}</span>
+                            <span className="text-[10px] text-slate-400">{prodCount} products {b.is_primary ? '· Flagship' : ''}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => handleOpenBrandModal(b)}
+                            className="p-1 rounded bg-white/5 hover:bg-vivo-600/30 text-slate-300 hover:text-vivo-300 text-xs"
+                            title="Edit brand"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                          </button>
+                          {brands.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (prodCount > 0) {
+                                  alert(`Cannot delete brand "${b.name}" because it currently has ${prodCount} products associated with it. Please reassign or delete the products first.`);
+                                  return;
+                                }
+                                setBrandDeleteConfirmId(b.id);
+                              }}
+                              className="p-1 rounded bg-red-500/10 hover:bg-red-500/20 text-red-400"
+                              title="Delete brand"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Brand Add/Edit Form */}
+            <form onSubmit={handleSaveBrand} className="p-6 space-y-4 text-xs">
+              <h4 className="text-xs font-bold text-vivo-400 uppercase tracking-wider">
+                {editingBrandId ? 'Update Brand Form' : '+ Add New Brand'}
+              </h4>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-slate-300 font-semibold">Brand Name *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. OnePlus, Apple, Nothing"
+                    value={brandFormData.name}
+                    onChange={(e) => {
+                      const name = e.target.value;
+                      const preset = BRAND_LOGO_PRESETS.find(p => p.name.toLowerCase() === name.trim().toLowerCase());
+                      setBrandFormData({
+                        ...brandFormData,
+                        name,
+                        slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+                        logo_url: preset ? preset.logo : brandFormData.logo_url
+                      });
+                    }}
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold focus:border-vivo-500 focus:outline-none"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-slate-300 font-semibold">URL Slug *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. oneplus, apple, nothing"
+                    value={brandFormData.slug}
+                    onChange={(e) => setBrandFormData({ ...brandFormData, slug: e.target.value })}
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-mono text-[11px] focus:border-vivo-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Logo URL & Quick Presets */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-slate-300 font-semibold">Official Logo Image URL *</label>
+                  {brandFormData.logo_url && (
+                    <span className="text-[10px] text-emerald-400 font-medium">Logo selected</span>
+                  )}
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <div className="relative w-10 h-10 rounded-xl bg-slate-950 border border-white/10 p-1 flex-shrink-0 flex items-center justify-center">
+                    {brandFormData.logo_url && (
+                      <Image src={brandFormData.logo_url} alt="Logo preview" fill className="object-contain p-1" />
+                    )}
+                  </div>
+                  <input
+                    type="text"
+                    required
+                    placeholder="https://... (SVG or PNG vector image)"
+                    value={brandFormData.logo_url}
+                    onChange={(e) => setBrandFormData({ ...brandFormData, logo_url: e.target.value })}
+                    className="flex-1 p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-mono text-[11px] focus:border-vivo-500 focus:outline-none"
+                  />
+                </div>
+
+                {/* Logo Presets */}
+                <div className="space-y-1 pt-1">
+                  <span className="text-[10px] text-slate-500">Pick Official Preset Brand Logo:</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {BRAND_LOGO_PRESETS.map((bp, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setBrandFormData({
+                          ...brandFormData,
+                          logo_url: bp.logo,
+                          name: brandFormData.name || bp.name,
+                          slug: brandFormData.slug || bp.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+                        })}
+                        className={`px-2 py-1 rounded-lg border text-[10px] transition-all flex items-center gap-1.5 ${
+                          brandFormData.logo_url === bp.logo
+                            ? 'bg-vivo-600/30 text-vivo-300 border-vivo-500/50 font-bold'
+                            : 'bg-slate-900 text-slate-400 border-white/5 hover:text-white'
+                        }`}
+                      >
+                        <div className="relative w-3 h-3 flex-shrink-0">
+                          <Image src={bp.logo} alt={bp.name} fill className="object-contain" />
+                        </div>
+                        <span>{bp.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="space-y-1">
+                <label className="text-slate-300 font-semibold">Brand Tagline / Description</label>
+                <textarea
+                  rows={2}
+                  placeholder="e.g. Flagship imaging, super-fast charging & clean operating system"
+                  value={brandFormData.description}
+                  onChange={(e) => setBrandFormData({ ...brandFormData, description: e.target.value })}
+                  className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:border-vivo-500 focus:outline-none"
+                />
+              </div>
+
+              {/* Primary Flagship Partner Checkbox */}
+              <div className="p-3 rounded-xl bg-slate-900/80 border border-white/5 flex items-center justify-between">
+                <div>
+                  <span className="font-semibold text-white block">Primary Flagship Partner</span>
+                  <span className="text-[10px] text-slate-400">Highlights this brand with a special badge in the customer showroom.</span>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={brandFormData.is_primary}
+                    onChange={(e) => setBrandFormData({ ...brandFormData, is_primary: e.target.checked })}
+                    className="sr-only peer"
+                  />
+                  <div className="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-vivo-600"></div>
+                </label>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+                {editingBrandId && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingBrandId(null);
+                      setBrandFormData({
+                        name: '',
+                        slug: '',
+                        logo_url: BRAND_LOGO_PRESETS[0].logo,
+                        description: '',
+                        is_primary: false,
+                        sort_order: brands.length + 1,
+                      });
+                    }}
+                    className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white"
+                  >
+                    Cancel Edit
+                  </button>
+                )}
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-vivo-600 to-vivo-500 hover:from-vivo-500 text-white font-bold shadow-glow-blue transition-all"
+                >
+                  {editingBrandId ? 'Save Brand Changes' : 'Add Brand to Catalog'}
+                </button>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+      )}
+
+      {/* Brand Delete Confirmation */}
+      {brandDeleteConfirmId && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-slate-900 border border-red-500/30 rounded-3xl p-6 space-y-4 shadow-2xl">
+            <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400">
+              <Trash2 className="w-6 h-6" />
+            </div>
+            <div>
+              <h4 className="text-base font-bold text-white">Delete Brand?</h4>
+              <p className="text-xs text-slate-400 mt-1">
+                Are you sure you want to remove this brand from the store?
+              </p>
+            </div>
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setBrandDeleteConfirmId(null)}
+                className="px-4 py-2 rounded-xl bg-white/5 text-slate-300 text-xs"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  deleteBrand(brandDeleteConfirmId);
+                  setBrandDeleteConfirmId(null);
+                }}
+                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold"
+              >
+                Confirm Delete
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -73,40 +73,52 @@ export default function HomePage() {
       {/* 5. In-Store Accessories Showroom */}
       <AccessoriesShowcase />
 
-      {/* 6. Multi-Brand Mobile Grid */}
+      {/* 6. Multi-Brand Smartphone Portfolio */}
       <section className="py-16 border-t border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="text-center max-w-2xl mx-auto space-y-2">
-            <h2 className="text-3xl font-extrabold text-white font-display">
-              Multi-Brand Smartphone Portfolio
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-vivo-400 uppercase tracking-widest">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>AUTHORIZED STORE PORTFOLIO</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-display">
+              Multi-Brand Smartphone & Accessory Lineup
             </h2>
             <p className="text-xs sm:text-sm text-slate-400">
-              Browse certified original devices from leading brands available at our Begampur store.
+              Authorized showroom for <strong className="text-vivo-300">VIVO Flagship Devices</strong> alongside genuine Samsung, OPPO & Realme smartphones with official warranty.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {brands.map(b => (
               <Link
                 key={b.id}
-                href={`/mobiles?brand=${b.slug}`}
-                className="p-6 rounded-2xl glass-card text-center space-y-3 group hover:border-vivo-500/50 hover:shadow-glow-blue/20"
+                href={b.slug === 'galaxy-store-genuine' ? '/accessories' : `/mobiles?brand=${b.slug}`}
+                className={`p-5 sm:p-6 rounded-3xl glass-card text-center space-y-3 group transition-all duration-300 ${
+                  b.is_primary
+                    ? 'border-vivo-500/60 shadow-glow-blue/20 bg-gradient-to-b from-vivo-950/40 via-slate-900 to-slate-950'
+                    : 'hover:border-vivo-500/40 hover:shadow-glow-blue/10 bg-slate-900/60'
+                }`}
               >
-                <div className="relative w-16 h-16 mx-auto rounded-xl overflow-hidden bg-slate-900 border border-white/10 flex items-center justify-center p-2 group-hover:border-vivo-400 transition-all">
+                <div className="relative w-16 h-16 mx-auto rounded-2xl overflow-hidden bg-slate-950/90 border border-white/10 flex items-center justify-center p-2.5 group-hover:border-vivo-400/60 group-hover:scale-105 transition-all shadow-inner">
                   <Image
                     src={b.logo_url}
                     alt={b.name}
                     fill
-                    className="object-cover"
+                    className="object-contain p-2"
                   />
                 </div>
                 <div>
                   <h3 className="font-bold text-white text-base group-hover:text-vivo-400 transition-colors">
                     {b.name}
                   </h3>
-                  {b.is_primary && (
-                    <span className="text-[10px] text-vivo-300 font-bold bg-vivo-500/20 px-2 py-0.5 rounded-full mt-1 inline-block">
-                      PRIMARY BRAND
+                  {b.is_primary ? (
+                    <span className="text-[10px] text-slate-950 font-extrabold bg-vivo-500 px-2.5 py-0.5 rounded-full mt-1.5 inline-block shadow-glow-blue">
+                      ★ PRIMARY FLAGSHIP
+                    </span>
+                  ) : (
+                    <span className="text-[10px] text-slate-400 font-medium mt-1 inline-block">
+                      Authorized Retailer
                     </span>
                   )}
                 </div>

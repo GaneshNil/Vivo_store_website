@@ -124,3 +124,19 @@
 .pulse-badge-dot {
   animation: gentle-pulse 2s infinite ease-in-out;
 }
+
+/* Mobile Phone Enhancements */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Touch Device Ergonomics */
+@media (max-width: 768px) {
+  button, a {
+    touch-action: manipulation;
+  }
+}

@@ -9,6 +9,7 @@ import {
   Smartphone, 
   Boxes, 
   Tag, 
+  Sparkles,
   Bell, 
   ShieldAlert, 
   Settings, 
@@ -32,7 +33,7 @@ const AUTH_STORAGE_KEY = 'galaxy_admin_authenticated';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { notifyRequests, products } = useStore();
+  const { offers, products } = useStore();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Authentication State
@@ -90,15 +91,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     setLoginError('');
   };
 
-  const pendingNotifies = notifyRequests.filter(n => n.status === 'PENDING').length;
+  const activeOffersCount = offers.filter(o => o.is_active).length;
   const lowStockCount = products.flatMap(p => p.variants).filter(v => v.computed_status === 'LOW_STOCK').length;
 
   const adminNav = [
     { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { label: 'Products & Variants', href: '/admin/products', icon: Smartphone },
     { label: 'Inventory & Stock', href: '/admin/inventory', icon: Boxes, badge: lowStockCount > 0 ? `${lowStockCount} Low` : null, badgeColor: 'bg-amber-500' },
-    { label: 'Prices & Offers', href: '/admin/prices', icon: Tag },
-    { label: 'Notify Me Requests', href: '/admin/notify-requests', icon: Bell, badge: pendingNotifies > 0 ? pendingNotifies : null, badgeColor: 'bg-cyan-500' },
+    { label: 'Pricing & MRPs', href: '/admin/prices', icon: Tag },
+    { label: 'Store Offers & Schemes', href: '/admin/offers', icon: Sparkles, badge: activeOffersCount > 0 ? `${activeOffersCount} Active` : null, badgeColor: 'bg-amber-500 text-slate-950 font-extrabold' },
     { label: 'Audit Logs', href: '/admin/audit-logs', icon: ShieldAlert },
     { label: 'Store Settings', href: '/admin/settings', icon: Settings },
   ];

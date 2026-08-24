@@ -40,28 +40,35 @@ export default function BrandsPage() {
               key={b.id}
               className={`p-6 sm:p-8 rounded-3xl glass-panel border space-y-4 transition-all duration-300 ${
                 b.is_primary
-                  ? 'border-vivo-500/50 shadow-glow-blue/20 bg-gradient-to-br from-vivo-950/30 to-slate-900'
-                  : 'border-white/10 hover:border-white/20'
+                  ? 'border-vivo-500/60 shadow-glow-blue/30 bg-gradient-to-br from-vivo-950/40 via-slate-900 to-slate-950'
+                  : 'border-white/10 hover:border-white/20 bg-slate-900/50'
               }`}
             >
-              <div className="flex items-start justify-between">
+              <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-slate-900 border border-white/10 flex-shrink-0">
-                    <Image src={b.logo_url} alt={b.name} fill className="object-cover" />
+                  <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-slate-950/90 border border-white/10 flex-shrink-0 p-2 flex items-center justify-center shadow-inner">
+                    <Image src={b.logo_url} alt={b.name} fill className="object-contain p-2" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold font-display text-white">{b.name}</h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-xl font-bold font-display text-white">{b.name}</h3>
+                      {b.is_primary && (
+                        <span className="text-[10px] uppercase font-extrabold tracking-widest bg-vivo-500 text-slate-950 px-2 py-0.5 rounded-full shadow-glow-blue">
+                          ★ FLAGSHIP PARTNER
+                        </span>
+                      )}
+                    </div>
                     {b.is_primary && (
-                      <span className="text-[10px] uppercase font-bold tracking-widest bg-vivo-500/20 text-vivo-300 px-2 py-0.5 rounded-full border border-vivo-500/30 inline-block mt-1">
-                        ★ PRIMARY FLAGSHIP PARTNER
-                      </span>
+                      <p className="text-[11px] text-vivo-300 font-medium mt-0.5">
+                        Official VIVO Experience Showroom & ZEISS Photography Specialist
+                      </p>
                     )}
                   </div>
                 </div>
 
-                <div className="text-right text-xs text-slate-400">
+                <div className="text-right text-xs text-slate-400 flex-shrink-0">
                   <p><strong className="text-white font-bold">{phoneCount}</strong> Phones</p>
-                  {accCount > 0 && <p><strong className="text-white font-bold">{accCount}</strong> Accessories</p>}
+                  {accCount > 0 && <p><strong className="text-white font-bold">{accCount}</strong> Acc</p>}
                 </div>
               </div>
 
@@ -69,13 +76,17 @@ export default function BrandsPage() {
                 {b.description}
               </p>
 
-              <div className="pt-2 flex items-center justify-between border-t border-white/5">
+              <div className="pt-3 flex items-center justify-between border-t border-white/5">
                 <span className="text-xs text-slate-400">
                   In-Stock at Begampur Store
                 </span>
                 <Link
                   href={b.slug === 'galaxy-store-genuine' ? '/accessories' : `/mobiles?brand=${b.slug}`}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/10 hover:bg-vivo-600 text-white text-xs font-semibold transition-all"
+                  className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+                    b.is_primary
+                      ? 'bg-vivo-600 hover:bg-vivo-500 text-white shadow-glow-blue'
+                      : 'bg-white/10 hover:bg-white/20 text-white'
+                  }`}
                 >
                   <span>Explore Catalog</span>
                   <ArrowRight className="w-3.5 h-3.5" />

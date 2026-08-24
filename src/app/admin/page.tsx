@@ -28,7 +28,7 @@ export default function AdminDashboardPage() {
     stockMovements, 
     priceHistory, 
     incomingStockList, 
-    notifyRequests,
+    offers,
     receiveIncomingStock
   } = useStore();
 
@@ -42,7 +42,7 @@ export default function AdminDashboardPage() {
   const comingSoonCount = allVariants.filter(v => v.computed_status === 'COMING_SOON').length;
 
   const pendingIncoming = incomingStockList.filter(i => i.status === 'PENDING');
-  const pendingNotifies = notifyRequests.filter(n => n.status === 'PENDING');
+  const activeOffersCount = offers.filter(o => o.is_active).length;
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
@@ -54,7 +54,7 @@ export default function AdminDashboardPage() {
             Store Management Dashboard
           </h1>
           <p className="text-xs sm:text-sm text-slate-400">
-            Real-time showroom catalog, stock movements, pricing rules & incoming shipments.
+            Real-time showroom catalog, active offers & schemes, stock movements, pricing rules & incoming shipments.
           </p>
         </div>
 
@@ -66,6 +66,14 @@ export default function AdminDashboardPage() {
           >
             <PlusCircle className="w-4 h-4" />
             <span>Add Product</span>
+          </Link>
+
+          <Link
+            href="/admin/offers"
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs shadow-glow-gold transition-all"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span>Store Schemes</span>
           </Link>
 
           <Link
@@ -81,7 +89,7 @@ export default function AdminDashboardPage() {
             className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 text-xs font-semibold transition-all"
           >
             <Tag className="w-4 h-4 text-amber-400" />
-            <span>Update Prices</span>
+            <span>Pricing & MRPs</span>
           </Link>
         </div>
       </div>
@@ -141,15 +149,18 @@ export default function AdminDashboardPage() {
           <p className="text-[11px] text-slate-400">{pendingIncoming.length} shipments inbound</p>
         </div>
 
-        {/* Pending Customer Notify */}
-        <div className="p-5 rounded-2xl glass-panel border border-origin-violet/20 bg-origin-violet/[0.02] space-y-2">
-          <div className="flex items-center justify-between text-xs text-origin-violet">
-            <span>Notify Requests</span>
-            <Bell className="w-4 h-4" />
+        {/* Live Store Offers & Schemes */}
+        <Link 
+          href="/admin/offers"
+          className="p-5 rounded-2xl glass-panel border border-amber-500/30 bg-amber-500/[0.04] space-y-2 hover:border-amber-400 hover:shadow-glow-gold/20 transition-all block group"
+        >
+          <div className="flex items-center justify-between text-xs text-amber-400">
+            <span>Store Schemes</span>
+            <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform" />
           </div>
-          <p className="text-2xl font-bold text-origin-violet font-display">{pendingNotifies.length}</p>
-          <p className="text-[11px] text-slate-400">Customer leads</p>
-        </div>
+          <p className="text-2xl font-bold text-amber-400 font-display">{activeOffersCount}</p>
+          <p className="text-[11px] text-amber-300/80">Active promotions →</p>
+        </Link>
 
       </div>
 

@@ -211,18 +211,39 @@ export interface PriceHistoryItem {
   created_at: string;
 }
 
+export type OfferType = 
+  | 'bajaj_emi' 
+  | 'bank_cashback' 
+  | 'bundle_combo' 
+  | 'exchange_bonus' 
+  | 'festive_launch' 
+  | 'free_gift' 
+  | 'warranty_care' 
+  | 'custom';
+
+export type OfferBadgeColor = 'amber' | 'emerald' | 'cyan' | 'purple' | 'rose' | 'blue';
+
 export interface Offer {
   id: string;
   title: string;
   subtitle?: string;
   badge_text: string;
+  badge_color?: OfferBadgeColor;
   discount_text?: string;
+  offer_type?: OfferType;
   banner_url?: string;
   start_date: string;
   end_date?: string;
   is_active: boolean;
   terms?: string;
   sort_order: number;
+  applicable_category?: 'all' | 'vivo_flagship' | 'vivo_all' | 'all_mobiles' | 'accessories' | 'custom';
+  applicable_product_names?: string[];
+  cta_text?: string;
+  cta_link?: string;
+  highlights?: string[];
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface Review {

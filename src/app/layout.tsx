@@ -4,6 +4,7 @@ import { StoreProvider } from '@/lib/store/store-context';
 import { Header } from '@/components/common/Header';
 import { Footer } from '@/components/common/Footer';
 import { CompareTray } from '@/components/customer/CompareTray';
+import { MobileBottomNav } from '@/components/common/MobileBottomNav';
 
 export const metadata: Metadata = {
   title: 'Galaxy Mobile Gallery | VIVO Authorized Showroom & Multi-Brand Mobiles Begampur',
@@ -28,14 +29,15 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-sans min-h-screen flex flex-col bg-[#080C14] text-slate-100 antialiased">
+      <body className="font-sans min-h-screen flex flex-col bg-[#080C14] text-slate-100 antialiased overflow-x-hidden">
         <StoreProvider>
           <Header />
-          <main className="flex-1">
+          <main className="flex-1 pb-16 md:pb-0">
             {children}
           </main>
           <CompareTray />
           <Footer />
+          <MobileBottomNav />
         </StoreProvider>
       </body>
     </html>

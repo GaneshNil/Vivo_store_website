@@ -51,12 +51,24 @@ interface StoreContextType {
   addProduct: (product: Omit<Product, 'id'>) => Product;
   updateProduct: (id: string, updates: Partial<Product>) => void;
   deleteProduct: (id: string, soft?: boolean) => void;
+
+  // Brand Actions
+  addBrand: (brand: Omit<Brand, 'id'>) => Brand;
+  updateBrand: (id: string, updates: Partial<Brand>) => void;
+  deleteBrand: (id: string) => void;
   
   // Inventory & Price Actions
   updateVariantPrice: (productId: string, variantId: string, mrp: number, sellingPrice: number, reason?: string) => void;
   updateVariantStock: (productId: string, variantId: string, currentStock: number, reason: StockMovementReason, notes?: string) => void;
   addIncomingStock: (item: Omit<IncomingStock, 'id' | 'status' | 'created_at' | 'admin_email'>) => void;
   receiveIncomingStock: (incomingId: string) => void;
+
+  // Store Offers & Schemes Actions
+  addOffer: (offer: Omit<Offer, 'id' | 'created_at'>) => Offer;
+  updateOffer: (id: string, updates: Partial<Offer>) => void;
+  deleteOffer: (id: string) => void;
+  toggleOfferStatus: (id: string) => void;
+  reorderOffers: (reorderedOffers: Offer[]) => void;
 
   submitNotifyRequest: (req: Omit<NotifyRequest, 'id' | 'status' | 'created_at'>) => void;
   submitReview: (rev: Omit<Review, 'id' | 'created_at' | 'is_approved'>) => void;
@@ -214,6 +226,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           const missingDefaults = INITIAL_PRODUCTS.filter(p => !existingIds.has(p.id));
           setProducts([...parsed.products, ...missingDefaults]);
         }
+        if (parsed.brands && Array.isArray(parsed.brands)) {
+          const existingIds = new Set(parsed.brands.map((b: Brand) => b.id));
+          const missingDefaults = INITIAL_BRANDS.filter(b => !existingIds.has(b.id));
+          setBrands([...parsed.brands, ...missingDefaults]);
+        }
+        if (parsed.offers && Array.isArray(parsed.offers)) {
+          setOffers(parsed.offers);
+        }
         if (parsed.stockMovements) setStockMovements(parsed.stockMovements);
         if (parsed.incomingStockList) setIncomingStockList(parsed.incomingStockList);
         if (parsed.priceHistory) setPriceHistory(parsed.priceHistory);
@@ -233,6 +253,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       const dataToSave = {
         products,
+        brands,
+        offers,
         stockMovements,
         incomingStockList,
         priceHistory,
@@ -244,7 +266,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } catch (e) {
       console.warn('Failed to persist store state:', e);
     }
-  }, [products, stockMovements, incomingStockList, priceHistory, notifyRequests, auditLogs, storeSettings, isLoaded]);
+  }, [products, brands, offers, stockMovements, incomingStockList, priceHistory, notifyRequests, auditLogs, storeSettings, isLoaded]);
 
   // Helper: compute status based on stock and incoming
   const computeStatus = (
@@ -361,6 +383,76 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         action: soft ? 'PRODUCT_DEACTIVATED' : 'PRODUCT_DELETED',
         entity_type: 'PRODUCT',
         entity_id: id,
+        created_at: new Date().toISOString(),
+      },
+      ...prev,
+    ]);
+  };
+
+  // 3b. Brand Actions
+  const addBrand = (brandData: Omit<Brand, 'id'>): Brand => {
+    const slug = brandData.slug || brandData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const id = `brand-${slug}-${Date.now()}`;
+    const newBrand: Brand = {
+      ...brandData,
+      id,
+      slug,
+      created_at: new Date().toISOString(),
+    };
+
+    setBrands(prev => [...prev, newBrand]);
+
+    setAuditLogs(prev => [
+      {
+        id: `audit-${Date.now()}`,
+        admin_email: 'admin@galaxymobile.com',
+        action: 'BRAND_CREATED',
+        entity_type: 'BRAND',
+        entity_id: id,
+        details: { name: newBrand.name, slug: newBrand.slug },
+        created_at: new Date().toISOString(),
+      },
+      ...prev,
+    ]);
+
+    return newBrand;
+  };
+
+  const updateBrand = (id: string, updates: Partial<Brand>) => {
+    setBrands(prev =>
+      prev.map(b => (b.id === id ? { ...b, ...updates } : b))
+    );
+
+    setAuditLogs(prev => [
+      {
+        id: `audit-${Date.now()}`,
+        admin_email: 'admin@galaxymobile.com',
+        action: 'BRAND_UPDATED',
+        entity_type: 'BRAND',
+        entity_id: id,
+        details: { updated_fields: Object.keys(updates) },
+        created_at: new Date().toISOString(),
+      },
+      ...prev,
+    ]);
+  };
+
+  const deleteBrand = (id: string) => {
+    let deletedName = '';
+    setBrands(prev => {
+      const match = prev.find(b => b.id === id);
+      if (match) deletedName = match.name;
+      return prev.filter(b => b.id !== id);
+    });
+
+    setAuditLogs(prev => [
+      {
+        id: `audit-${Date.now()}`,
+        admin_email: 'admin@galaxymobile.com',
+        action: 'BRAND_DELETED',
+        entity_type: 'BRAND',
+        entity_id: id,
+        details: { name: deletedName },
         created_at: new Date().toISOString(),
       },
       ...prev,
@@ -623,7 +715,123 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     ]);
   };
 
-  // 8. Customer Notify Request
+  // 8. Store Offers & Special Schemes Management
+  const addOffer = (offerData: Omit<Offer, 'id' | 'created_at'>): Offer => {
+    const id = `offer-${Date.now()}`;
+    const newOffer: Offer = {
+      ...offerData,
+      id,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    setOffers(prev => [newOffer, ...prev]);
+
+    setAuditLogs(prev => [
+      {
+        id: `audit-${Date.now()}`,
+        admin_email: 'admin@galaxymobile.com',
+        action: 'OFFER_CREATED',
+        entity_type: 'OFFER',
+        entity_id: id,
+        details: { title: newOffer.title, badge: newOffer.badge_text, discount: newOffer.discount_text },
+        created_at: new Date().toISOString(),
+      },
+      ...prev,
+    ]);
+
+    return newOffer;
+  };
+
+  const updateOffer = (id: string, updates: Partial<Offer>) => {
+    setOffers(prev =>
+      prev.map(off => (off.id === id ? { ...off, ...updates, updated_at: new Date().toISOString() } : off))
+    );
+
+    setAuditLogs(prev => [
+      {
+        id: `audit-${Date.now()}`,
+        admin_email: 'admin@galaxymobile.com',
+        action: 'OFFER_UPDATED',
+        entity_type: 'OFFER',
+        entity_id: id,
+        details: { updated_fields: Object.keys(updates) },
+        created_at: new Date().toISOString(),
+      },
+      ...prev,
+    ]);
+  };
+
+  const deleteOffer = (id: string) => {
+    let deletedTitle = '';
+    setOffers(prev => {
+      const match = prev.find(o => o.id === id);
+      if (match) deletedTitle = match.title;
+      return prev.filter(o => o.id !== id);
+    });
+
+    setAuditLogs(prev => [
+      {
+        id: `audit-${Date.now()}`,
+        admin_email: 'admin@galaxymobile.com',
+        action: 'OFFER_DELETED',
+        entity_type: 'OFFER',
+        entity_id: id,
+        details: { title: deletedTitle },
+        created_at: new Date().toISOString(),
+      },
+      ...prev,
+    ]);
+  };
+
+  const toggleOfferStatus = (id: string) => {
+    let newStatus = false;
+    setOffers(prev =>
+      prev.map(off => {
+        if (off.id === id) {
+          newStatus = !off.is_active;
+          return { ...off, is_active: newStatus, updated_at: new Date().toISOString() };
+        }
+        return off;
+      })
+    );
+
+    setAuditLogs(prev => [
+      {
+        id: `audit-${Date.now()}`,
+        admin_email: 'admin@galaxymobile.com',
+        action: 'OFFER_STATUS_TOGGLED',
+        entity_type: 'OFFER',
+        entity_id: id,
+        details: { is_active: newStatus },
+        created_at: new Date().toISOString(),
+      },
+      ...prev,
+    ]);
+  };
+
+  const reorderOffers = (reorderedOffers: Offer[]) => {
+    const updated = reorderedOffers.map((off, index) => ({
+      ...off,
+      sort_order: index + 1,
+      updated_at: new Date().toISOString(),
+    }));
+    setOffers(updated);
+
+    setAuditLogs(prev => [
+      {
+        id: `audit-${Date.now()}`,
+        admin_email: 'admin@galaxymobile.com',
+        action: 'OFFERS_REORDERED',
+        entity_type: 'OFFER',
+        details: { count: updated.length },
+        created_at: new Date().toISOString(),
+      },
+      ...prev,
+    ]);
+  };
+
+  // 9. Customer Notify Request
   const submitNotifyRequest = (req: Omit<NotifyRequest, 'id' | 'status' | 'created_at'>) => {
     const newReq: NotifyRequest = {
       ...req,
@@ -634,7 +842,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setNotifyRequests(prev => [newReq, ...prev]);
   };
 
-  // 9. Customer Review
+  // 10. Customer Review
   const submitReview = (rev: Omit<Review, 'id' | 'created_at' | 'is_approved'>) => {
     const newRev: Review = {
       ...rev,
@@ -735,10 +943,18 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       addProduct,
       updateProduct,
       deleteProduct,
+      addBrand,
+      updateBrand,
+      deleteBrand,
       updateVariantPrice,
       updateVariantStock,
       addIncomingStock,
       receiveIncomingStock,
+      addOffer,
+      updateOffer,
+      deleteOffer,
+      toggleOfferStatus,
+      reorderOffers,
       submitNotifyRequest,
       submitReview,
       updateStoreSettings,

@@ -926,6 +926,40 @@ export default function ProductDetailPage() {
         </div>
       )}
 
+      {/* Mobile Phone Sticky Action Bar */}
+      <div className="md:hidden fixed bottom-[52px] left-0 right-0 z-30 bg-[#070b16]/95 backdrop-blur-xl border-t border-white/10 p-2.5 px-4 shadow-[0_-8px_25px_rgba(0,0,0,0.8)]">
+        <div className="flex items-center justify-between gap-3 max-w-lg mx-auto">
+          <div>
+            <span className="text-[10px] text-slate-400 block">Showroom Price</span>
+            <span className="text-base font-extrabold text-white font-display">
+              {formatPrice(activeVariant?.selling_price || 0)}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <a
+              href={`https://wa.me/91${storeSettings.whatsapp}?text=Hello%20Galaxy%20Mobile%20Gallery,%20I%20am%20interested%20in%20${encodeURIComponent(product.name)}%20(${encodeURIComponent(activeVariant?.ram || '')}%20${encodeURIComponent(activeVariant?.storage || '')}%20${encodeURIComponent(activeVariant?.color || '')}).%20Is%20it%20available%20at%20Begampur%20store?`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-glow-emerald"
+              title="WhatsApp inquiry"
+            >
+              <MessageSquare className="w-3.5 h-3.5 fill-current" />
+              <span className="text-xs">WhatsApp</span>
+            </a>
+
+            <button
+              type="button"
+              onClick={() => setVisitModalOpen(true)}
+              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-vivo-600 to-vivo-500 hover:from-vivo-500 text-white font-bold text-xs shadow-glow-blue flex items-center gap-1.5"
+            >
+              <MapPin className="w-3.5 h-3.5" />
+              <span>Visit Store</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }
