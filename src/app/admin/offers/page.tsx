@@ -6,6 +6,7 @@ import { useStore } from '@/lib/store/store-context';
 import { Offer, OfferType, OfferBadgeColor } from '@/lib/types';
 import { formatDate } from '@/lib/utils/formatters';
 import { fireConfetti } from '@/lib/utils/confetti';
+import { compressImageForUpload } from '@/lib/utils/image-compression';
 import {
   Sparkles,
   PlusCircle,
@@ -32,7 +33,10 @@ import {
   Eye,
   Sliders,
   ChevronRight,
-  Info
+  Info,
+  Upload,
+  Loader2,
+  ImageIcon
 } from 'lucide-react';
 
 const OFFER_TYPE_CONFIG: Record<OfferType, { label: string; icon: any; defaultBadge: string; color: OfferBadgeColor }> = {
@@ -148,6 +152,54 @@ export default function AdminOffersPage() {
 
   // Highlight Input helper
   const [currentHighlight, setCurrentHighlight] = useState('');
+
+  // Device Banner Upload State
+  const [isUploadingBanner, setIsUploadingBanner] = useState(false);
+  const [uploadBannerError, setUploadBannerError] = useState<string | null>(null);
+
+  const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingBanner(true);
+    setUploadBannerError(null);
+
+    try {
+      // Compress phone banner on client to max 1600px width (shrinks 12MB raw photo to ~180KB)
+      const compressed = await compressImageForUpload(file, 1600, 0.84);
+
+      try {
+        const uploadFormData = new FormData();
+        uploadFormData.append('file', compressed.file);
+        uploadFormData.append('folder', 'banners');
+
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: uploadFormData,
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.url) {
+            setFormData(prev => ({ ...prev, banner_url: data.url }));
+            return;
+          }
+        }
+      } catch {
+        // Fallback to client data URL if upload API fails
+      }
+
+      if (compressed.dataUrl) {
+        setFormData(prev => ({ ...prev, banner_url: compressed.dataUrl }));
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Error uploading banner image';
+      setUploadBannerError(message);
+    } finally {
+      setIsUploadingBanner(false);
+      e.target.value = ''; // Reset input so subsequent mobile camera snaps work reliably
+    }
+  };
 
   // Form State
   const [formData, setFormData] = useState<{
@@ -760,423 +812,467 @@ export default function AdminOffersPage() {
 
       {/* Creation & Edit Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-4xl bg-[#090d16] border border-white/10 rounded-3xl shadow-2xl overflow-hidden my-8 animate-in fade-in zoom-in-95">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+          <div className="w-full max-w-5xl bg-[#090d16] border border-white/10 rounded-3xl shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col animate-in fade-in zoom-in-95">
             
-            {/* Modal Header */}
-            <div className="p-6 border-b border-white/10 flex items-center justify-between bg-slate-900/50">
+            {/* Sticky Modal Header */}
+            <div className="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between bg-slate-900/90 backdrop-blur-md flex-shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
                   <Sparkles className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-white font-display">
+                  <h2 className="text-base sm:text-lg font-bold text-white font-display">
                     {editingOfferId ? 'Edit Store Offer / Special Scheme' : 'Create New Store Offer & Scheme'}
                   </h2>
                   <p className="text-xs text-slate-400">
-                    Customize promotional details, discounts, banner graphics, highlights, and in-store claim guidelines.
+                    Customize promotional details, discounts, device banner graphics, highlights, and in-store claim guidelines.
                   </p>
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(false)}
-                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                  <span>Close</span>
+                </button>
+              </div>
             </div>
 
             {/* Modal Body: Form & Real-time Live Preview */}
-            <form onSubmit={handleSave} className="p-6 sm:p-8 space-y-8">
+            <form onSubmit={handleSave} className="flex-1 overflow-y-auto flex flex-col justify-between">
               
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                
-                {/* Left Side: Form Controls (7 cols) */}
-                <div className="lg:col-span-7 space-y-6 text-xs">
+              <div className="p-4 sm:p-6 space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                   
-                  {/* Scheme Category & Active Status */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-slate-300 font-semibold">Scheme Category *</label>
-                      <select
-                        value={formData.offer_type}
-                        onChange={(e) => {
-                          const val = e.target.value as OfferType;
-                          const cfg = OFFER_TYPE_CONFIG[val];
-                          setFormData({
-                            ...formData,
-                            offer_type: val,
-                            badge_text: formData.badge_text === 'STORE EXCLUSIVE' ? cfg.defaultBadge : formData.badge_text,
-                            badge_color: cfg.color
-                          });
-                        }}
-                        className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-medium focus:border-amber-400 focus:outline-none"
-                      >
-                        <option value="bajaj_emi">Bajaj 0% EMI Scheme</option>
-                        <option value="bank_cashback">Instant Bank Cashback</option>
-                        <option value="exchange_bonus">Old Phone Exchange Bonus</option>
-                        <option value="bundle_combo">Bundle Combo Deal</option>
-                        <option value="festive_launch">Festive Launch Bonanza</option>
-                        <option value="free_gift">Free In-Store Gifts</option>
-                        <option value="warranty_care">Screen & Warranty Protection</option>
-                        <option value="custom">Custom Promotion</option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-slate-300 font-semibold">Live Store Visibility</label>
-                      <div className="flex items-center justify-between p-2 rounded-xl bg-slate-900 border border-white/10">
-                        <span className="text-slate-300 text-xs font-semibold">
-                          {formData.is_active ? 'Visible on Storefront' : 'Hidden (Draft)'}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => setFormData({ ...formData, is_active: !formData.is_active })}
-                          className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
-                            formData.is_active ? 'bg-emerald-500 text-slate-950' : 'bg-slate-700 text-slate-300'
-                          }`}
+                  {/* Left Side: Form Controls (7 cols) */}
+                  <div className="lg:col-span-7 space-y-5 text-xs">
+                    
+                    {/* Scheme Category & Active Status */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                      <div className="space-y-1.5">
+                        <label className="text-slate-300 font-semibold">Scheme Category *</label>
+                        <select
+                          value={formData.offer_type}
+                          onChange={(e) => {
+                            const val = e.target.value as OfferType;
+                            const cfg = OFFER_TYPE_CONFIG[val];
+                            setFormData({
+                              ...formData,
+                              offer_type: val,
+                              badge_text: formData.badge_text === 'STORE EXCLUSIVE' ? cfg.defaultBadge : formData.badge_text,
+                              badge_color: cfg.color
+                            });
+                          }}
+                          className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-medium focus:border-amber-400 focus:outline-none"
                         >
-                          {formData.is_active ? 'Active' : 'Draft'}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Title & Discount Headline */}
-                  <div className="space-y-4">
-                    <div className="space-y-1.5">
-                      <label className="text-slate-300 font-semibold">Scheme Title *</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. Bajaj Finance EMI Available Scheme"
-                        value={formData.title}
-                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                        className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold focus:border-amber-400 focus:outline-none"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-1.5">
-                        <label className="text-slate-300 font-semibold">Discount / Highlight Headline *</label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="e.g. Bajaj Finance EMI Available or Save Flat 40%"
-                          value={formData.discount_text}
-                          onChange={(e) => setFormData({ ...formData, discount_text: e.target.value })}
-                          className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-emerald-400 font-bold focus:border-amber-400 focus:outline-none"
-                        />
+                          <option value="bajaj_emi">Bajaj 0% EMI Scheme</option>
+                          <option value="bank_cashback">Instant Bank Cashback</option>
+                          <option value="exchange_bonus">Old Phone Exchange Bonus</option>
+                          <option value="bundle_combo">Bundle Combo Deal</option>
+                          <option value="festive_launch">Festive Launch Bonanza</option>
+                          <option value="free_gift">Free In-Store Gifts</option>
+                          <option value="warranty_care">Screen & Warranty Protection</option>
+                          <option value="custom">Custom Promotion</option>
+                        </select>
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="text-slate-300 font-semibold">Badge Pill Text *</label>
+                        <label className="text-slate-300 font-semibold">Live Store Visibility</label>
+                        <div className="flex items-center justify-between p-2 rounded-xl bg-slate-900 border border-white/10">
+                          <span className="text-slate-300 text-xs font-semibold">
+                            {formData.is_active ? 'Visible on Storefront' : 'Hidden (Draft)'}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setFormData({ ...formData, is_active: !formData.is_active })}
+                            className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                              formData.is_active ? 'bg-emerald-500 text-slate-950 shadow-glow-emerald' : 'bg-slate-700 text-slate-300'
+                            }`}
+                          >
+                            {formData.is_active ? 'Active' : 'Draft'}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Title & Discount Headline */}
+                    <div className="space-y-3.5">
+                      <div className="space-y-1.5">
+                        <label className="text-slate-300 font-semibold">Scheme Title *</label>
                         <input
                           type="text"
                           required
-                          placeholder="e.g. STORE EXCLUSIVE, 0% EMI"
-                          value={formData.badge_text}
-                          onChange={(e) => setFormData({ ...formData, badge_text: e.target.value })}
+                          placeholder="e.g. Bajaj Finance EMI Available Scheme"
+                          value={formData.title}
+                          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                           className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold focus:border-amber-400 focus:outline-none"
                         />
                       </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div className="space-y-1.5">
+                          <label className="text-slate-300 font-semibold">Discount / Highlight Headline *</label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="e.g. Bajaj Finance EMI Available or Save Flat 40%"
+                            value={formData.discount_text}
+                            onChange={(e) => setFormData({ ...formData, discount_text: e.target.value })}
+                            className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-emerald-400 font-bold focus:border-amber-400 focus:outline-none"
+                          />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <label className="text-slate-300 font-semibold">Badge Pill Text *</label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="e.g. STORE EXCLUSIVE, 0% EMI"
+                            value={formData.badge_text}
+                            onChange={(e) => setFormData({ ...formData, badge_text: e.target.value })}
+                            className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold focus:border-amber-400 focus:outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Badge Color Picker */}
+                      <div className="space-y-1.5">
+                        <label className="text-slate-300 font-semibold">Badge Color Theme</label>
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          {(['amber', 'emerald', 'cyan', 'purple', 'rose', 'blue'] as OfferBadgeColor[]).map((c) => (
+                            <button
+                              key={c}
+                              type="button"
+                              onClick={() => setFormData({ ...formData, badge_color: c })}
+                              className={`px-2.5 py-1 rounded-lg text-xs font-bold capitalize transition-all border ${
+                                formData.badge_color === c
+                                  ? 'border-white text-white bg-white/10 shadow-glow-blue'
+                                  : 'border-white/10 text-slate-400 hover:text-white bg-slate-900'
+                              }`}
+                            >
+                              <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${BADGE_COLOR_CONFIG[c].previewBadge}`} />
+                              {c}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Subtitle / Description */}
+                      <div className="space-y-1.5">
+                        <label className="text-slate-300 font-semibold">Subtitle & Scheme Summary</label>
+                        <textarea
+                          rows={2}
+                          placeholder="e.g. Easy Monthly Installments, Instant Document Approval & Zero Processing Fees at Begampur Showroom"
+                          value={formData.subtitle}
+                          onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+                          className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:border-amber-400 focus:outline-none"
+                        />
+                      </div>
                     </div>
 
-                    {/* Badge Color Picker */}
-                    <div className="space-y-1.5">
-                      <label className="text-slate-300 font-semibold">Badge Color Theme</label>
-                      <div className="flex flex-wrap items-center gap-2">
-                        {(['amber', 'emerald', 'cyan', 'purple', 'rose', 'blue'] as OfferBadgeColor[]).map((c) => (
+                    {/* Banner Graphic Selector: Upload from Device + URL + Presets */}
+                    <div className="space-y-2.5 p-4 rounded-2xl bg-slate-900/60 border border-white/10">
+                      <div className="flex items-center justify-between">
+                        <label className="text-slate-200 font-bold flex items-center gap-1.5">
+                          <ImageIcon className="w-4 h-4 text-vivo-400" />
+                          <span>Scheme Banner Graphic *</span>
+                        </label>
+                        {uploadBannerError && (
+                          <span className="text-[10px] text-rose-400 font-medium">{uploadBannerError}</span>
+                        )}
+                      </div>
+
+                      {/* Upload Button + URL Bar */}
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                        <label className={`cursor-pointer px-4 py-2.5 rounded-xl border flex items-center justify-center gap-2 text-xs font-bold transition-all shadow-sm flex-shrink-0 ${
+                          isUploadingBanner
+                            ? 'bg-slate-800 text-slate-400 border-white/10'
+                            : 'bg-gradient-to-r from-vivo-600 to-vivo-500 hover:from-vivo-500 text-white border-vivo-400/40 shadow-glow-blue hover:scale-[1.02]'
+                        }`}>
+                          {isUploadingBanner ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin text-white" />
+                              <span>Uploading...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="w-4 h-4" />
+                              <span>Upload from Device</span>
+                            </>
+                          )}
+                          <input
+                            type="file"
+                            accept="image/*,image/jpeg,image/png,image/webp,image/svg+xml,image/heic,image/heif,.heic,.heif"
+                            disabled={isUploadingBanner}
+                            onChange={handleBannerUpload}
+                            className="hidden"
+                          />
+                        </label>
+
+                        <div className="relative flex-1">
+                          <input
+                            type="text"
+                            required
+                            placeholder="Or paste banner image URL (https://... or /assets/...)"
+                            value={formData.banner_url}
+                            onChange={(e) => setFormData({ ...formData, banner_url: e.target.value })}
+                            className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-mono text-[11px] focus:border-amber-400 focus:outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Presets */}
+                      <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                        <span className="text-[10px] text-slate-500">Pick Preset:</span>
+                        {PRESET_BANNERS.map((pb, idx) => (
                           <button
-                            key={c}
+                            key={idx}
                             type="button"
-                            onClick={() => setFormData({ ...formData, badge_color: c })}
-                            className={`px-3 py-1 rounded-lg text-xs font-bold capitalize transition-all border ${
-                              formData.badge_color === c
-                                ? 'border-white text-white bg-white/10 shadow-glow-blue'
-                                : 'border-white/10 text-slate-400 hover:text-white bg-slate-900'
+                            onClick={() => setFormData({ ...formData, banner_url: pb.url })}
+                            className={`px-2 py-0.5 rounded text-[10px] border transition-all ${
+                              formData.banner_url === pb.url
+                                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 font-bold'
+                                : 'bg-white/5 text-slate-400 border-white/5 hover:text-white'
                             }`}
                           >
-                            <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${BADGE_COLOR_CONFIG[c].previewBadge}`} />
-                            {c}
+                            {pb.label}
                           </button>
                         ))}
                       </div>
                     </div>
 
-                    {/* Subtitle / Description */}
+                    {/* Bullet Highlights Builder */}
+                    <div className="space-y-2">
+                      <label className="text-slate-300 font-semibold">Key Highlights & USPs (Bullet Badges)</label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          placeholder="e.g. 0% Down Payment, Free Screen Guard, Instant Approval"
+                          value={currentHighlight}
+                          onChange={(e) => setCurrentHighlight(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              handleAddHighlight();
+                            }
+                          }}
+                          className="flex-1 p-2 rounded-xl bg-slate-900 border border-white/10 text-white focus:border-amber-400 focus:outline-none"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleAddHighlight}
+                          className="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold"
+                        >
+                          + Add Tag
+                        </button>
+                      </div>
+
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        {formData.highlights.map((hl, hIdx) => (
+                          <span
+                            key={hIdx}
+                            className="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-200 border border-white/10 text-xs flex items-center gap-1.5"
+                          >
+                            <span>{hl}</span>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveHighlight(hIdx)}
+                              className="text-slate-400 hover:text-red-400"
+                            >
+                              ×
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Validity Dates */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-slate-300 font-semibold">Validity Date Range</label>
+                        <label className="flex items-center gap-1.5 text-xs text-amber-300 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={formData.is_always_active}
+                            onChange={(e) => setFormData({ ...formData, is_always_active: e.target.checked })}
+                            className="rounded bg-slate-900 border-white/20 text-amber-500 focus:ring-0"
+                          />
+                          <span>Always Active / Ongoing Scheme</span>
+                        </label>
+                      </div>
+
+                      {!formData.is_always_active && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <span className="text-[11px] text-slate-400">Start Date</span>
+                            <input
+                              type="date"
+                              value={formData.start_date}
+                              onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                              className="w-full p-2 rounded-xl bg-slate-900 border border-white/10 text-white"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <span className="text-[11px] text-slate-400">End Date (Expiry)</span>
+                            <input
+                              type="date"
+                              value={formData.end_date}
+                              onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
+                              className="w-full p-2 rounded-xl bg-slate-900 border border-white/10 text-white"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Terms & Conditions */}
                     <div className="space-y-1.5">
-                      <label className="text-slate-300 font-semibold">Subtitle & Scheme Summary</label>
+                      <label className="text-slate-300 font-semibold">Terms & Conditions / In-Store Guidelines</label>
                       <textarea
                         rows={2}
-                        placeholder="e.g. Easy Monthly Installments, Instant Document Approval & Zero Processing Fees at Begampur Showroom"
-                        value={formData.subtitle}
-                        onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+                        placeholder="e.g. Instant document approval with Aadhaar / PAN card. Physical purchase at Begampur showroom."
+                        value={formData.terms}
+                        onChange={(e) => setFormData({ ...formData, terms: e.target.value })}
                         className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:border-amber-400 focus:outline-none"
                       />
                     </div>
-                  </div>
 
-                  {/* Banner Graphic Selector */}
-                  <div className="space-y-2">
-                    <label className="text-slate-300 font-semibold">Banner Image URL *</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="https://images.unsplash.com/... or /assets/..."
-                      value={formData.banner_url}
-                      onChange={(e) => setFormData({ ...formData, banner_url: e.target.value })}
-                      className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-mono text-[11px] focus:border-amber-400 focus:outline-none"
-                    />
-
-                    {/* Presets */}
-                    <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                      <span className="text-[10px] text-slate-500">Pick Preset:</span>
-                      {PRESET_BANNERS.map((pb, idx) => (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={() => setFormData({ ...formData, banner_url: pb.url })}
-                          className={`px-2 py-0.5 rounded text-[10px] border transition-all ${
-                            formData.banner_url === pb.url
-                              ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 font-bold'
-                              : 'bg-white/5 text-slate-400 border-white/5 hover:text-white'
-                          }`}
-                        >
-                          {pb.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Bullet Highlights Builder */}
-                  <div className="space-y-2">
-                    <label className="text-slate-300 font-semibold">Key Highlights & USPs (Bullet Badges)</label>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="text"
-                        placeholder="e.g. 0% Down Payment, Free Screen Guard, Instant Approval"
-                        value={currentHighlight}
-                        onChange={(e) => setCurrentHighlight(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            handleAddHighlight();
-                          }
-                        }}
-                        className="flex-1 p-2 rounded-xl bg-slate-900 border border-white/10 text-white focus:border-amber-400 focus:outline-none"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleAddHighlight}
-                        className="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold"
-                      >
-                        + Add Tag
-                      </button>
-                    </div>
-
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                      {formData.highlights.map((hl, hIdx) => (
-                        <span
-                          key={hIdx}
-                          className="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-200 border border-white/10 text-xs flex items-center gap-1.5"
-                        >
-                          <span>{hl}</span>
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveHighlight(hIdx)}
-                            className="text-slate-400 hover:text-red-400"
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Validity Dates */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <label className="text-slate-300 font-semibold">Validity Date Range</label>
-                      <label className="flex items-center gap-1.5 text-xs text-amber-300 cursor-pointer">
+                    {/* CTA Text & Destination Link */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-slate-300 font-semibold">CTA Button Label</label>
                         <input
-                          type="checkbox"
-                          checked={formData.is_always_active}
-                          onChange={(e) => setFormData({ ...formData, is_always_active: e.target.checked })}
-                          className="rounded bg-slate-900 border-white/20 text-amber-500 focus:ring-0"
+                          type="text"
+                          placeholder="e.g. Claim in Store, Check Eligibility"
+                          value={formData.cta_text}
+                          onChange={(e) => setFormData({ ...formData, cta_text: e.target.value })}
+                          className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-medium focus:border-amber-400 focus:outline-none"
                         />
-                        <span>Always Active / Ongoing Scheme</span>
-                      </label>
-                    </div>
-
-                    {!formData.is_always_active && (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                          <span className="text-[11px] text-slate-400">Start Date</span>
-                          <input
-                            type="date"
-                            value={formData.start_date}
-                            onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-                            className="w-full p-2 rounded-xl bg-slate-900 border border-white/10 text-white"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <span className="text-[11px] text-slate-400">End Date (Expiry)</span>
-                          <input
-                            type="date"
-                            value={formData.end_date}
-                            onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
-                            className="w-full p-2 rounded-xl bg-slate-900 border border-white/10 text-white"
-                          />
-                        </div>
                       </div>
-                    )}
-                  </div>
 
-                  {/* Terms & Conditions */}
-                  <div className="space-y-1.5">
-                    <label className="text-slate-300 font-semibold">Terms & Conditions / In-Store Guidelines</label>
-                    <textarea
-                      rows={2}
-                      placeholder="e.g. Instant document approval with Aadhaar / PAN card. Physical purchase at Begampur showroom."
-                      value={formData.terms}
-                      onChange={(e) => setFormData({ ...formData, terms: e.target.value })}
-                      className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:border-amber-400 focus:outline-none"
-                    />
-                  </div>
-
-                  {/* CTA Text & Destination Link */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-slate-300 font-semibold">CTA Button Label</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Claim in Store, Check Eligibility"
-                        value={formData.cta_text}
-                        onChange={(e) => setFormData({ ...formData, cta_text: e.target.value })}
-                        className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-medium focus:border-amber-400 focus:outline-none"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-slate-300 font-semibold">CTA Destination Link</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. /store, /mobiles, /product/vivo-v40-pro-5g"
-                        value={formData.cta_link}
-                        onChange={(e) => setFormData({ ...formData, cta_link: e.target.value })}
-                        className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-mono text-[11px] focus:border-amber-400 focus:outline-none"
-                      />
-                    </div>
-                  </div>
-
-                </div>
-
-                {/* Right Side: Live Realtime Preview Card (5 cols) */}
-                <div className="lg:col-span-5 space-y-4">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                      <Eye className="w-3.5 h-3.5 text-cyan-400" />
-                      <span>Live Customer View Preview</span>
-                    </span>
-                    <span className="text-[10px] text-emerald-400 font-semibold">Dynamic Render</span>
-                  </div>
-
-                  {/* Live Rendered Card */}
-                  <div className="rounded-3xl glass-card border border-white/20 overflow-hidden shadow-2xl bg-slate-950/80">
-                    
-                    {/* Banner Image */}
-                    <div className="relative aspect-[16/9] w-full bg-slate-900">
-                      {formData.banner_url && (
-                        <Image
-                          src={formData.banner_url}
-                          alt={formData.title || 'Offer'}
-                          fill
-                          className="object-cover"
+                      <div className="space-y-1.5">
+                        <label className="text-slate-300 font-semibold">CTA Destination Link</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. /store, /mobiles, /product/vivo-v40-pro-5g"
+                          value={formData.cta_link}
+                          onChange={(e) => setFormData({ ...formData, cta_link: e.target.value })}
+                          className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-mono text-[11px] focus:border-amber-400 focus:outline-none"
                         />
-                      )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
+                      </div>
+                    </div>
+
+                  </div>
+
+                  {/* Right Side: Live Realtime Preview Card (5 cols) */}
+                  <div className="lg:col-span-5 space-y-4">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                        <Eye className="w-3.5 h-3.5 text-cyan-400" />
+                        <span>Live Customer View Preview</span>
+                      </span>
+                      <span className="text-[10px] text-emerald-400 font-semibold">Dynamic Render</span>
+                    </div>
+
+                    {/* Live Rendered Card */}
+                    <div className="rounded-3xl glass-card border border-white/20 overflow-hidden shadow-2xl bg-slate-950/80">
                       
-                      <div className="absolute top-3 left-3">
-                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold shadow-lg ${BADGE_COLOR_CONFIG[formData.badge_color].previewBadge}`}>
-                          {formData.badge_text || 'BADGE TEXT'}
-                        </span>
-                      </div>
-
-                      <div className="absolute bottom-3 left-3 right-3">
-                        <span className="px-2 py-0.5 rounded-lg text-xs font-black bg-emerald-500 text-slate-950 shadow-md">
-                          {formData.discount_text || 'Discount Text'}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Card Content */}
-                    <div className="p-5 space-y-3">
-                      <div>
-                        <h4 className="font-display font-bold text-base text-white">
-                          {formData.title || 'Scheme Title Preview'}
-                        </h4>
-                        <p className="text-xs text-slate-300 leading-relaxed mt-1">
-                          {formData.subtitle || 'Scheme subtitle and benefit description will appear here.'}
-                        </p>
-                      </div>
-
-                      {/* Highlights */}
-                      {formData.highlights.length > 0 && (
-                        <div className="flex flex-wrap gap-1 pt-1">
-                          {formData.highlights.map((h, i) => (
-                            <span key={i} className="px-2 py-0.5 rounded-md bg-white/5 text-[10px] text-slate-300 flex items-center gap-1 border border-white/5">
-                              <Check className="w-2.5 h-2.5 text-emerald-400" />
-                              <span>{h}</span>
-                            </span>
-                          ))}
+                      {/* Banner Image */}
+                      <div className="relative aspect-[16/9] w-full bg-slate-900">
+                        {formData.banner_url && (
+                          <Image
+                            src={formData.banner_url}
+                            alt={formData.title || 'Offer'}
+                            fill
+                            className="object-cover"
+                          />
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
+                        
+                        <div className="absolute top-3 left-3">
+                          <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold shadow-lg ${BADGE_COLOR_CONFIG[formData.badge_color].previewBadge}`}>
+                            {formData.badge_text || 'BADGE TEXT'}
+                          </span>
                         </div>
-                      )}
 
-                      {/* Terms */}
-                      {formData.terms && (
-                        <p className="text-[10px] text-slate-400 italic pt-1 border-t border-white/5">
-                          Terms: {formData.terms}
-                        </p>
-                      )}
-
-                      {/* CTA & Validity */}
-                      <div className="pt-3 border-t border-white/5 flex items-center justify-between">
-                        <span className="text-[10px] text-slate-400">
-                          {formData.is_always_active ? 'Ongoing Scheme' : `Valid till ${formData.end_date || 'N/A'}`}
-                        </span>
-
-                        <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-vivo-600 text-white text-xs font-semibold shadow">
-                          <span>{formData.cta_text || 'Claim in Store'}</span>
-                          <ChevronRight className="w-3 h-3" />
-                        </span>
+                        <div className="absolute bottom-3 left-3 right-3">
+                          <span className="px-2 py-0.5 rounded-lg text-xs font-black bg-emerald-500 text-slate-950 shadow-md">
+                            {formData.discount_text || 'Discount Text'}
+                          </span>
+                        </div>
                       </div>
+
+                      {/* Card Content */}
+                      <div className="p-5 space-y-3">
+                        <div>
+                          <h4 className="font-display font-bold text-base text-white">
+                            {formData.title || 'Scheme Title Preview'}
+                          </h4>
+                          <p className="text-xs text-slate-300 leading-relaxed mt-1">
+                            {formData.subtitle || 'Scheme subtitle and benefit description will appear here.'}
+                          </p>
+                        </div>
+
+                        {/* Highlights */}
+                        {formData.highlights.length > 0 && (
+                          <div className="flex flex-wrap gap-1 pt-1">
+                            {formData.highlights.map((h, i) => (
+                              <span key={i} className="px-2 py-0.5 rounded-md bg-white/5 text-[10px] text-slate-300 flex items-center gap-1 border border-white/5">
+                                <Check className="w-2.5 h-2.5 text-emerald-400" />
+                                <span>{h}</span>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Terms */}
+                        {formData.terms && (
+                          <p className="text-[10px] text-slate-400 italic pt-1 border-t border-white/5">
+                            Terms: {formData.terms}
+                          </p>
+                        )}
+
+                        {/* CTA & Validity */}
+                        <div className="pt-3 border-t border-white/5 flex items-center justify-between">
+                          <span className="text-[10px] text-slate-400">
+                            {formData.is_always_active ? 'Ongoing Scheme' : `Valid till ${formData.end_date || 'N/A'}`}
+                          </span>
+
+                          <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-vivo-600 text-white text-xs font-semibold shadow">
+                            <span>{formData.cta_text || 'Claim in Store'}</span>
+                            <ChevronRight className="w-3 h-3" />
+                          </span>
+                        </div>
+                      </div>
+
                     </div>
 
-                  </div>
+                    {/* Information Tip */}
+                    <div className="p-3.5 rounded-2xl bg-vivo-950/30 border border-vivo-500/20 text-vivo-300 text-[11px] flex items-start gap-2">
+                      <Info className="w-4 h-4 flex-shrink-0 mt-0.5 text-vivo-400" />
+                      <span>
+                        This scheme will immediately synchronize with the store's public <strong className="text-white">/offers</strong> page, homepage promotion banners, and in-store catalog.
+                      </span>
+                    </div>
 
-                  {/* Information Tip */}
-                  <div className="p-3.5 rounded-2xl bg-vivo-950/30 border border-vivo-500/20 text-vivo-300 text-[11px] flex items-start gap-2">
-                    <Info className="w-4 h-4 flex-shrink-0 mt-0.5 text-vivo-400" />
-                    <span>
-                      This scheme will immediately synchronize with the store's public <strong className="text-white">/offers</strong> page, homepage promotion banners, and in-store catalog.
-                    </span>
                   </div>
 
                 </div>
-
               </div>
 
-              {/* Form Actions Footer */}
-              <div className="pt-6 border-t border-white/10 flex items-center justify-end gap-3">
+              {/* Sticky Form Actions Footer */}
+              <div className="p-4 px-6 border-t border-white/10 bg-slate-900/95 backdrop-blur-md flex items-center justify-end gap-3 flex-shrink-0 sticky bottom-0 z-10">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold"
+                  className="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold transition-colors"
                 >
-                  Cancel
+                  Cancel & Close
                 </button>
 
                 <button

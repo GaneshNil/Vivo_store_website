@@ -227,9 +227,16 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           setProducts([...parsed.products, ...missingDefaults]);
         }
         if (parsed.brands && Array.isArray(parsed.brands)) {
-          const existingIds = new Set(parsed.brands.map((b: Brand) => b.id));
+          const defaultLogoMap = new Map(INITIAL_BRANDS.map(b => [b.id, b.logo_url]));
+          const normalizedBrands = parsed.brands.map((b: Brand) => {
+            if (defaultLogoMap.has(b.id) && b.logo_url.startsWith('http')) {
+              return { ...b, logo_url: defaultLogoMap.get(b.id) || b.logo_url };
+            }
+            return b;
+          });
+          const existingIds = new Set(normalizedBrands.map((b: Brand) => b.id));
           const missingDefaults = INITIAL_BRANDS.filter(b => !existingIds.has(b.id));
-          setBrands([...parsed.brands, ...missingDefaults]);
+          setBrands([...normalizedBrands, ...missingDefaults]);
         }
         if (parsed.offers && Array.isArray(parsed.offers)) {
           setOffers(parsed.offers);

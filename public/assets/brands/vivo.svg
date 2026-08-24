@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="vivoBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4182FF"/>
+      <stop offset="100%" stop-color="#0052D9"/>
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="none"/>
+  <!-- V -->
+  <path d="M45 28 L72 92 L96 92 L123 28 L98 28 L84 66 L70 28 Z" fill="url(#vivoBlue)"/>
+  <!-- I -->
+  <path d="M142 28 L142 92 L164 92 L164 28 Z" fill="url(#vivoBlue)"/>
+  <!-- V -->
+  <path d="M185 28 L212 92 L236 92 L263 28 L238 28 L224 66 L210 28 Z" fill="url(#vivoBlue)"/>
+  <!-- O -->
+  <path d="M316 26 C288 26 268 46 268 60 C268 74 288 94 316 94 C344 94 364 74 364 60 C364 46 344 26 316 26 Z M316 45 C328 45 341 51 341 60 C341 69 328 75 316 75 C304 75 291 69 291 60 C291 51 304 45 316 45 Z" fill="url(#vivoBlue)"/>
+</svg>

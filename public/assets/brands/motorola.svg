@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 120" width="100%" height="100%">
+  <!-- Motorola Batwing Circle -->
+  <circle cx="60" cy="60" r="45" fill="#001438" stroke="#0083D6" stroke-width="4"/>
+  <path d="M42 78 C42 55 54 42 60 56 C66 42 78 55 78 78 C74 65 67 60 60 70 C53 60 46 65 42 78 Z" fill="#0083D6"/>
+  <!-- Motorola Wordmark -->
+  <text x="120" y="72" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="30" letter-spacing="1">motorola</text>
+</svg>

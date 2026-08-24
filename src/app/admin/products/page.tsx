@@ -6,6 +6,7 @@ import { useStore } from '@/lib/store/store-context';
 import { formatPrice, getStatusBadgeConfig, calculateEMI } from '@/lib/utils/formatters';
 import { Product, ProductVariant, ProductImage } from '@/lib/types';
 import { fireConfetti } from '@/lib/utils/confetti';
+import { compressImageForUpload } from '@/lib/utils/image-compression';
 import { 
   Smartphone, 
   PlusCircle, 
@@ -33,7 +34,8 @@ import {
   Percent,
   CreditCard,
   ToggleLeft,
-  ToggleRight
+  ToggleRight,
+  Loader2
 } from 'lucide-react';
 
 interface VariantDraft {
@@ -66,26 +68,74 @@ export default function AdminProductsPage() {
   const [brandFormData, setBrandFormData] = useState({
     name: '',
     slug: '',
-    logo_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Vivo_mobile_logo.png/800px-Vivo_mobile_logo.png',
+    logo_url: '/assets/brands/vivo.svg',
     description: '',
     is_primary: false,
     sort_order: 1,
   });
 
   const BRAND_LOGO_PRESETS = [
-    { name: 'VIVO', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Vivo_mobile_logo.png/800px-Vivo_mobile_logo.png' },
-    { name: 'Samsung', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Samsung_Logo.svg/800px-Samsung_Logo.svg.png' },
-    { name: 'OPPO', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/OPPO_Logo.svg/800px-OPPO_Logo.svg.png' },
-    { name: 'Realme', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Realme_logo.svg/800px-Realme_logo.svg.png' },
-    { name: 'Apple', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/800px-Apple_logo_black.svg.png' },
-    { name: 'OnePlus', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/OnePlus_Logo.svg/800px-OnePlus_Logo.svg.png' },
-    { name: 'Xiaomi', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Xiaomi_logo_%282021-%29.svg/800px-Xiaomi_logo_%282021-%29.svg.png' },
-    { name: 'Nothing', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Nothing_Technology_logo.svg/800px-Nothing_Technology_logo.svg.png' },
-    { name: 'Motorola', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Motorola_new_logo.svg/800px-Motorola_new_logo.svg.png' },
-    { name: 'Google Pixel', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/800px-Google_2015_logo.svg.png' },
-    { name: 'iQOO', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/IQOO_logo.png/800px-IQOO_logo.png' },
+    { name: 'VIVO', logo: '/assets/brands/vivo.svg' },
+    { name: 'Samsung', logo: '/assets/brands/samsung.svg' },
+    { name: 'OPPO', logo: '/assets/brands/oppo.svg' },
+    { name: 'Realme', logo: '/assets/brands/realme.svg' },
+    { name: 'Apple', logo: '/assets/brands/apple.svg' },
+    { name: 'OnePlus', logo: '/assets/brands/oneplus.svg' },
+    { name: 'Xiaomi', logo: '/assets/brands/xiaomi.svg' },
+    { name: 'Nothing', logo: '/assets/brands/nothing.svg' },
+    { name: 'Motorola', logo: '/assets/brands/motorola.svg' },
+    { name: 'Google Pixel', logo: '/assets/brands/google.svg' },
+    { name: 'iQOO', logo: '/assets/brands/iqoo.svg' },
     { name: 'Store Genuine', logo: '/assets/store-logo/IMG-20260822-WA0004.jpg' },
   ];
+
+  // Brand Logo Upload from Device
+  const [isUploadingBrandLogo, setIsUploadingBrandLogo] = useState(false);
+  const [brandLogoUploadError, setBrandLogoUploadError] = useState<string | null>(null);
+
+  const handleBrandLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingBrandLogo(true);
+    setBrandLogoUploadError(null);
+
+    try {
+      // Scale and compress logo for fast, clean mobile/desktop display
+      const compressed = await compressImageForUpload(file, 600, 0.88);
+
+      try {
+        const uploadFormData = new FormData();
+        uploadFormData.append('file', compressed.file);
+        uploadFormData.append('folder', 'brands');
+
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: uploadFormData,
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.url) {
+            setBrandFormData(prev => ({ ...prev, logo_url: data.url }));
+            return;
+          }
+        }
+      } catch {
+        // Fallback to client data URL if upload route is unavailable
+      }
+
+      if (compressed.dataUrl) {
+        setBrandFormData(prev => ({ ...prev, logo_url: compressed.dataUrl }));
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to process brand logo';
+      setBrandLogoUploadError(message);
+    } finally {
+      setIsUploadingBrandLogo(false);
+      e.target.value = ''; // Reset input so selecting another image on phone triggers properly
+    }
+  };
 
   const handleOpenBrandModal = (brandToEdit?: typeof brands[0]) => {
     if (brandToEdit) {
@@ -345,7 +395,7 @@ export default function AdminProductsPage() {
     setIsModalOpen(true);
   };
 
-  // Handle Multi-file Upload to Supabase Storage
+  // Handle Multi-file Upload (Optimized for Mobile Phone Cameras & Galleries)
   const handleMultipleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -360,23 +410,34 @@ export default function AdminProductsPage() {
     try {
       for (let i = 0; i < totalFiles; i++) {
         const file = files[i];
-        setUploadProgressText(`Uploading photo ${i + 1} of ${totalFiles} to Supabase...`);
+        setUploadProgressText(`Optimizing & uploading photo ${i + 1} of ${totalFiles}...`);
 
-        const data = new FormData();
-        data.append('file', file);
+        // Compress phone photo on client side to max 1400px (turns 12MB raw photo into ~150KB)
+        const compressed = await compressImageForUpload(file, 1400, 0.82);
 
-        const res = await fetch('/api/upload', {
-          method: 'POST',
-          body: data,
-        });
+        try {
+          const data = new FormData();
+          data.append('file', compressed.file);
+          data.append('folder', 'products');
 
-        if (!res.ok) {
-          throw new Error(`Failed to upload ${file.name}`);
+          const res = await fetch('/api/upload', {
+            method: 'POST',
+            body: data,
+          });
+
+          if (res.ok) {
+            const result = await res.json();
+            if (result.url) {
+              uploadedUrls.push(result.url);
+              continue;
+            }
+          }
+        } catch {
+          // Fallback to client data URL if upload API fails
         }
 
-        const result = await res.json();
-        if (result.url) {
-          uploadedUrls.push(result.url);
+        if (compressed.dataUrl) {
+          uploadedUrls.push(compressed.dataUrl);
         }
       }
 
@@ -390,6 +451,7 @@ export default function AdminProductsPage() {
     } finally {
       setIsUploadingImages(false);
       setUploadProgressText('');
+      e.target.value = ''; // Reset input so selecting another camera photo on phone works every time
     }
   };
 
@@ -819,31 +881,34 @@ export default function AdminProductsPage() {
 
       {/* Product Modal (Add & Full Edit Mode) */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-full max-w-4xl rounded-3xl glass-panel border border-vivo-500/30 p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+          <div className="w-full max-w-4xl rounded-3xl bg-[#0a0f1d] border border-vivo-500/30 overflow-hidden my-auto max-h-[92vh] flex flex-col shadow-2xl animate-in fade-in zoom-in-95">
             
-            <div className="flex items-center justify-between border-b border-white/10 pb-4">
+            {/* Sticky Header */}
+            <div className="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between bg-slate-900/90 backdrop-blur-md flex-shrink-0">
               <div>
-                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
                   {editingProductId ? <Edit3 className="w-5 h-5 text-vivo-400" /> : <Smartphone className="w-5 h-5 text-vivo-400" />}
                   <span>{editingProductId ? 'Edit Product & Technical Specifications' : 'Add New Product to Catalog'}</span>
                 </h3>
                 <p className="text-xs text-slate-400">
                   {editingProductId 
                     ? 'Update name, prices, variants, photos, Bajaj EMI ON/OFF status and full hardware breakdown.' 
-                    : 'Configure multi-RAM/ROM tiers, Supabase photos, Bajaj EMI ON/OFF switch & full specifications.'}
+                    : 'Configure multi-RAM/ROM tiers, photos, Bajaj EMI ON/OFF switch & full specifications.'}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 text-slate-400 hover:text-white rounded-lg bg-white/5"
+                className="px-3 py-1.5 text-slate-300 hover:text-white rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                title="Close"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
+                <span>Close</span>
               </button>
             </div>
 
-            <form onSubmit={handleSaveProduct} className="space-y-6 text-xs">
+            <form id="productMainForm" onSubmit={handleSaveProduct} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 text-xs">
               
               {/* Product Basic Info */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1072,7 +1137,7 @@ export default function AdminProductsPage() {
                     <span>{isUploadingImages ? uploadProgressText : 'Upload Multiple Photos from Device'}</span>
                     <input
                       type="file"
-                      accept="image/*"
+                      accept="image/*,image/jpeg,image/png,image/webp,image/svg+xml,image/heic,image/heif,.heic,.heif"
                       multiple
                       disabled={isUploadingImages}
                       onChange={handleMultipleImageUpload}
@@ -1577,26 +1642,27 @@ export default function AdminProductsPage() {
 
                 </div>
               </div>
-
-              {/* Submit Buttons */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-semibold"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-vivo-600 to-vivo-500 hover:from-vivo-500 hover:to-vivo-400 text-white font-bold shadow-glow-blue transition-all flex items-center gap-2"
-                >
-                  <Check className="w-4 h-4" />
-                  <span>{editingProductId ? 'Save & Update Product Specifications' : 'Publish Product to Catalog'}</span>
-                </button>
-              </div>
-
             </form>
+
+            {/* Sticky Form Footer */}
+            <div className="p-4 px-6 border-t border-white/10 bg-slate-900/95 backdrop-blur-md flex items-center justify-between gap-3 sticky bottom-0 z-10 flex-shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white text-xs font-semibold transition-colors"
+              >
+                Close & Cancel
+              </button>
+
+              <button
+                type="submit"
+                form="productMainForm"
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-vivo-600 to-vivo-500 hover:from-vivo-500 hover:to-vivo-400 text-white font-bold text-xs shadow-glow-blue transition-all flex items-center gap-2"
+              >
+                <Check className="w-4 h-4" />
+                <span>{editingProductId ? 'Save Product Changes' : 'Publish Product to Showroom'}</span>
+              </button>
+            </div>
 
           </div>
         </div>
@@ -1604,21 +1670,21 @@ export default function AdminProductsPage() {
 
       {/* Brand Management Modal */}
       {isBrandModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-2xl bg-[#0a0f1d] border border-white/10 rounded-3xl shadow-2xl overflow-hidden my-8 animate-in zoom-in-95">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+          <div className="w-full max-w-3xl bg-[#0a0f1d] border border-white/10 rounded-3xl shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col animate-in zoom-in-95">
             
-            {/* Header */}
-            <div className="p-6 border-b border-white/10 flex items-center justify-between bg-slate-900/50">
+            {/* Sticky Modal Header */}
+            <div className="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between bg-slate-900/90 backdrop-blur-md flex-shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-vivo-600/20 border border-vivo-500/30 flex items-center justify-center text-vivo-400">
                   <Layers className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white font-display">
+                  <h3 className="text-base sm:text-lg font-bold text-white font-display">
                     {editingBrandId ? 'Edit Brand Details' : 'Brand Management & Addition'}
                   </h3>
                   <p className="text-xs text-slate-400">
-                    Add new phone or accessory brands to sell in the showroom and attach new products.
+                    Manage authorized showroom brands, upload logos, and register new smartphone brands.
                   </p>
                 </div>
               </div>
@@ -1626,196 +1692,247 @@ export default function AdminProductsPage() {
               <button
                 type="button"
                 onClick={() => setIsBrandModalOpen(false)}
-                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white"
+                className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                title="Close Modal"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
+                <span>Close</span>
               </button>
             </div>
 
-            {/* Existing Brands List */}
-            {!editingBrandId && (
-              <div className="p-6 border-b border-white/5 space-y-3">
-                <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-                  Current Store Brands ({brands.length})
-                </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-48 overflow-y-auto pr-1">
-                  {brands.map(b => {
-                    const prodCount = products.filter(p => p.brand_id === b.id).length;
-                    return (
-                      <div
-                        key={b.id}
-                        className="p-2.5 rounded-xl bg-slate-900 border border-white/5 flex items-center justify-between gap-3 group"
-                      >
-                        <div className="flex items-center gap-2.5 overflow-hidden">
-                          <div className="relative w-8 h-8 rounded-lg overflow-hidden bg-slate-950 border border-white/10 flex-shrink-0 p-1 flex items-center justify-center">
-                            <Image src={b.logo_url} alt={b.name} fill className="object-contain p-1" />
+            {/* Scrollable Modal Content */}
+            <div className="flex-1 overflow-y-auto">
+              
+              {/* Existing Brands List */}
+              {!editingBrandId && (
+                <div className="p-4 sm:p-6 border-b border-white/5 space-y-3 bg-slate-950/40">
+                  <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center justify-between">
+                    <span>Current Store Brands ({brands.length})</span>
+                    <span className="text-[11px] text-slate-500 font-normal">Click edit icon to modify brand details</span>
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-44 overflow-y-auto pr-1">
+                    {brands.map(b => {
+                      const prodCount = products.filter(p => p.brand_id === b.id).length;
+                      return (
+                        <div
+                          key={b.id}
+                          className="p-2.5 rounded-xl bg-slate-900 border border-white/5 flex items-center justify-between gap-3 group hover:border-white/20 transition-colors"
+                        >
+                          <div className="flex items-center gap-2.5 overflow-hidden">
+                            <div className="relative w-8 h-8 rounded-lg overflow-hidden bg-slate-950 border border-white/10 flex-shrink-0 p-1 flex items-center justify-center">
+                              <Image src={b.logo_url} alt={b.name} fill className="object-contain p-1" />
+                            </div>
+                            <div className="truncate">
+                              <span className="font-bold text-white text-xs block truncate">{b.name}</span>
+                              <span className="text-[10px] text-slate-400">{prodCount} products {b.is_primary ? '· Flagship' : ''}</span>
+                            </div>
                           </div>
-                          <div className="truncate">
-                            <span className="font-bold text-white text-xs block truncate">{b.name}</span>
-                            <span className="text-[10px] text-slate-400">{prodCount} products {b.is_primary ? '· Flagship' : ''}</span>
-                          </div>
-                        </div>
 
-                        <div className="flex items-center gap-1">
-                          <button
-                            type="button"
-                            onClick={() => handleOpenBrandModal(b)}
-                            className="p-1 rounded bg-white/5 hover:bg-vivo-600/30 text-slate-300 hover:text-vivo-300 text-xs"
-                            title="Edit brand"
-                          >
-                            <Edit3 className="w-3.5 h-3.5" />
-                          </button>
-                          {brands.length > 1 && (
+                          <div className="flex items-center gap-1">
                             <button
                               type="button"
-                              onClick={() => {
-                                if (prodCount > 0) {
-                                  alert(`Cannot delete brand "${b.name}" because it currently has ${prodCount} products associated with it. Please reassign or delete the products first.`);
-                                  return;
-                                }
-                                setBrandDeleteConfirmId(b.id);
-                              }}
-                              className="p-1 rounded bg-red-500/10 hover:bg-red-500/20 text-red-400"
-                              title="Delete brand"
+                              onClick={() => handleOpenBrandModal(b)}
+                              className="p-1.5 rounded-lg bg-white/5 hover:bg-vivo-600/30 text-slate-300 hover:text-vivo-300 text-xs transition-colors"
+                              title="Edit brand"
                             >
-                              <Trash2 className="w-3.5 h-3.5" />
+                              <Edit3 className="w-3.5 h-3.5" />
                             </button>
-                          )}
+                            {brands.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (prodCount > 0) {
+                                    alert(`Cannot delete brand "${b.name}" because it currently has ${prodCount} products associated with it. Please reassign or delete the products first.`);
+                                    return;
+                                  }
+                                  setBrandDeleteConfirmId(b.id);
+                                }}
+                                className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors"
+                                title="Delete brand"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Brand Add/Edit Form */}
-            <form onSubmit={handleSaveBrand} className="p-6 space-y-4 text-xs">
-              <h4 className="text-xs font-bold text-vivo-400 uppercase tracking-wider">
-                {editingBrandId ? 'Update Brand Form' : '+ Add New Brand'}
-              </h4>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-slate-300 font-semibold">Brand Name *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. OnePlus, Apple, Nothing"
-                    value={brandFormData.name}
-                    onChange={(e) => {
-                      const name = e.target.value;
-                      const preset = BRAND_LOGO_PRESETS.find(p => p.name.toLowerCase() === name.trim().toLowerCase());
-                      setBrandFormData({
-                        ...brandFormData,
-                        name,
-                        slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-                        logo_url: preset ? preset.logo : brandFormData.logo_url
-                      });
-                    }}
-                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold focus:border-vivo-500 focus:outline-none"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-slate-300 font-semibold">URL Slug *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. oneplus, apple, nothing"
-                    value={brandFormData.slug}
-                    onChange={(e) => setBrandFormData({ ...brandFormData, slug: e.target.value })}
-                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-mono text-[11px] focus:border-vivo-500 focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Logo URL & Quick Presets */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-slate-300 font-semibold">Official Logo Image URL *</label>
-                  {brandFormData.logo_url && (
-                    <span className="text-[10px] text-emerald-400 font-medium">Logo selected</span>
-                  )}
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <div className="relative w-10 h-10 rounded-xl bg-slate-950 border border-white/10 p-1 flex-shrink-0 flex items-center justify-center">
-                    {brandFormData.logo_url && (
-                      <Image src={brandFormData.logo_url} alt="Logo preview" fill className="object-contain p-1" />
-                    )}
+                      );
+                    })}
                   </div>
-                  <input
-                    type="text"
-                    required
-                    placeholder="https://... (SVG or PNG vector image)"
-                    value={brandFormData.logo_url}
-                    onChange={(e) => setBrandFormData({ ...brandFormData, logo_url: e.target.value })}
-                    className="flex-1 p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-mono text-[11px] focus:border-vivo-500 focus:outline-none"
-                  />
                 </div>
+              )}
 
-                {/* Logo Presets */}
-                <div className="space-y-1 pt-1">
-                  <span className="text-[10px] text-slate-500">Pick Official Preset Brand Logo:</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {BRAND_LOGO_PRESETS.map((bp, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={() => setBrandFormData({
+              {/* Brand Add/Edit Form */}
+              <form id="brandForm" onSubmit={handleSaveBrand} className="p-4 sm:p-6 space-y-4 text-xs">
+                <h4 className="text-xs font-bold text-vivo-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>{editingBrandId ? 'Update Brand Details' : '+ Add New Brand to Showroom'}</span>
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div className="space-y-1">
+                    <label className="text-slate-300 font-semibold">Brand Name *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. OnePlus, Apple, Nothing"
+                      value={brandFormData.name}
+                      onChange={(e) => {
+                        const name = e.target.value;
+                        const preset = BRAND_LOGO_PRESETS.find(p => p.name.toLowerCase() === name.trim().toLowerCase());
+                        setBrandFormData({
                           ...brandFormData,
-                          logo_url: bp.logo,
-                          name: brandFormData.name || bp.name,
-                          slug: brandFormData.slug || bp.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
-                        })}
-                        className={`px-2 py-1 rounded-lg border text-[10px] transition-all flex items-center gap-1.5 ${
-                          brandFormData.logo_url === bp.logo
-                            ? 'bg-vivo-600/30 text-vivo-300 border-vivo-500/50 font-bold'
-                            : 'bg-slate-900 text-slate-400 border-white/5 hover:text-white'
-                        }`}
-                      >
-                        <div className="relative w-3 h-3 flex-shrink-0">
-                          <Image src={bp.logo} alt={bp.name} fill className="object-contain" />
-                        </div>
-                        <span>{bp.name}</span>
-                      </button>
-                    ))}
+                          name,
+                          slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+                          logo_url: preset ? preset.logo : brandFormData.logo_url
+                        });
+                      }}
+                      className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold focus:border-vivo-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-slate-300 font-semibold">URL Slug *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. oneplus, apple, nothing"
+                      value={brandFormData.slug}
+                      onChange={(e) => setBrandFormData({ ...brandFormData, slug: e.target.value })}
+                      className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-mono text-[11px] focus:border-vivo-500 focus:outline-none"
+                    />
                   </div>
                 </div>
-              </div>
 
-              {/* Description */}
-              <div className="space-y-1">
-                <label className="text-slate-300 font-semibold">Brand Tagline / Description</label>
-                <textarea
-                  rows={2}
-                  placeholder="e.g. Flagship imaging, super-fast charging & clean operating system"
-                  value={brandFormData.description}
-                  onChange={(e) => setBrandFormData({ ...brandFormData, description: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:border-vivo-500 focus:outline-none"
-                />
-              </div>
+                {/* Logo URL & Device Upload */}
+                <div className="space-y-2.5 p-3.5 rounded-2xl bg-slate-900/60 border border-white/10">
+                  <div className="flex items-center justify-between">
+                    <label className="text-slate-200 font-semibold flex items-center gap-1.5">
+                      <ImageIcon className="w-3.5 h-3.5 text-vivo-400" />
+                      <span>Official Brand Logo Graphic *</span>
+                    </label>
+                    {brandLogoUploadError ? (
+                      <span className="text-[10px] text-rose-400 font-medium">{brandLogoUploadError}</span>
+                    ) : brandFormData.logo_url ? (
+                      <span className="text-[10px] text-emerald-400 font-medium">Logo selected</span>
+                    ) : null}
+                  </div>
+                  
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                    <label className={`cursor-pointer px-3.5 py-2.5 rounded-xl border flex items-center justify-center gap-2 text-xs font-bold transition-all shadow-sm flex-shrink-0 ${
+                      isUploadingBrandLogo
+                        ? 'bg-slate-800 text-slate-400 border-white/10'
+                        : 'bg-gradient-to-r from-vivo-600 to-vivo-500 hover:from-vivo-500 text-white border-vivo-400/40 shadow-glow-blue'
+                    }`}>
+                      {isUploadingBrandLogo ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+                          <span>Uploading...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-3.5 h-3.5" />
+                          <span>Upload Logo from Device</span>
+                        </>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/*,image/jpeg,image/png,image/webp,image/svg+xml,image/heic,image/heif,.heic,.heif"
+                        disabled={isUploadingBrandLogo}
+                        onChange={handleBrandLogoUpload}
+                        className="hidden"
+                      />
+                    </label>
 
-              {/* Primary Flagship Partner Checkbox */}
-              <div className="p-3 rounded-xl bg-slate-900/80 border border-white/5 flex items-center justify-between">
-                <div>
-                  <span className="font-semibold text-white block">Primary Flagship Partner</span>
-                  <span className="text-[10px] text-slate-400">Highlights this brand with a special badge in the customer showroom.</span>
+                    <div className="flex items-center gap-2 flex-1">
+                      <div className="relative w-9 h-9 rounded-xl bg-slate-950 border border-white/10 p-1 flex-shrink-0 flex items-center justify-center">
+                        {brandFormData.logo_url && (
+                          <Image src={brandFormData.logo_url} alt="Logo preview" fill className="object-contain p-1" />
+                        )}
+                      </div>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Or paste Logo image URL (SVG/PNG)"
+                        value={brandFormData.logo_url}
+                        onChange={(e) => setBrandFormData({ ...brandFormData, logo_url: e.target.value })}
+                        className="flex-1 p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-mono text-[11px] focus:border-vivo-500 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Logo Presets */}
+                  <div className="space-y-1 pt-1">
+                    <span className="text-[10px] text-slate-500">Or Pick 1-Click Official Preset:</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {BRAND_LOGO_PRESETS.map((bp, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => setBrandFormData({
+                            ...brandFormData,
+                            logo_url: bp.logo,
+                            name: brandFormData.name || bp.name,
+                            slug: brandFormData.slug || bp.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+                          })}
+                          className={`px-2 py-1 rounded-lg border text-[10px] transition-all flex items-center gap-1.5 ${
+                            brandFormData.logo_url === bp.logo
+                              ? 'bg-vivo-600/30 text-vivo-300 border-vivo-500/50 font-bold'
+                              : 'bg-slate-900 text-slate-400 border-white/5 hover:text-white'
+                          }`}
+                        >
+                          <div className="relative w-3 h-3 flex-shrink-0">
+                            <Image src={bp.logo} alt={bp.name} fill className="object-contain" />
+                          </div>
+                          <span>{bp.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={brandFormData.is_primary}
-                    onChange={(e) => setBrandFormData({ ...brandFormData, is_primary: e.target.checked })}
-                    className="sr-only peer"
-                  />
-                  <div className="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-vivo-600"></div>
-                </label>
-              </div>
 
-              {/* Actions */}
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+                {/* Description */}
+                <div className="space-y-1">
+                  <label className="text-slate-300 font-semibold">Brand Tagline / Description</label>
+                  <textarea
+                    rows={2}
+                    placeholder="e.g. Flagship imaging, super-fast charging & clean operating system"
+                    value={brandFormData.description}
+                    onChange={(e) => setBrandFormData({ ...brandFormData, description: e.target.value })}
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:border-vivo-500 focus:outline-none"
+                  />
+                </div>
+
+                {/* Primary Flagship Partner Checkbox */}
+                <div className="p-3 rounded-xl bg-slate-900/80 border border-white/5 flex items-center justify-between">
+                  <div>
+                    <span className="font-semibold text-white block">Primary Flagship Partner</span>
+                    <span className="text-[10px] text-slate-400">Highlights this brand with a special badge in the customer showroom.</span>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={brandFormData.is_primary}
+                      onChange={(e) => setBrandFormData({ ...brandFormData, is_primary: e.target.checked })}
+                      className="sr-only peer"
+                    />
+                    <div className="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-vivo-600"></div>
+                  </label>
+                </div>
+
+              </form>
+            </div>
+
+            {/* Sticky Modal Footer */}
+            <div className="p-4 px-6 border-t border-white/10 bg-slate-900/95 backdrop-blur-md flex items-center justify-between gap-3 sticky bottom-0 z-10 flex-shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsBrandModalOpen(false)}
+                className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white text-xs font-semibold transition-colors"
+              >
+                Close Modal
+              </button>
+
+              <div className="flex items-center gap-3">
                 {editingBrandId && (
                   <button
                     type="button"
@@ -1830,20 +1947,20 @@ export default function AdminProductsPage() {
                         sort_order: brands.length + 1,
                       });
                     }}
-                    className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white"
+                    className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white text-xs font-semibold"
                   >
                     Cancel Edit
                   </button>
                 )}
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-vivo-600 to-vivo-500 hover:from-vivo-500 text-white font-bold shadow-glow-blue transition-all"
+                  form="brandForm"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-vivo-600 to-vivo-500 hover:from-vivo-500 text-white font-bold text-xs shadow-glow-blue transition-all"
                 >
                   {editingBrandId ? 'Save Brand Changes' : 'Add Brand to Catalog'}
                 </button>
               </div>
-
-            </form>
+            </div>
 
           </div>
         </div>
