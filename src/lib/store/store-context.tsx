@@ -214,9 +214,59 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const [compareList, setCompareList] = useState<Product[]>([]);
   const [wishlist, setWishlist] = useState<string[]>([]);
+  
+  // Real-time Multi-Device Sync Refs
+  const currentVersionRef = React.useRef<number>(0);
+  const isApplyingRemoteRef = React.useRef<boolean>(false);
+  const syncTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
-  // Load from localStorage if present
+  // Helper to apply remote data to React state
+  const applyRemoteData = React.useCallback((remoteData: any, version: number) => {
+    if (!remoteData) return;
+    isApplyingRemoteRef.current = true;
+    currentVersionRef.current = version;
+
+    if (Array.isArray(remoteData.products)) setProducts(remoteData.products);
+    if (Array.isArray(remoteData.brands)) setBrands(remoteData.brands);
+    if (Array.isArray(remoteData.offers)) setOffers(remoteData.offers);
+    if (Array.isArray(remoteData.categories)) setCategories(remoteData.categories);
+    if (Array.isArray(remoteData.series)) setSeries(remoteData.series);
+    if (remoteData.storeSettings) setStoreSettings(remoteData.storeSettings);
+    if (Array.isArray(remoteData.stockMovements)) setStockMovements(remoteData.stockMovements);
+    if (Array.isArray(remoteData.incomingStockList)) setIncomingStockList(remoteData.incomingStockList);
+    if (Array.isArray(remoteData.priceHistory)) setPriceHistory(remoteData.priceHistory);
+    if (Array.isArray(remoteData.notifyRequests)) setNotifyRequests(remoteData.notifyRequests);
+    if (Array.isArray(remoteData.auditLogs)) setAuditLogs(remoteData.auditLogs);
+
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(remoteData));
+    } catch {
+      // Ignore quota errors
+    }
+
+    setTimeout(() => {
+      isApplyingRemoteRef.current = false;
+    }, 100);
+  }, []);
+
+  // Poll or check server for latest updates from other devices
+  const checkServerSync = React.useCallback(async () => {
+    try {
+      const res = await fetch(`/api/sync?v=${currentVersionRef.current}`, { cache: 'no-store' });
+      if (!res.ok) return;
+      const result = await res.json();
+
+      if (!result.upToDate && result.data && result.version) {
+        applyRemoteData(result.data, result.version);
+      }
+    } catch {
+      // Server sync error (e.g. offline)
+    }
+  }, [applyRemoteData]);
+
+  // Load initial state and initiate real-time listeners
   useEffect(() => {
+    // 1. Instant local storage bootstrap
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
@@ -238,9 +288,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           const missingDefaults = INITIAL_BRANDS.filter(b => !existingIds.has(b.id));
           setBrands([...normalizedBrands, ...missingDefaults]);
         }
-        if (parsed.offers && Array.isArray(parsed.offers)) {
-          setOffers(parsed.offers);
-        }
+        if (parsed.offers && Array.isArray(parsed.offers)) setOffers(parsed.offers);
         if (parsed.stockMovements) setStockMovements(parsed.stockMovements);
         if (parsed.incomingStockList) setIncomingStockList(parsed.incomingStockList);
         if (parsed.priceHistory) setPriceHistory(parsed.priceHistory);
@@ -252,28 +300,125 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       console.warn('Failed to load local store state:', e);
     }
     setIsLoaded(true);
-  }, []);
 
-  // Save to localStorage
-  useEffect(() => {
-    if (!isLoaded) return;
+    // 2. Fetch shared live state from server
+    checkServerSync();
+
+    // 3. Heartbeat polling every 3 seconds for cross-device synchronization
+    const interval = setInterval(() => {
+      checkServerSync();
+    }, 3000);
+
+    // 4. Tab visibility change & focus listener (instant check when mobile screen turns on)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        checkServerSync();
+      }
+    };
+    window.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', checkServerSync);
+
+    // 5. BroadcastChannel for instant 0ms tab-to-tab sync on same device
+    let channel: BroadcastChannel | null = null;
     try {
-      const dataToSave = {
-        products,
-        brands,
-        offers,
-        stockMovements,
-        incomingStockList,
-        priceHistory,
-        notifyRequests,
-        auditLogs,
-        storeSettings,
-      };
+      if (typeof BroadcastChannel !== 'undefined') {
+        channel = new BroadcastChannel('galaxy_store_sync_channel');
+        channel.onmessage = (event) => {
+          if (event.data?.type === 'SYNC_REQUEST') {
+            checkServerSync();
+          }
+        };
+      }
+    } catch {
+      // BroadcastChannel fallback
+    }
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', checkServerSync);
+      if (channel) channel.close();
+    };
+  }, [checkServerSync, applyRemoteData]);
+
+  // Push updates to server and localStorage whenever state changes locally
+  useEffect(() => {
+    if (!isLoaded || isApplyingRemoteRef.current) return;
+
+    const dataToSave = {
+      products,
+      brands,
+      offers,
+      categories,
+      series,
+      stockMovements,
+      incomingStockList,
+      priceHistory,
+      notifyRequests,
+      auditLogs,
+      storeSettings,
+    };
+
+    // Save to local storage
+    try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
     } catch (e) {
-      console.warn('Failed to persist store state:', e);
+      console.warn('Failed to persist store state to localStorage:', e);
     }
-  }, [products, brands, offers, stockMovements, incomingStockList, priceHistory, notifyRequests, auditLogs, storeSettings, isLoaded]);
+
+    // Debounce server push (300ms) to ensure smooth typing and batching
+    if (syncTimeoutRef.current) {
+      clearTimeout(syncTimeoutRef.current);
+    }
+
+    syncTimeoutRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch('/api/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dataToSave),
+        });
+        if (res.ok) {
+          const result = await res.json();
+          if (result.version) {
+            currentVersionRef.current = result.version;
+          }
+
+          // Broadcast to other tabs on same device
+          if (typeof BroadcastChannel !== 'undefined') {
+            try {
+              const channel = new BroadcastChannel('galaxy_store_sync_channel');
+              channel.postMessage({ type: 'SYNC_REQUEST', version: result.version });
+              channel.close();
+            } catch {
+              // Ignore
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to push state to server:', err);
+      }
+    }, 300);
+
+    return () => {
+      if (syncTimeoutRef.current) {
+        clearTimeout(syncTimeoutRef.current);
+      }
+    };
+  }, [
+    products, 
+    brands, 
+    offers, 
+    categories, 
+    series, 
+    stockMovements, 
+    incomingStockList, 
+    priceHistory, 
+    notifyRequests, 
+    auditLogs, 
+    storeSettings, 
+    isLoaded
+  ]);
 
   // Helper: compute status based on stock and incoming
   const computeStatus = (

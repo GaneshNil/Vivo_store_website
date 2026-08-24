@@ -73,12 +73,12 @@ export const Header: React.FC = () => {
 
       {/* Main Glass Header */}
       <header className="sticky top-0 z-40 glass-nav">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 sm:h-20">
             
             {/* Store Brand & Logo */}
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative w-11 h-11 rounded-xl overflow-hidden border border-vivo-500/30 bg-slate-900 shadow-glow-blue flex-shrink-0 group-hover:border-vivo-400 transition-all">
+            <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group min-w-0 pr-2">
+              <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-xl overflow-hidden border border-vivo-500/30 bg-slate-900 shadow-glow-blue flex-shrink-0 group-hover:border-vivo-400 transition-all">
                 <Image
                   src="/assets/store-logo/IMG-20260822-WA0004.jpg"
                   alt="Galaxy Mobile Gallery Logo"
@@ -87,16 +87,16 @@ export const Header: React.FC = () => {
                   priority
                 />
               </div>
-              <div className="flex flex-col">
+              <div className="flex flex-col min-w-0 justify-center">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-display font-bold text-lg md:text-xl tracking-tight text-white group-hover:text-gradient-vivo transition-all">
+                  <span className="font-display font-bold text-sm sm:text-lg md:text-xl tracking-tight text-white group-hover:text-gradient-vivo transition-all truncate">
                     GALAXY MOBILE
                   </span>
-                  <span className="text-[10px] uppercase font-bold tracking-widest bg-vivo-500/20 text-vivo-400 px-1.5 py-0.5 rounded border border-vivo-500/30">
+                  <span className="text-[8.5px] sm:text-[10px] uppercase font-extrabold tracking-wider bg-vivo-500/20 text-vivo-400 px-1.5 py-0.5 rounded border border-vivo-500/30 flex-shrink-0">
                     VIVO SHOWROOM
                   </span>
                 </div>
-                <span className="text-xs text-slate-400 tracking-wide">
+                <span className="text-[10px] sm:text-xs text-slate-400 tracking-wide truncate">
                   Gallery & Accessories · Begampur
                 </span>
               </div>
@@ -128,23 +128,23 @@ export const Header: React.FC = () => {
             </nav>
 
             {/* Header Right Action Utilities */}
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
               {/* Search Button */}
               <Link
                 href="/mobiles"
-                className="p-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 border border-white/5 transition-all"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl text-slate-300 hover:text-white bg-slate-900/60 hover:bg-white/10 border border-white/10 transition-all flex items-center justify-center"
                 title="Search Phones & Accessories"
               >
-                <Search className="w-4.5 h-4.5" />
+                <Search className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
               </Link>
 
-              {/* Compare Quick Action */}
+              {/* Compare Quick Action (Desktop & Tablet) */}
               <Link
                 href="/compare"
-                className="relative p-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 border border-white/5 transition-all hidden sm:flex items-center"
+                className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl text-slate-300 hover:text-white bg-slate-900/60 hover:bg-white/10 border border-white/10 transition-all hidden sm:flex items-center justify-center"
                 title="Compare Specifications"
               >
-                <Layers className="w-4.5 h-4.5" />
+                <Layers className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                 {compareList.length > 0 && (
                   <span className="absolute -top-1 -right-1 bg-origin-violet text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-[#080C14]">
                     {compareList.length}
@@ -152,24 +152,23 @@ export const Header: React.FC = () => {
                 )}
               </Link>
 
-              {/* Store Directions CTA */}
+              {/* Store Directions CTA (Desktop & Tablet only) */}
               <Link
                 href="/store"
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-vivo-600 to-origin-violet hover:from-vivo-500 hover:to-origin-purple text-white text-sm font-semibold shadow-glow-blue hover:shadow-glow-violet transition-all transform hover:-translate-y-0.5"
+                className="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-vivo-600 to-origin-violet hover:from-vivo-500 hover:to-origin-purple text-white text-sm font-semibold shadow-glow-blue hover:shadow-glow-violet transition-all transform hover:-translate-y-0.5"
               >
                 <MapPin className="w-4 h-4 text-cyan-200" />
-                <span className="hidden sm:inline">Visit Showroom</span>
-                <span className="sm:hidden">Store</span>
+                <span>Visit Showroom</span>
               </Link>
 
-              {/* Mobile Menu Toggle */}
+              {/* Mobile Menu Toggle (Three Lines) */}
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-white/5 border border-white/5"
+                className="lg:hidden w-9 h-9 sm:w-10 sm:h-10 rounded-xl text-slate-300 hover:text-white bg-slate-900/60 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-all"
                 aria-label="Toggle menu"
               >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                {mobileMenuOpen ? <X className="w-4.5 h-4.5" /> : <Menu className="w-4.5 h-4.5" />}
               </button>
             </div>
           </div>
