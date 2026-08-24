@@ -236,7 +236,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (Array.isArray(remoteData.incomingStockList)) setIncomingStockList(remoteData.incomingStockList);
     if (Array.isArray(remoteData.priceHistory)) setPriceHistory(remoteData.priceHistory);
     if (Array.isArray(remoteData.notifyRequests)) setNotifyRequests(remoteData.notifyRequests);
-    if (Array.isArray(remoteData.auditLogs)) setAuditLogs(remoteData.auditLogs);
+
+    // Merge Audit Logs monotonically so they are permanently preserved
+    setAuditLogs(prev => {
+      const map = new Map();
+      [...(prev || []), ...(Array.isArray(remoteData.auditLogs) ? remoteData.auditLogs : [])].forEach(l => {
+        if (l && l.id) map.set(l.id, l);
+      });
+      return Array.from(map.values()).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    });
 
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(remoteData));
@@ -366,7 +374,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       console.warn('Failed to persist store state to localStorage:', e);
     }
 
-    // Debounce server push (300ms) to ensure smooth typing and batching
+    // Fast server push (100ms) to ensure instant synchronization without lagging
     if (syncTimeoutRef.current) {
       clearTimeout(syncTimeoutRef.current);
     }
@@ -398,7 +406,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       } catch (err) {
         console.warn('Failed to push state to server:', err);
       }
-    }, 300);
+    }, 100);
 
     return () => {
       if (syncTimeoutRef.current) {

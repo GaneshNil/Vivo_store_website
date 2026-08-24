@@ -133,23 +133,147 @@ function formatAuditToPlainEnglish(log: {
 export default function AdminAuditLogsPage() {
   const { auditLogs } = useStore();
 
+  // Search & Filter State
+  const [searchKeyword, setSearchKeyword] = React.useState('');
+  const [selectedDate, setSelectedDate] = React.useState('');
+  const [selectedActionGroup, setSelectedActionGroup] = React.useState('ALL');
+
+  // Filter logs based on search keyword, date, and action group
+  const filteredLogs = React.useMemo(() => {
+    return auditLogs.filter(log => {
+      // 1. Date Filter
+      if (selectedDate) {
+        const logDate = log.created_at.split('T')[0];
+        if (logDate !== selectedDate) return false;
+      }
+
+      // 2. Action Group Filter
+      if (selectedActionGroup !== 'ALL') {
+        const action = (log.action || '').toUpperCase();
+        if (selectedActionGroup === 'OFFER' && !action.includes('OFFER') && !action.includes('SCHEME')) return false;
+        if (selectedActionGroup === 'PRODUCT' && !action.includes('PRODUCT')) return false;
+        if (selectedActionGroup === 'PRICE' && !action.includes('PRICE')) return false;
+        if (selectedActionGroup === 'STOCK' && !action.includes('STOCK')) return false;
+        if (selectedActionGroup === 'BRAND' && !action.includes('BRAND')) return false;
+        if (selectedActionGroup === 'SETTINGS' && !action.includes('SETTINGS')) return false;
+        if (selectedActionGroup === 'NOTIFY' && !action.includes('NOTIFY')) return false;
+      }
+
+      // 3. Search Keyword
+      if (searchKeyword.trim()) {
+        const q = searchKeyword.toLowerCase();
+        const plainText = formatAuditToPlainEnglish(log).toLowerCase();
+        const adminEmail = (log.admin_email || '').toLowerCase();
+        const action = (log.action || '').toLowerCase();
+        const entity = (log.entity_type || '').toLowerCase();
+        const entityId = (log.entity_id || '').toLowerCase();
+
+        return (
+          plainText.includes(q) ||
+          adminEmail.includes(q) ||
+          action.includes(q) ||
+          entity.includes(q) ||
+          entityId.includes(q)
+        );
+      }
+
+      return true;
+    });
+  }, [auditLogs, searchKeyword, selectedDate, selectedActionGroup]);
+
+  const hasActiveFilters = Boolean(searchKeyword || selectedDate || selectedActionGroup !== 'ALL');
+
+  const handleResetFilters = () => {
+    setSearchKeyword('');
+    setSelectedDate('');
+    setSelectedActionGroup('ALL');
+  };
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       
       {/* Header */}
       <div>
         <h1 className="text-2xl font-extrabold text-white font-display">System Audit Logs</h1>
-        <p className="text-xs text-slate-400">Immutable security ledger recording every administrative mutation, price change & stock movement in clear English.</p>
+        <p className="text-xs text-slate-400">
+          Immutable security ledger permanently recording every administrative mutation, price change & stock movement in clear English.
+        </p>
+      </div>
+
+      {/* Search & Filter Toolbar */}
+      <div className="p-4 rounded-2xl glass-panel border border-white/10 space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+            <span>Filter & Search Audit Activity</span>
+            <span className="px-2 py-0.5 rounded-full bg-vivo-500/20 text-vivo-300 border border-vivo-500/30 text-[10px]">
+              {filteredLogs.length} of {auditLogs.length} logs
+            </span>
+          </span>
+
+          {hasActiveFilters && (
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              className="text-[11px] text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1 transition-colors"
+            >
+              <span>Reset Filters</span>
+            </button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          {/* Keyword Search Input */}
+          <div className="space-y-1">
+            <label className="text-[11px] text-slate-400 font-medium">Search Activity / Keyword</label>
+            <input
+              type="text"
+              placeholder="Search by offer, phone name, price, user..."
+              value={searchKeyword}
+              onChange={(e) => setSearchKeyword(e.target.value)}
+              className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white placeholder:text-slate-500 focus:border-vivo-500 focus:outline-none"
+            />
+          </div>
+
+          {/* Date Picker Filter */}
+          <div className="space-y-1">
+            <label className="text-[11px] text-slate-400 font-medium">Filter by Specific Date</label>
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:border-vivo-500 focus:outline-none"
+            />
+          </div>
+
+          {/* Action Type Category Filter */}
+          <div className="space-y-1">
+            <label className="text-[11px] text-slate-400 font-medium">Filter by Action Category</label>
+            <select
+              value={selectedActionGroup}
+              onChange={(e) => setSelectedActionGroup(e.target.value)}
+              className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:border-vivo-500 focus:outline-none"
+            >
+              <option value="ALL">All Recorded Actions</option>
+              <option value="OFFER">Store Offers & Schemes</option>
+              <option value="PRODUCT">Product Creation & Updates</option>
+              <option value="PRICE">Price Updates & Discounts</option>
+              <option value="STOCK">Inventory, Stock & Shipments</option>
+              <option value="BRAND">Brand Management</option>
+              <option value="SETTINGS">Store Info & Settings</option>
+              <option value="NOTIFY">Customer Notify Requests</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       {/* Audit Logs Table */}
       <div className="rounded-2xl glass-panel border border-white/10 overflow-hidden shadow-xl">
-        <div className="p-4 border-b border-white/10 flex items-center justify-between">
+        <div className="p-4 border-b border-white/10 flex items-center justify-between bg-slate-950/40">
           <h3 className="font-bold text-sm text-white flex items-center gap-2">
             <ShieldAlert className="w-4 h-4 text-origin-violet" />
-            <span>Recorded Admin Mutations ({auditLogs.length})</span>
+            <span>Audit Trail Ledger</span>
           </h3>
-          <span className="text-xs text-slate-400 font-medium">Plain English activity summary</span>
+          <span className="text-xs text-slate-400 font-medium">Immutable chronological activity stream</span>
         </div>
 
         <div className="overflow-x-auto">
@@ -165,37 +289,46 @@ export default function AdminAuditLogsPage() {
             </thead>
 
             <tbody className="divide-y divide-white/5">
-              {auditLogs.map(log => {
-                const plainEnglishText = formatAuditToPlainEnglish(log);
-                return (
-                  <tr key={log.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="p-4 text-slate-400 whitespace-nowrap">{formatDateTime(log.created_at)}</td>
-                    
-                    <td className="p-4 font-semibold text-slate-200 whitespace-nowrap">
-                      <span className="flex items-center gap-1.5">
-                        <UserCheck className="w-3.5 h-3.5 text-vivo-400" />
-                        <span>{log.admin_email}</span>
-                      </span>
-                    </td>
+              {filteredLogs.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="p-8 text-center text-slate-400">
+                    <p className="font-semibold text-slate-300 text-sm">No audit logs matching your filter criteria.</p>
+                    <p className="text-xs text-slate-500 mt-1">Try changing your search keyword, date, or action category filter.</p>
+                  </td>
+                </tr>
+              ) : (
+                filteredLogs.map(log => {
+                  const plainEnglishText = formatAuditToPlainEnglish(log);
+                  return (
+                    <tr key={log.id} className="hover:bg-white/[0.02] transition-colors">
+                      <td className="p-4 text-slate-400 whitespace-nowrap">{formatDateTime(log.created_at)}</td>
+                      
+                      <td className="p-4 font-semibold text-slate-200 whitespace-nowrap">
+                        <span className="flex items-center gap-1.5">
+                          <UserCheck className="w-3.5 h-3.5 text-vivo-400" />
+                          <span>{log.admin_email}</span>
+                        </span>
+                      </td>
 
-                    <td className="p-4 whitespace-nowrap">
-                      <span className="px-2.5 py-1 rounded-lg font-mono text-[10px] font-bold bg-vivo-500/15 text-vivo-300 border border-vivo-500/30">
-                        {log.action}
-                      </span>
-                    </td>
+                      <td className="p-4 whitespace-nowrap">
+                        <span className="px-2.5 py-1 rounded-lg font-mono text-[10px] font-bold bg-vivo-500/15 text-vivo-300 border border-vivo-500/30">
+                          {log.action}
+                        </span>
+                      </td>
 
-                    <td className="p-4 font-mono text-slate-300 whitespace-nowrap">
-                      <span className="px-2 py-0.5 rounded bg-slate-900 border border-white/5 text-[11px] text-slate-300">
-                        {log.entity_type}
-                      </span>
-                    </td>
+                      <td className="p-4 font-mono text-slate-300 whitespace-nowrap">
+                        <span className="px-2 py-0.5 rounded bg-slate-900 border border-white/5 text-[11px] text-slate-300">
+                          {log.entity_type}
+                        </span>
+                      </td>
 
-                    <td className="p-4 text-slate-200 text-xs leading-relaxed font-medium min-w-[320px]">
-                      {plainEnglishText}
-                    </td>
-                  </tr>
-                );
-              })}
+                      <td className="p-4 text-slate-200 text-xs leading-relaxed font-medium min-w-[320px]">
+                        {plainEnglishText}
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
