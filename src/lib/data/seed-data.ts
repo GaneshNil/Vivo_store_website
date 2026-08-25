@@ -1166,7 +1166,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     },
     sort_order: 16,
     images: [
-      { id: 'img-x300fe-1', product_id: 'prod-vivo-x300-fe', image_url: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO X300 FE Urban Olive Green', view_type: 'front', is_primary: true, sort_order: 1 }
+      { id: 'img-x300fe-1', product_id: 'prod-vivo-x300-fe', image_url: '/assets/products/vivo-x300-fe.jpg', alt_text: 'VIVO X300 FE Urban Olive Green', view_type: 'front', is_primary: true, sort_order: 1 }
     ],
     variants: [
       {
@@ -1301,7 +1301,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     },
     sort_order: 17,
     images: [
-      { id: 'img-v70fe-1', product_id: 'prod-vivo-v70-fe', image_url: 'https://images.unsplash.com/photo-1565849904461-04a58ad377e0?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO V70 FE Northern Lights Purple', view_type: 'front', is_primary: true, sort_order: 1 }
+      { id: 'img-v70fe-1', product_id: 'prod-vivo-v70-fe', image_url: '/assets/products/vivo-v70-fe.jpg', alt_text: 'VIVO V70 FE Northern Lights Purple', view_type: 'front', is_primary: true, sort_order: 1 }
     ],
     variants: [
       {
@@ -1431,7 +1431,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     },
     sort_order: 18,
     images: [
-      { id: 'img-y11-1', product_id: 'prod-vivo-y11-5g', image_url: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO Y11 5G Pearl Marble White', view_type: 'front', is_primary: true, sort_order: 1 }
+      { id: 'img-y11-1', product_id: 'prod-vivo-y11-5g', image_url: '/assets/products/vivo-y11-5g.jpg', alt_text: 'VIVO Y11 5G Pearl Marble White', view_type: 'front', is_primary: true, sort_order: 1 }
     ],
     variants: [
       {
@@ -1541,7 +1541,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     },
     sort_order: 19,
     images: [
-      { id: 'img-y51pro-1', product_id: 'prod-vivo-y51-pro-5g', image_url: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO Y51 Pro 5G Crimson Wine Red', view_type: 'front', is_primary: true, sort_order: 1 }
+      { id: 'img-y51pro-1', product_id: 'prod-vivo-y51-pro-5g', image_url: '/assets/products/vivo-y51-pro-5g.jpg', alt_text: 'VIVO Y51 Pro 5G Crimson Wine Red', view_type: 'front', is_primary: true, sort_order: 1 }
     ],
     variants: [
       {
@@ -1662,7 +1662,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     },
     sort_order: 20,
     images: [
-      { id: 'img-x300pro-1', product_id: 'prod-vivo-x300-pro', image_url: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO X300 Pro 5G Titanium Desert Gold', view_type: 'front', is_primary: true, sort_order: 1 }
+      { id: 'img-x300pro-1', product_id: 'prod-vivo-x300-pro', image_url: '/assets/products/vivo-x300-pro-5g.jpg', alt_text: 'VIVO X300 Pro 5G Titanium Desert Gold', view_type: 'front', is_primary: true, sort_order: 1 }
     ],
     variants: [
       {
@@ -1751,7 +1751,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     },
     sort_order: 21,
     images: [
-      { id: 'img-y31-1', product_id: 'prod-vivo-y31-5g', image_url: 'https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO Y31 5G Dark Emerald Green', view_type: 'front', is_primary: true, sort_order: 1 }
+      { id: 'img-y31-1', product_id: 'prod-vivo-y31-5g', image_url: '/assets/products/vivo-y31-5g.jpg', alt_text: 'VIVO Y31 5G Dark Emerald Green', view_type: 'front', is_primary: true, sort_order: 1 }
     ],
     variants: [
       {
@@ -1866,7 +1866,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     },
     sort_order: 22,
     images: [
-      { id: 'img-v70e-1', product_id: 'prod-vivo-v70-elite', image_url: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO V70 Elite Sunset Rose Coral', view_type: 'front', is_primary: true, sort_order: 1 }
+      { id: 'img-v70e-1', product_id: 'prod-vivo-v70-elite', image_url: '/assets/products/vivo-v70-elite.jpg', alt_text: 'VIVO V70 Elite Sunset Rose Coral', view_type: 'front', is_primary: true, sort_order: 1 }
     ],
     variants: [
       {
@@ -1985,7 +1985,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     },
     sort_order: 23,
     images: [
-      { id: 'img-x300u-1', product_id: 'prod-vivo-x300-ultra', image_url: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO X300 Ultra Titanium Mint Green', view_type: 'front', is_primary: true, sort_order: 1 }
+      { id: 'img-x300u-1', product_id: 'prod-vivo-x300-ultra', image_url: '/assets/products/vivo-x300-ultra-5g.jpg', alt_text: 'VIVO X300 Ultra Titanium Mint Green', view_type: 'front', is_primary: true, sort_order: 1 }
     ],
     variants: [
       {
@@ -2074,7 +2074,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     },
     sort_order: 24,
     images: [
-      { id: 'img-y31t-1', product_id: 'prod-vivo-y31t-5g', image_url: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO Y31t 5G Burgundy Wine Red', view_type: 'front', is_primary: true, sort_order: 1 }
+      { id: 'img-y31t-1', product_id: 'prod-vivo-y31t-5g', image_url: '/assets/products/vivo-y31t-5g.jpg', alt_text: 'VIVO Y31t 5G Burgundy Wine Red', view_type: 'front', is_primary: true, sort_order: 1 }
     ],
     variants: [
       {
@@ -2204,7 +2204,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     },
     sort_order: 25,
     images: [
-      { id: 'img-y400-1', product_id: 'prod-vivo-y400-5g', image_url: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO Y400 5G Military Olive Green', view_type: 'front', is_primary: true, sort_order: 1 }
+      { id: 'img-y400-1', product_id: 'prod-vivo-y400-5g', image_url: '/assets/products/vivo-y400-5g.jpg', alt_text: 'VIVO Y400 5G Military Olive Green', view_type: 'front', is_primary: true, sort_order: 1 }
     ],
     variants: [
       {
@@ -2311,7 +2311,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     },
     sort_order: 26,
     images: [
-      { id: 'img-y05-1', product_id: 'prod-vivo-y05', image_url: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO Y05 Pearl Ivory White', view_type: 'front', is_primary: true, sort_order: 1 }
+      { id: 'img-y05-1', product_id: 'prod-vivo-y05', image_url: '/assets/products/vivo-y05.jpg', alt_text: 'VIVO Y05 Pearl Ivory White', view_type: 'front', is_primary: true, sort_order: 1 }
     ],
     variants: [
       {
@@ -2406,7 +2406,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     },
     sort_order: 27,
     images: [
-      { id: 'img-v70-1', product_id: 'prod-vivo-v70-5g', image_url: 'https://images.unsplash.com/photo-1565849904461-04a58ad377e0?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO V70 5G Desert Champagne Gold', view_type: 'front', is_primary: true, sort_order: 1 }
+      { id: 'img-v70-1', product_id: 'prod-vivo-v70-5g', image_url: '/assets/products/vivo-v70-5g.jpg', alt_text: 'VIVO V70 5G Desert Champagne Gold', view_type: 'front', is_primary: true, sort_order: 1 }
     ],
     variants: [
       {
@@ -2514,7 +2514,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     },
     sort_order: 28,
     images: [
-      { id: 'img-y21-1', product_id: 'prod-vivo-y21-5g', image_url: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO Y21 5G Midnight Cosmic Navy', view_type: 'front', is_primary: true, sort_order: 1 }
+      { id: 'img-y21-1', product_id: 'prod-vivo-y21-5g', image_url: '/assets/products/vivo-y21-5g.jpg', alt_text: 'VIVO Y21 5G Midnight Cosmic Navy', view_type: 'front', is_primary: true, sort_order: 1 }
     ],
     variants: [
       {
