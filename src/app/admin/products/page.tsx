@@ -66,16 +66,25 @@ const STORAGE_OPTIONS = ['64GB', '128GB', '256GB', '512GB', '1TB'];
 const TENURE_OPTIONS = [3, 6, 9, 12, 18, 24];
 
 export default function AdminProductsPage() {
-  const { products, brands, categories, series, storeSettings, addProduct, updateProduct, deleteProduct, setHeroFlagshipProduct, addBrand, updateBrand, deleteBrand } = useStore();
+  const { products, brands, categories, series, storeSettings, addProduct, updateProduct, deleteProduct, setHeroFlagshipProduct, addBrand, updateBrand, deleteBrand, addSeries, updateSeries, deleteSeries } = useStore();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBrand, setSelectedBrand] = useState('all');
   const [selectedType, setSelectedType] = useState<'all' | 'phone' | 'accessory'>('all');
   
+  // Series Management Modal State
+  const [isSeriesModalOpen, setIsSeriesModalOpen] = useState(false);
+  const [seriesFormData, setSeriesFormData] = useState({
+    brand_id: brands[0]?.id || '',
+    name: '',
+    description: '',
+  });
+
   // Brand Management Modal State
   const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
   const [editingBrandId, setEditingBrandId] = useState<string | null>(null);
   const [brandDeleteConfirmId, setBrandDeleteConfirmId] = useState<string | null>(null);
+  const [newSeriesNameInBrandModal, setNewSeriesNameInBrandModal] = useState('');
   const [brandFormData, setBrandFormData] = useState({
     name: '',
     slug: '',
@@ -203,6 +212,26 @@ export default function AdminProductsPage() {
 
     fireConfetti({ particleCount: 35, spread: 50, origin: { y: 0.6 } });
     setIsBrandModalOpen(false);
+  };
+
+  const handleSaveSeries = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!seriesFormData.name.trim() || !seriesFormData.brand_id) return;
+
+    const created = addSeries({
+      brand_id: seriesFormData.brand_id,
+      name: seriesFormData.name.trim(),
+      slug: seriesFormData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      description: seriesFormData.description.trim() || `${seriesFormData.name.trim()} lineup`,
+    });
+
+    if (isModalOpen) {
+      setFormData(prev => ({ ...prev, series_id: created.id }));
+    }
+
+    fireConfetti({ particleCount: 35, spread: 50, origin: { y: 0.6 } });
+    setIsSeriesModalOpen(false);
+    setSeriesFormData({ brand_id: formData.brand_id, name: '', description: '' });
   };
   
   // Modal states (Add & Edit)
@@ -1147,16 +1176,39 @@ export default function AdminProductsPage() {
 
                 {formData.is_phone && (
                   <div className="space-y-1">
-                    <label className="text-slate-300 font-semibold">Series</label>
+                    <div className="flex items-center justify-between">
+                      <label className="text-slate-300 font-semibold">Series / Model Lineup</label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSeriesFormData({
+                            brand_id: formData.brand_id,
+                            name: '',
+                            description: '',
+                          });
+                          setIsSeriesModalOpen(true);
+                        }}
+                        className="text-[11px] text-vivo-400 hover:text-vivo-300 font-semibold flex items-center gap-1"
+                      >
+                        <PlusCircle className="w-3.5 h-3.5" />
+                        <span>+ Add Series</span>
+                      </button>
+                    </div>
                     <select
-                      value={formData.series_id}
+                      value={formData.series_id || ''}
                       onChange={(e) => setFormData({ ...formData, series_id: e.target.value })}
                       className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-vivo-500"
                     >
-                      {series.map(s => (
+                      <option value="">No Series / General Lineup</option>
+                      {series.filter(s => s.brand_id === formData.brand_id).map(s => (
                         <option key={s.id} value={s.id}>{s.name}</option>
                       ))}
                     </select>
+                    {series.filter(s => s.brand_id === formData.brand_id).length === 0 && (
+                      <p className="text-[10px] text-amber-400">
+                        No series configured for this brand yet. Click &quot;+ Add Series&quot; above to create one.
+                      </p>
+                    )}
                   </div>
                 )}
               </div>
@@ -2052,6 +2104,102 @@ export default function AdminProductsPage() {
               </div>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* Series Management Modal */}
+      {isSeriesModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-[#0a0f1d] border border-vivo-500/30 rounded-3xl shadow-2xl overflow-hidden p-6 space-y-5 animate-in zoom-in-95">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-vivo-600/20 text-vivo-400 flex items-center justify-center">
+                  <Smartphone className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-base font-bold text-white font-display">Create Smartphone Series</h4>
+                  <p className="text-[11px] text-slate-400">Add a model lineup for the selected brand</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsSeriesModalOpen(false)}
+                className="p-1 text-slate-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveSeries} className="space-y-4 text-xs">
+              <div className="space-y-1">
+                <label className="text-slate-300 font-semibold">Target Brand *</label>
+                <select
+                  value={seriesFormData.brand_id}
+                  onChange={(e) => setSeriesFormData({ ...seriesFormData, brand_id: e.target.value })}
+                  className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-vivo-500"
+                >
+                  {brands.map(b => (
+                    <option key={b.id} value={b.id}>{b.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-slate-300 font-semibold">Series / Lineup Name *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Galaxy S Series, Reno Series, Nord Series"
+                  value={seriesFormData.name}
+                  onChange={(e) => setSeriesFormData({ ...seriesFormData, name: e.target.value })}
+                  className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold focus:border-vivo-500 focus:outline-none"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-slate-300 font-semibold">Description / Key Selling Point</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Flagship AI Cameras & Ultra Performance"
+                  value={seriesFormData.description}
+                  onChange={(e) => setSeriesFormData({ ...seriesFormData, description: e.target.value })}
+                  className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:border-vivo-500 focus:outline-none"
+                />
+              </div>
+
+              {/* Existing Series for Selected Brand */}
+              {series.filter(s => s.brand_id === seriesFormData.brand_id).length > 0 && (
+                <div className="p-3 rounded-xl bg-slate-900/60 border border-white/5 space-y-1.5">
+                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                    Existing Series for this Brand:
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {series.filter(s => s.brand_id === seriesFormData.brand_id).map(s => (
+                      <span key={s.id} className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[11px] text-slate-300">
+                        {s.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setIsSeriesModalOpen(false)}
+                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-xl bg-vivo-600 hover:bg-vivo-500 text-white font-bold text-xs shadow-glow-blue"
+                >
+                  Create Series
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

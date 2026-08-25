@@ -46,6 +46,7 @@ interface StoreContextType {
   auditLogs: AuditLog[];
   compareList: Product[];
   wishlist: string[]; // product IDs
+  isLoaded: boolean;
 
   // Product Actions
   addProduct: (product: Omit<Product, 'id'>) => Product;
@@ -56,6 +57,11 @@ interface StoreContextType {
   addBrand: (brand: Omit<Brand, 'id'>) => Brand;
   updateBrand: (id: string, updates: Partial<Brand>) => void;
   deleteBrand: (id: string) => void;
+
+  // Series Actions
+  addSeries: (seriesData: Omit<Series, 'id'>) => Series;
+  updateSeries: (id: string, updates: Partial<Series>) => void;
+  deleteSeries: (id: string) => void;
   
   // Inventory & Price Actions
   updateVariantPrice: (productId: string, variantId: string, mrp: number, sellingPrice: number, reason?: string) => void;
@@ -295,6 +301,16 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           const existingIds = new Set(normalizedBrands.map((b: Brand) => b.id));
           const missingDefaults = INITIAL_BRANDS.filter(b => !existingIds.has(b.id));
           setBrands([...normalizedBrands, ...missingDefaults]);
+        }
+        if (parsed.categories && Array.isArray(parsed.categories)) {
+          const existingIds = new Set(parsed.categories.map((c: Category) => c.id));
+          const missingDefaults = INITIAL_CATEGORIES.filter(c => !existingIds.has(c.id));
+          setCategories([...parsed.categories, ...missingDefaults]);
+        }
+        if (parsed.series && Array.isArray(parsed.series)) {
+          const existingIds = new Set(parsed.series.map((s: Series) => s.id));
+          const missingDefaults = INITIAL_SERIES.filter(s => !existingIds.has(s.id));
+          setSeries([...parsed.series, ...missingDefaults]);
         }
         if (parsed.offers && Array.isArray(parsed.offers)) setOffers(parsed.offers);
         if (parsed.stockMovements) setStockMovements(parsed.stockMovements);
@@ -617,6 +633,44 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       },
       ...prev,
     ]);
+  };
+
+  // 3c. Series Actions
+  const addSeries = (seriesData: Omit<Series, 'id'>): Series => {
+    const slug = seriesData.slug || seriesData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const id = `series-${slug}-${Date.now()}`;
+    const newSeries: Series = {
+      ...seriesData,
+      id,
+      slug,
+    };
+
+    setSeries(prev => [...prev, newSeries]);
+
+    setAuditLogs(prev => [
+      {
+        id: `audit-${Date.now()}`,
+        admin_email: 'admin@galaxymobile.com',
+        action: 'SERIES_CREATED',
+        entity_type: 'SERIES',
+        entity_id: id,
+        details: { name: newSeries.name, brand_id: newSeries.brand_id },
+        created_at: new Date().toISOString(),
+      },
+      ...prev,
+    ]);
+
+    return newSeries;
+  };
+
+  const updateSeries = (id: string, updates: Partial<Series>) => {
+    setSeries(prev =>
+      prev.map(s => (s.id === id ? { ...s, ...updates } : s))
+    );
+  };
+
+  const deleteSeries = (id: string) => {
+    setSeries(prev => prev.filter(s => s.id !== id));
   };
 
   // 4. Update Variant Price
@@ -1122,12 +1176,16 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       auditLogs,
       compareList,
       wishlist,
+      isLoaded,
       addProduct,
       updateProduct,
       deleteProduct,
       addBrand,
       updateBrand,
       deleteBrand,
+      addSeries,
+      updateSeries,
+      deleteSeries,
       updateVariantPrice,
       updateVariantStock,
       addIncomingStock,
@@ -1166,6 +1224,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       auditLogs,
       compareList,
       wishlist,
+      isLoaded,
     ]
   );
 

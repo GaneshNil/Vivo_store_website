@@ -42,11 +42,43 @@ function MobilesContent() {
 
   // Dynamic filter options from data
   const availableBrands = useMemo(() => brands.filter(b => b.slug !== 'galaxy-store-genuine'), [brands]);
+  
   const availableSeries = useMemo(() => {
-    if (selectedBrand === 'all') return series;
-    const b = brands.find(brand => brand.slug === selectedBrand);
-    return b ? series.filter(s => s.brand_id === b.id) : series;
-  }, [series, brands, selectedBrand]);
+    const seriesMap = new Map();
+    if (selectedBrand !== 'all') {
+      const b = brands.find(brand => brand.slug === selectedBrand || brand.id === selectedBrand);
+      if (b) {
+        series.filter(s => s.brand_id === b.id).forEach(s => seriesMap.set(s.id, s));
+        phoneProducts.filter(p => p.brand_id === b.id || p.brand?.slug === selectedBrand).forEach(p => {
+          if (p.series && (p.series.id || p.series.name)) {
+            const sId = p.series.id || `series-${p.series.slug || p.series.name}`;
+            seriesMap.set(sId, {
+              id: sId,
+              name: p.series.name,
+              slug: p.series.slug || p.series.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+              brand_id: b.id
+            });
+          }
+        });
+      }
+      return Array.from(seriesMap.values());
+    }
+
+    // All brands: combine global series list and any series from phone products
+    series.forEach(s => seriesMap.set(s.id, s));
+    phoneProducts.forEach(p => {
+      if (p.series && (p.series.id || p.series.name)) {
+        const sId = p.series.id || `series-${p.series.slug || p.series.name}`;
+        seriesMap.set(sId, {
+          id: sId,
+          name: p.series.name,
+          slug: p.series.slug || p.series.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          brand_id: p.brand_id || ''
+        });
+      }
+    });
+    return Array.from(seriesMap.values());
+  }, [series, brands, selectedBrand, phoneProducts]);
 
   // Filtering Logic
   const filteredProducts = useMemo(() => {
@@ -72,12 +104,21 @@ function MobilesContent() {
 
       // 2. Brand
       if (selectedBrand !== 'all') {
-        if (prod.brand?.slug !== selectedBrand) return false;
+        const matchBrand = prod.brand?.slug === selectedBrand ||
+                           prod.brand_id === selectedBrand ||
+                           prod.brand?.id === selectedBrand ||
+                           brands.find(b => b.slug === selectedBrand || b.id === selectedBrand)?.id === prod.brand_id;
+        if (!matchBrand) return false;
       }
 
       // 3. Series
       if (selectedSeries !== 'all') {
-        if (prod.series?.slug !== selectedSeries) return false;
+        const matchSeries = prod.series?.slug === selectedSeries ||
+                            prod.series_id === selectedSeries ||
+                            prod.series?.id === selectedSeries ||
+                            prod.series?.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-') === selectedSeries ||
+                            series.find(s => s.slug === selectedSeries || s.id === selectedSeries)?.id === prod.series_id;
+        if (!matchSeries) return false;
       }
 
       // 4. Price Range (based on minimum variant price)
@@ -126,7 +167,7 @@ function MobilesContent() {
       }
       return a.sort_order - b.sort_order;
     });
-  }, [phoneProducts, searchQuery, selectedBrand, selectedSeries, priceRange, selectedRam, selectedStorage, selectedStatus, fiveGOnly, sortBy]);
+  }, [phoneProducts, searchQuery, selectedBrand, selectedSeries, priceRange, selectedRam, selectedStorage, selectedStatus, fiveGOnly, sortBy, brands, series]);
 
   const resetFilters = () => {
     setSearchQuery('');

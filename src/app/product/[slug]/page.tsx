@@ -38,9 +38,25 @@ import { fireConfetti } from '@/lib/utils/confetti';
 
 export default function ProductDetailPage() {
   const { slug } = useParams();
-  const { products, storeSettings, addToCompare, compareList, toggleWishlist, isInWishlist, submitNotifyRequest } = useStore();
+  const { products, storeSettings, addToCompare, compareList, toggleWishlist, isInWishlist, submitNotifyRequest, isLoaded } = useStore();
 
-  const product = products.find(p => p.slug === slug);
+  const rawSlug = Array.isArray(slug) ? slug[0] : (slug ? String(slug) : '');
+  const decodedSlug = decodeURIComponent(rawSlug).toLowerCase().trim();
+
+  const product = useMemo(() => {
+    return products.find(p => {
+      if (!p) return false;
+      const pSlug = (p.slug || '').toLowerCase().trim();
+      const pId = (p.id || '').toLowerCase().trim();
+      const pName = (p.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').trim();
+      return pSlug === decodedSlug ||
+             pId === decodedSlug ||
+             pSlug === rawSlug.toLowerCase().trim() ||
+             pId === rawSlug.toLowerCase().trim() ||
+             pName === decodedSlug ||
+             p.slug === rawSlug;
+    });
+  }, [products, rawSlug, decodedSlug]);
 
   // Active Variant State
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
@@ -92,12 +108,28 @@ export default function ProductDetailPage() {
   const tenureMonths = product?.bajaj_emi_tenure_months || 6;
   const emiAmount = activeVariant ? calculateEMI(activeVariant.selling_price, tenureMonths, interestRate) : 0;
 
+  if (!isLoaded) {
+    return (
+      <div className="py-24 max-w-5xl mx-auto px-4 space-y-8 animate-pulse">
+        <div className="h-8 bg-slate-800 rounded-2xl w-48 mx-auto" />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-6 h-96 bg-slate-800/60 rounded-3xl" />
+          <div className="lg:col-span-6 space-y-4">
+            <div className="h-10 bg-slate-800 rounded-xl w-3/4" />
+            <div className="h-6 bg-slate-800/60 rounded-lg w-1/2" />
+            <div className="h-24 bg-slate-800/40 rounded-2xl" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!product) {
     return (
       <div className="py-24 max-w-4xl mx-auto px-4 text-center space-y-4">
-        <h2 className="text-2xl font-bold text-white">Product Not Found</h2>
+        <h2 className="text-2xl font-bold text-white font-display">Product Not Found</h2>
         <p className="text-sm text-slate-400">The mobile phone or accessory model you are looking for does not exist or has been discontinued.</p>
-        <Link href="/mobiles" className="inline-block px-5 py-2.5 rounded-xl bg-vivo-600 text-white text-xs font-semibold">
+        <Link href="/mobiles" className="inline-block px-5 py-2.5 rounded-xl bg-vivo-600 hover:bg-vivo-500 text-white text-xs font-semibold shadow-glow-blue transition-all">
           Browse Smartphone Catalog
         </Link>
       </div>
