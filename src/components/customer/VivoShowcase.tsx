@@ -15,7 +15,7 @@ export const VivoShowcase: React.FC = () => {
 
   const displayedProducts = activeSeries === 'all'
     ? vivoProducts
-    : vivoProducts.filter(p => p.series?.slug === activeSeries);
+    : vivoProducts.filter(p => p.series?.slug === activeSeries || p.series_id === activeSeries || series.find(s => s.slug === activeSeries || s.id === activeSeries)?.id === p.series_id);
 
   return (
     <section className="py-16 border-t border-white/5 relative">

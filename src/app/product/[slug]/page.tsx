@@ -515,175 +515,325 @@ export default function ProductDetailPage() {
           )}
         </div>
 
-        {/* Specs Table & Cards */}
-        <div className="rounded-3xl glass-panel border border-white/10 overflow-hidden">
-          <div className="divide-y divide-white/5">
-            
-            {/* General Overview Card */}
-            <div className="p-6 space-y-3 bg-white/[0.02]">
-              <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                <Smartphone className="w-3.5 h-3.5 text-vivo-400" /> General & Selected Variant Details
-              </h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                <div className="flex justify-between border-b border-white/5 pb-2">
-                  <span className="text-slate-400">Brand</span>
-                  <span className="text-white font-semibold">{product.brand?.name || 'VIVO'}</span>
+        {/* Dynamic Multi-Category Specs Cards */}
+        {(() => {
+          // Robust Specs Normalizer
+          let rawSpecs = product.specifications as any;
+          if (typeof rawSpecs === 'string') {
+            try {
+              rawSpecs = JSON.parse(rawSpecs);
+            } catch {
+              rawSpecs = {};
+            }
+          }
+          const s = (rawSpecs && typeof rawSpecs === 'object') ? rawSpecs : {};
+
+          // 1. In The Box
+          let inTheBoxItems: string[] = [];
+          if (Array.isArray(s.in_the_box)) {
+            inTheBoxItems = s.in_the_box.map((item: any) => String(item).trim()).filter(Boolean);
+          } else if (typeof s.in_the_box === 'string' && s.in_the_box.trim()) {
+            inTheBoxItems = s.in_the_box.split(',').map((item: string) => item.trim()).filter(Boolean);
+          }
+
+          // 2. Custom Specifications
+          const customSpecsList: Array<{ label: string; value: string }> = [];
+          if (Array.isArray(s.custom_specs)) {
+            s.custom_specs.forEach((cs: any) => {
+              if (cs && (cs.key || cs.label) && cs.value) {
+                customSpecsList.push({
+                  label: String(cs.key || cs.label).trim(),
+                  value: String(cs.value).trim(),
+                });
+              }
+            });
+          }
+
+          // Helper to extract key-values from group or string
+          const extractGroupItems = (val: any): Array<{ label: string; value: string }> => {
+            if (!val) return [];
+            if (typeof val === 'string' && val.trim().length > 0) {
+              return [{ label: 'Specification', value: val.trim() }];
+            }
+            if (typeof val === 'object' && !Array.isArray(val)) {
+              return Object.entries(val)
+                .filter(([k, v]) => v !== undefined && v !== null && String(v).trim().length > 0 && typeof v !== 'object')
+                .map(([k, v]) => ({
+                  label: k.replace(/_/g, ' '),
+                  value: String(v).trim(),
+                }));
+            }
+            return [];
+          };
+
+          const handledKeys = new Set([
+            'in_the_box',
+            'custom_specs',
+            'warranty_info',
+            'highlights',
+            'specifications',
+            'display',
+            'display_specs',
+            'camera',
+            'camera_specs',
+            'processor',
+            'processor_specs',
+            'battery_charging',
+            'battery',
+            'charging',
+            'connectivity',
+            'build_dimensions',
+            'audio',
+            'sound'
+          ]);
+
+          const displayItems = extractGroupItems(s.display || s.display_specs);
+          const cameraItems = extractGroupItems(s.camera || s.camera_specs);
+          const processorItems = extractGroupItems(s.processor || s.processor_specs);
+          const batteryItems = extractGroupItems(s.battery_charging || s.battery || s.charging);
+          const connectivityItems = extractGroupItems(s.connectivity);
+          const buildItems = extractGroupItems(s.build_dimensions);
+          const audioItems = extractGroupItems(s.audio || s.sound);
+
+          // Category-specific & custom flat specs
+          const flatCategoryItems: Array<{ label: string; value: string }> = [];
+          Object.entries(s).forEach(([k, val]) => {
+            if (handledKeys.has(k)) return;
+            if (val === undefined || val === null) return;
+
+            if (typeof val === 'string' && val.trim().length > 0) {
+              flatCategoryItems.push({
+                label: k.replace(/_/g, ' '),
+                value: val.trim(),
+              });
+            } else if (typeof val === 'number' || typeof val === 'boolean') {
+              flatCategoryItems.push({
+                label: k.replace(/_/g, ' '),
+                value: String(val),
+              });
+            } else if (typeof val === 'object' && !Array.isArray(val)) {
+              const nested = extractGroupItems(val);
+              nested.forEach(n => {
+                flatCategoryItems.push({
+                  label: `${k.replace(/_/g, ' ')} - ${n.label}`,
+                  value: n.value,
+                });
+              });
+            }
+          });
+
+          // Merge custom specs
+          customSpecsList.forEach(cs => {
+            if (!flatCategoryItems.some(f => f.label.toLowerCase() === cs.label.toLowerCase())) {
+              flatCategoryItems.push(cs);
+            }
+          });
+
+          return (
+            <div className="rounded-3xl glass-panel border border-white/10 overflow-hidden">
+              <div className="divide-y divide-white/5">
+                
+                {/* General Overview Card */}
+                <div className="p-6 space-y-3 bg-white/[0.02]">
+                  <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                    <Smartphone className="w-3.5 h-3.5 text-vivo-400" /> General & Selected Variant Details
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <div className="flex justify-between border-b border-white/5 pb-2">
+                      <span className="text-slate-400">Brand</span>
+                      <span className="text-white font-semibold">{product.brand?.name || 'VIVO'}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-white/5 pb-2">
+                      <span className="text-slate-400">Model Name</span>
+                      <span className="text-white font-semibold">{product.name}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-white/5 pb-2">
+                      <span className="text-slate-400">Category</span>
+                      <span className="text-white font-semibold">{product.category?.name || (product.is_phone ? 'Smartphone' : 'Accessories')}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-white/5 pb-2">
+                      <span className="text-slate-400">Selected Color</span>
+                      <span className="text-white font-semibold">{activeVariant?.color || 'Standard'}</span>
+                    </div>
+                    {activeVariant?.ram && (
+                      <div className="flex justify-between border-b border-white/5 pb-2">
+                        <span className="text-slate-400">RAM Capacity</span>
+                        <span className="text-white font-semibold">{activeVariant.ram}</span>
+                      </div>
+                    )}
+                    {activeVariant?.storage && (
+                      <div className="flex justify-between border-b border-white/5 pb-2">
+                        <span className="text-slate-400">Internal Storage</span>
+                        <span className="text-white font-semibold">{activeVariant.storage}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between border-b border-white/5 pb-2">
+                      <span className="text-slate-400">Stock Availability</span>
+                      <span className="text-emerald-400 font-semibold">{statusConfig.label} ({activeVariant?.current_stock || 0} Units In Store)</span>
+                    </div>
+                    {product.warranty_info && (
+                      <div className="flex justify-between border-b border-white/5 pb-2">
+                        <span className="text-slate-400">Warranty</span>
+                        <span className="text-white font-medium">{product.warranty_info}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="flex justify-between border-b border-white/5 pb-2">
-                  <span className="text-slate-400">Model Name</span>
-                  <span className="text-white font-semibold">{product.name}</span>
-                </div>
-                <div className="flex justify-between border-b border-white/5 pb-2">
-                  <span className="text-slate-400">Selected Color</span>
-                  <span className="text-white font-semibold">{activeVariant?.color || 'Standard'}</span>
-                </div>
-                {activeVariant?.ram && (
-                  <div className="flex justify-between border-b border-white/5 pb-2">
-                    <span className="text-slate-400">RAM Capacity</span>
-                    <span className="text-white font-semibold">{activeVariant.ram}</span>
+
+                {/* Display Specs */}
+                {displayItems.length > 0 && (
+                  <div className="p-6 space-y-3">
+                    <h4 className="text-xs font-bold text-vivo-400 uppercase tracking-wider flex items-center gap-2">
+                      <Sparkles className="w-3.5 h-3.5" /> Display & Screen
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                      {displayItems.map((item, idx) => (
+                        <div key={idx} className="flex justify-between border-b border-white/5 pb-2">
+                          <span className="text-slate-400 capitalize">{item.label}</span>
+                          <span className="text-white font-medium text-right">{item.value}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
-                {activeVariant?.storage && (
-                  <div className="flex justify-between border-b border-white/5 pb-2">
-                    <span className="text-slate-400">Internal Storage</span>
-                    <span className="text-white font-semibold">{activeVariant.storage}</span>
+
+                {/* Camera Specs */}
+                {cameraItems.length > 0 && (
+                  <div className="p-6 space-y-3">
+                    <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-2">
+                      <Camera className="w-3.5 h-3.5" /> Camera System
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                      {cameraItems.map((item, idx) => (
+                        <div key={idx} className="flex justify-between border-b border-white/5 pb-2">
+                          <span className="text-slate-400 capitalize">{item.label}</span>
+                          <span className="text-white font-medium text-right">{item.value}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
-                <div className="flex justify-between border-b border-white/5 pb-2">
-                  <span className="text-slate-400">Stock Availability</span>
-                  <span className="text-emerald-400 font-semibold">{statusConfig.label} ({activeVariant?.current_stock || 0} Units In Store)</span>
-                </div>
+
+                {/* Processor & Hardware */}
+                {processorItems.length > 0 && (
+                  <div className="p-6 space-y-3">
+                    <h4 className="text-xs font-bold text-origin-violet uppercase tracking-wider flex items-center gap-2">
+                      <Cpu className="w-3.5 h-3.5" /> Processor & Performance
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                      {processorItems.map((item, idx) => (
+                        <div key={idx} className="flex justify-between border-b border-white/5 pb-2">
+                          <span className="text-slate-400 capitalize">{item.label}</span>
+                          <span className="text-white font-medium text-right">{item.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Battery & Charging */}
+                {batteryItems.length > 0 && (
+                  <div className="p-6 space-y-3">
+                    <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+                      <Battery className="w-3.5 h-3.5" /> Battery & Power Delivery
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                      {batteryItems.map((item, idx) => (
+                        <div key={idx} className="flex justify-between border-b border-white/5 pb-2">
+                          <span className="text-slate-400 capitalize">{item.label}</span>
+                          <span className="text-white font-medium text-right">{item.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Connectivity & Ports */}
+                {connectivityItems.length > 0 && (
+                  <div className="p-6 space-y-3">
+                    <h4 className="text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center gap-2">
+                      <Zap className="w-3.5 h-3.5" /> Connectivity & Ports
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                      {connectivityItems.map((item, idx) => (
+                        <div key={idx} className="flex justify-between border-b border-white/5 pb-2">
+                          <span className="text-slate-400 capitalize">{item.label}</span>
+                          <span className="text-white font-medium text-right">{item.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Design, Build & Durability */}
+                {buildItems.length > 0 && (
+                  <div className="p-6 space-y-3">
+                    <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
+                      <ShieldCheck className="w-3.5 h-3.5" /> Design, Build & Durability
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                      {buildItems.map((item, idx) => (
+                        <div key={idx} className="flex justify-between border-b border-white/5 pb-2">
+                          <span className="text-slate-400 capitalize">{item.label}</span>
+                          <span className="text-white font-medium text-right">{item.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Audio & Sound */}
+                {audioItems.length > 0 && (
+                  <div className="p-6 space-y-3">
+                    <h4 className="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center gap-2">
+                      <Zap className="w-3.5 h-3.5" /> Audio & Sound
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                      {audioItems.map((item, idx) => (
+                        <div key={idx} className="flex justify-between border-b border-white/5 pb-2">
+                          <span className="text-slate-400 capitalize">{item.label}</span>
+                          <span className="text-white font-medium text-right">{item.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Category-Specific & Custom Specifications */}
+                {flatCategoryItems.length > 0 && (
+                  <div className="p-6 space-y-3">
+                    <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
+                      <Sliders className="w-3.5 h-3.5" /> Technical Specifications & Features
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                      {flatCategoryItems.map((spec, idx) => (
+                        <div key={idx} className="flex justify-between border-b border-white/5 pb-2">
+                          <span className="text-slate-400 capitalize">{spec.label}</span>
+                          <span className="text-white font-medium text-right">{spec.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* In the Box Items */}
+                {inTheBoxItems.length > 0 && (
+                  <div className="p-6 space-y-2">
+                    <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">In The Box Items:</h4>
+                    <div className="flex flex-wrap gap-2 text-xs">
+                      {inTheBoxItems.map((item, idx) => (
+                        <span key={idx} className="px-3 py-1 rounded-lg bg-white/5 text-slate-300 border border-white/5">
+                          ✓ {item}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
               </div>
             </div>
-
-            {/* Display Specs */}
-            {product.specifications?.display && Object.keys(product.specifications.display).length > 0 && (
-              <div className="p-6 space-y-3">
-                <h4 className="text-xs font-bold text-vivo-400 uppercase tracking-wider flex items-center gap-2">
-                  <Sparkles className="w-3.5 h-3.5" /> Display & Screen
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                  {Object.entries(product.specifications.display).map(([key, val]) => (
-                    <div key={key} className="flex justify-between border-b border-white/5 pb-2">
-                      <span className="text-slate-400 capitalize">{key.replace(/_/g, ' ')}</span>
-                      <span className="text-white font-medium text-right">{String(val)}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Camera Specs */}
-            {product.specifications?.camera && Object.keys(product.specifications.camera).length > 0 && (
-              <div className="p-6 space-y-3">
-                <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-2">
-                  <Camera className="w-3.5 h-3.5" /> Camera System
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                  {Object.entries(product.specifications.camera).map(([key, val]) => (
-                    <div key={key} className="flex justify-between border-b border-white/5 pb-2">
-                      <span className="text-slate-400 capitalize">{key.replace(/_/g, ' ')}</span>
-                      <span className="text-white font-medium text-right">{String(val)}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Processor & Hardware */}
-            {product.specifications?.processor && Object.keys(product.specifications.processor).length > 0 && (
-              <div className="p-6 space-y-3">
-                <h4 className="text-xs font-bold text-origin-violet uppercase tracking-wider flex items-center gap-2">
-                  <Cpu className="w-3.5 h-3.5" /> Processor & Performance
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                  {Object.entries(product.specifications.processor).map(([key, val]) => (
-                    <div key={key} className="flex justify-between border-b border-white/5 pb-2">
-                      <span className="text-slate-400 capitalize">{key.replace(/_/g, ' ')}</span>
-                      <span className="text-white font-medium text-right">{String(val)}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Battery & Charging */}
-            {product.specifications?.battery_charging && Object.keys(product.specifications.battery_charging).length > 0 && (
-              <div className="p-6 space-y-3">
-                <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
-                  <Battery className="w-3.5 h-3.5" /> Battery & Power Delivery
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                  {Object.entries(product.specifications.battery_charging).map(([key, val]) => (
-                    <div key={key} className="flex justify-between border-b border-white/5 pb-2">
-                      <span className="text-slate-400 capitalize">{key.replace(/_/g, ' ')}</span>
-                      <span className="text-white font-medium text-right">{String(val)}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Additional / Category-Specific Specifications */}
-            {(() => {
-              const specs: any = product.specifications || {};
-              const ignoredKeys = new Set(['display', 'processor', 'camera', 'battery_charging', 'in_the_box', 'custom_specs', 'specifications', 'warranty_info', 'highlights']);
-              const flatCategorySpecs: Array<{ label: string; value: string }> = Object.entries(specs)
-                .filter(([key, val]) => !ignoredKeys.has(key) && typeof val === 'string' && val.trim().length > 0)
-                .map(([key, val]) => ({
-                  label: key.replace(/_/g, ' '),
-                  value: String(val),
-                }));
-
-              const customSpecsList: Array<{ label: string; value: string }> = Array.isArray(specs.custom_specs)
-                ? specs.custom_specs.filter((cs: any) => cs?.key && cs?.value).map((cs: any) => ({
-                    label: String(cs.key),
-                    value: String(cs.value),
-                  }))
-                : [];
-
-              const combined = [...flatCategorySpecs];
-              customSpecsList.forEach(cs => {
-                if (!combined.some(s => s.label.toLowerCase() === cs.label.toLowerCase())) {
-                  combined.push(cs);
-                }
-              });
-
-              if (combined.length === 0) return null;
-
-              return (
-                <div className="p-6 space-y-3">
-                  <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
-                    <Sliders className="w-3.5 h-3.5" /> Technical Specifications & Features
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                    {combined.map((spec, idx) => (
-                      <div key={idx} className="flex justify-between border-b border-white/5 pb-2">
-                        <span className="text-slate-400 capitalize">{spec.label}</span>
-                        <span className="text-white font-medium text-right">{spec.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })()}
-
-            {/* In the Box Items */}
-            {product.specifications?.in_the_box && product.specifications.in_the_box.length > 0 && (
-              <div className="p-6 space-y-2">
-                <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">In The Box Items:</h4>
-                <div className="flex flex-wrap gap-2 text-xs">
-                  {product.specifications.in_the_box.map((item, idx) => (
-                    <span key={idx} className="px-3 py-1 rounded-lg bg-white/5 text-slate-300 border border-white/5">
-                      ✓ {item}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-          </div>
-        </div>
+          );
+        })()}
       </section>
 
       {/* Recommended Compatible Accessories Shelf */}

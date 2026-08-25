@@ -15,7 +15,7 @@ export const AccessoriesShowcase: React.FC = () => {
 
   const displayedProducts = activeCategory === 'all'
     ? accessoryProducts
-    : accessoryProducts.filter(p => p.category?.slug === activeCategory);
+    : accessoryProducts.filter(p => p.category?.slug === activeCategory || p.category_id === activeCategory || categories.find(c => c.slug === activeCategory || c.id === activeCategory)?.id === p.category_id);
 
   return (
     <section className="py-16 border-t border-white/5 relative">

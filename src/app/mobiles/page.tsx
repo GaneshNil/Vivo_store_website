@@ -107,7 +107,9 @@ function MobilesContent() {
 
       // 8. 5G Only
       if (fiveGOnly) {
-        const is5G = prod.name.includes('5G') || prod.specifications.connectivity?.network?.includes('5G');
+        const is5G = prod.name.includes('5G') || 
+          prod.specifications?.connectivity?.network?.includes('5G') ||
+          (typeof prod.specifications === 'object' && JSON.stringify(prod.specifications).includes('5G'));
         if (!is5G) return false;
       }
 

@@ -42,9 +42,9 @@ export const HeroSection: React.FC = () => {
   const statusConfig = getStatusBadgeConfig(defaultVariant?.computed_status || 'IN_STOCK');
 
   const s = (heroProduct?.specifications || {}) as any;
-  const cameraText = s.camera?.rear_main || '50 MP ZEISS Studio OIS';
-  const processorText = s.processor?.chipset || 'Flagship 5G Chipset';
-  const batteryText = s.battery_charging?.capacity || '5500 mAh BlueVolt';
+  const cameraText = (typeof s.camera === 'string' ? s.camera : s.camera?.rear_main) || s.rear_primary || (typeof s.primary_camera === 'string' ? s.primary_camera : s.primary_camera?.rear) || '50 MP ZEISS Studio OIS';
+  const processorText = (typeof s.processor === 'string' ? s.processor : s.processor?.chipset) || s.chipset || (typeof s.performance === 'string' ? s.performance : s.performance?.chipset) || 'Flagship 5G Chipset';
+  const batteryText = (typeof s.battery_charging === 'string' ? s.battery_charging : (s.battery_charging?.capacity || s.battery_charging?.battery_capacity)) || (typeof s.battery === 'string' ? s.battery : s.battery?.capacity) || s.battery_capacity || '5500 mAh BlueVolt';
 
   return (
     <section className="relative overflow-hidden pt-6 pb-16 md:py-20">

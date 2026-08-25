@@ -430,7 +430,15 @@ export default function AdminProductsPage() {
     }
 
     // Specifications
-    const s: any = product.specifications || {};
+    let rawS = product.specifications as any;
+    if (typeof rawS === 'string') {
+      try {
+        rawS = JSON.parse(rawS);
+      } catch {
+        rawS = {};
+      }
+    }
+    const s: any = (rawS && typeof rawS === 'object') ? rawS : {};
     setSpecsData({
       screen_size: s.display?.size || s.display?.screen_size || '6.78 inches',
       resolution: s.display?.resolution || '1.5K AMOLED',

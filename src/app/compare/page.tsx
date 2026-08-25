@@ -187,11 +187,12 @@ export default function ComparePage() {
                     </div>
                   </td>
                   {compareList.map(p => {
-                    const cap = p.specifications.battery_charging?.capacity || '5000 mAh';
-                    const gauge = getBatteryGauge(cap);
+                    const specs = (p.specifications || {}) as any;
+                    const cap = specs.battery_charging?.capacity || specs.battery || specs.battery_capacity || '5000 mAh';
+                    const gauge = getBatteryGauge(String(cap));
                     return (
                       <td key={p.id} className="p-4 border-l border-white/5 text-center space-y-2">
-                        <span className="font-bold text-white text-sm">{cap}</span>
+                        <span className="font-bold text-white text-sm">{String(cap)}</span>
                         <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
                           <div
                             className="bg-gradient-to-r from-emerald-500 to-emerald-400 h-full rounded-full transition-all duration-500"
@@ -213,11 +214,12 @@ export default function ComparePage() {
                     </div>
                   </td>
                   {compareList.map(p => {
-                    const spd = p.specifications.battery_charging?.charging_speed || '44W FlashCharge';
-                    const gauge = getChargingGauge(spd);
+                    const specs = (p.specifications || {}) as any;
+                    const spd = specs.battery_charging?.charging_speed || specs.charging || specs.charging_speed || '44W FlashCharge';
+                    const gauge = getChargingGauge(String(spd));
                     return (
                       <td key={p.id} className="p-4 border-l border-white/5 text-center space-y-2">
-                        <span className="font-bold text-white">{spd}</span>
+                        <span className="font-bold text-white">{String(spd)}</span>
                         <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
                           <div
                             className="bg-gradient-to-r from-amber-500 to-amber-400 h-full rounded-full transition-all duration-500"
@@ -233,12 +235,18 @@ export default function ComparePage() {
                 {/* 4. Display & Refresh Rate */}
                 <tr className="hover:bg-white/[0.02]">
                   <td className="p-4 font-semibold text-slate-300 sticky left-0 bg-slate-950/95 z-10">Display</td>
-                  {compareList.map(p => (
-                    <td key={p.id} className="p-4 border-l border-white/5 text-center space-y-1">
-                      <p className="font-bold text-white">{p.specifications.display?.size || '6.7 inches'}</p>
-                      <p className="text-slate-400 text-[11px]">{p.specifications.display?.resolution} · {p.specifications.display?.refresh_rate}</p>
-                    </td>
-                  ))}
+                  {compareList.map(p => {
+                    const specs = (p.specifications || {}) as any;
+                    const disp = specs.display;
+                    const dispSize = typeof disp === 'string' ? disp : (disp?.size || disp?.screen_size || specs.screen_size || '6.7 inches');
+                    const dispSub = typeof disp === 'object' ? [disp?.resolution, disp?.refresh_rate].filter(Boolean).join(' · ') : '';
+                    return (
+                      <td key={p.id} className="p-4 border-l border-white/5 text-center space-y-1">
+                        <p className="font-bold text-white">{dispSize}</p>
+                        {dispSub && <p className="text-slate-400 text-[11px]">{dispSub}</p>}
+                      </td>
+                    );
+                  })}
                   {compareList.length < 3 && <td className="p-4 border-l border-white/5" />}
                 </tr>
 
@@ -250,27 +258,38 @@ export default function ComparePage() {
                       <span>Rear Camera System</span>
                     </div>
                   </td>
-                  {compareList.map(p => (
-                    <td key={p.id} className="p-4 border-l border-white/5 text-center space-y-1">
-                      <p className="font-bold text-white">{p.specifications.camera?.rear_main || '50 MP OIS'}</p>
-                      {p.specifications.camera?.zeiss_optics && (
-                        <span className="text-[10px] bg-vivo-500/20 text-vivo-300 px-1.5 py-0.5 rounded font-semibold inline-block">
-                          ZEISS Co-engineered Optics
-                        </span>
-                      )}
-                    </td>
-                  ))}
+                  {compareList.map(p => {
+                    const specs = (p.specifications || {}) as any;
+                    const cam = specs.camera;
+                    const rearMain = typeof cam === 'string' ? cam : (cam?.rear_main || specs.rear_primary || '50 MP OIS');
+                    const hasZeiss = typeof cam === 'object' && cam?.zeiss_optics;
+                    return (
+                      <td key={p.id} className="p-4 border-l border-white/5 text-center space-y-1">
+                        <p className="font-bold text-white">{rearMain}</p>
+                        {hasZeiss && (
+                          <span className="text-[10px] bg-vivo-500/20 text-vivo-300 px-1.5 py-0.5 rounded font-semibold inline-block">
+                            ZEISS Co-engineered Optics
+                          </span>
+                        )}
+                      </td>
+                    );
+                  })}
                   {compareList.length < 3 && <td className="p-4 border-l border-white/5" />}
                 </tr>
 
                 {/* 6. Front Selfie Camera */}
                 <tr className="hover:bg-white/[0.02]">
                   <td className="p-4 font-semibold text-slate-300 sticky left-0 bg-slate-950/95 z-10">Front Camera</td>
-                  {compareList.map(p => (
-                    <td key={p.id} className="p-4 border-l border-white/5 text-center font-medium text-slate-200">
-                      {p.specifications.camera?.front_camera || '32 MP'}
-                    </td>
-                  ))}
+                  {compareList.map(p => {
+                    const specs = (p.specifications || {}) as any;
+                    const cam = specs.camera;
+                    const front = typeof cam === 'object' ? (cam?.front_camera || specs.front_camera || '32 MP') : (specs.front_camera || '32 MP');
+                    return (
+                      <td key={p.id} className="p-4 border-l border-white/5 text-center font-medium text-slate-200">
+                        {front}
+                      </td>
+                    );
+                  })}
                   {compareList.length < 3 && <td className="p-4 border-l border-white/5" />}
                 </tr>
 
@@ -282,11 +301,16 @@ export default function ComparePage() {
                       <span>Processor</span>
                     </div>
                   </td>
-                  {compareList.map(p => (
-                    <td key={p.id} className="p-4 border-l border-white/5 text-center font-bold text-white">
-                      {p.specifications.processor?.chipset || 'Octa-core 5G'}
-                    </td>
-                  ))}
+                  {compareList.map(p => {
+                    const specs = (p.specifications || {}) as any;
+                    const proc = specs.processor;
+                    const chipset = typeof proc === 'string' ? proc : (proc?.chipset || specs.chipset || 'Octa-core 5G');
+                    return (
+                      <td key={p.id} className="p-4 border-l border-white/5 text-center font-bold text-white">
+                        {chipset}
+                      </td>
+                    );
+                  })}
                   {compareList.length < 3 && <td className="p-4 border-l border-white/5" />}
                 </tr>
 
@@ -298,7 +322,7 @@ export default function ComparePage() {
                       <div className="flex flex-wrap justify-center gap-1">
                         {p.variants.map(v => (
                           <span key={v.id} className="px-2 py-0.5 rounded bg-white/5 text-[11px] text-slate-300">
-                            {v.ram}/{v.storage}
+                            {v.ram ? `${v.ram}/` : ''}{v.storage || v.color}
                           </span>
                         ))}
                       </div>
@@ -310,11 +334,16 @@ export default function ComparePage() {
                 {/* 9. Water & Dust Ingress Protection */}
                 <tr className="hover:bg-white/[0.02]">
                   <td className="p-4 font-semibold text-slate-300 sticky left-0 bg-slate-950/95 z-10">Durability / IP Rating</td>
-                  {compareList.map(p => (
-                    <td key={p.id} className="p-4 border-l border-white/5 text-center font-medium text-slate-200">
-                      {p.specifications.build_dimensions?.ip_rating || 'IP54 Splash Resistant'}
-                    </td>
-                  ))}
+                  {compareList.map(p => {
+                    const specs = (p.specifications || {}) as any;
+                    const build = specs.build_dimensions;
+                    const rating = typeof build === 'object' ? (build?.ip_rating || specs.ip_rating || 'IP54 Splash Resistant') : (specs.ip_rating || 'IP54 Splash Resistant');
+                    return (
+                      <td key={p.id} className="p-4 border-l border-white/5 text-center font-medium text-slate-200">
+                        {rating}
+                      </td>
+                    );
+                  })}
                   {compareList.length < 3 && <td className="p-4 border-l border-white/5" />}
                 </tr>
 

@@ -46,7 +46,10 @@ function AccessoriesContent() {
 
       // 2. Category
       if (selectedCat !== 'all') {
-        if (item.category?.slug !== selectedCat) return false;
+        const matchCat = item.category?.slug === selectedCat || 
+                         item.category_id === selectedCat || 
+                         categories.find(c => c.slug === selectedCat || c.id === selectedCat)?.id === item.category_id;
+        if (!matchCat) return false;
       }
 
       // 3. Price Filter
