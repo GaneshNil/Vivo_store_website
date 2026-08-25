@@ -4,14 +4,14 @@ import React, { useState, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useStore } from '@/lib/store/store-context';
 import { ProductCard } from '@/components/customer/ProductCard';
-import { 
-  Search, 
-  SlidersHorizontal, 
-  X, 
-  Sparkles, 
-  RotateCcw, 
-  Check, 
-  Layers, 
+import {
+  Search,
+  SlidersHorizontal,
+  X,
+  Sparkles,
+  RotateCcw,
+  Check,
+  Layers,
   Smartphone,
   ChevronDown
 } from 'lucide-react';
@@ -42,7 +42,7 @@ function MobilesContent() {
 
   // Dynamic filter options from data
   const availableBrands = useMemo(() => brands.filter(b => b.slug !== 'galaxy-store-genuine'), [brands]);
-  
+
   const availableSeries = useMemo(() => {
     const seriesMap = new Map();
     if (selectedBrand !== 'all') {
@@ -91,8 +91,8 @@ function MobilesContent() {
         const matchesBrand = prod.brand?.name.toLowerCase().includes(q);
         const matchesSeries = prod.series?.name.toLowerCase().includes(q);
         const matchesSpecs = JSON.stringify(prod.specifications).toLowerCase().includes(q);
-        const matchesVariant = prod.variants.some(v => 
-          v.sku.toLowerCase().includes(q) || 
+        const matchesVariant = prod.variants.some(v =>
+          v.sku.toLowerCase().includes(q) ||
           v.color.toLowerCase().includes(q) ||
           v.ram?.toLowerCase().includes(q) ||
           v.storage?.toLowerCase().includes(q)
@@ -105,19 +105,19 @@ function MobilesContent() {
       // 2. Brand
       if (selectedBrand !== 'all') {
         const matchBrand = prod.brand?.slug === selectedBrand ||
-                           prod.brand_id === selectedBrand ||
-                           prod.brand?.id === selectedBrand ||
-                           brands.find(b => b.slug === selectedBrand || b.id === selectedBrand)?.id === prod.brand_id;
+          prod.brand_id === selectedBrand ||
+          prod.brand?.id === selectedBrand ||
+          brands.find(b => b.slug === selectedBrand || b.id === selectedBrand)?.id === prod.brand_id;
         if (!matchBrand) return false;
       }
 
       // 3. Series
       if (selectedSeries !== 'all') {
         const matchSeries = prod.series?.slug === selectedSeries ||
-                            prod.series_id === selectedSeries ||
-                            prod.series?.id === selectedSeries ||
-                            prod.series?.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-') === selectedSeries ||
-                            series.find(s => s.slug === selectedSeries || s.id === selectedSeries)?.id === prod.series_id;
+          prod.series_id === selectedSeries ||
+          prod.series?.id === selectedSeries ||
+          prod.series?.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-') === selectedSeries ||
+          series.find(s => s.slug === selectedSeries || s.id === selectedSeries)?.id === prod.series_id;
         if (!matchSeries) return false;
       }
 
@@ -148,7 +148,7 @@ function MobilesContent() {
 
       // 8. 5G Only
       if (fiveGOnly) {
-        const is5G = prod.name.includes('5G') || 
+        const is5G = prod.name.includes('5G') ||
           prod.specifications?.connectivity?.network?.includes('5G') ||
           (typeof prod.specifications === 'object' && JSON.stringify(prod.specifications).includes('5G'));
         if (!is5G) return false;
@@ -185,7 +185,7 @@ function MobilesContent() {
 
   return (
     <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-      
+
       {/* Header Banner */}
       <div className="relative rounded-3xl glass-panel p-6 sm:p-8 border border-white/10 bg-gradient-to-r from-vivo-950/40 via-slate-900 to-origin-surface/40 overflow-hidden">
         <div className="max-w-2xl space-y-2">
@@ -205,7 +205,7 @@ function MobilesContent() {
       {/* Top Search & Filter Bar */}
       <div className="space-y-3">
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-          
+
           {/* Instant Search Box */}
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -228,7 +228,7 @@ function MobilesContent() {
 
           {/* Sort & Mobile Filter Trigger */}
           <div className="flex items-center gap-3 justify-between md:justify-end">
-            
+
             <button
               type="button"
               onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
@@ -274,11 +274,10 @@ function MobilesContent() {
           <button
             type="button"
             onClick={() => setSelectedBrand('all')}
-            className={`px-3 py-1.5 rounded-xl font-semibold whitespace-nowrap transition-all border ${
-              selectedBrand === 'all'
+            className={`px-3 py-1.5 rounded-xl font-semibold whitespace-nowrap transition-all border ${selectedBrand === 'all'
                 ? 'bg-vivo-600 text-white border-vivo-500 shadow-glow-blue'
                 : 'bg-slate-900/80 text-slate-400 border-white/10 hover:text-white'
-            }`}
+              }`}
           >
             All Brands
           </button>
@@ -287,11 +286,10 @@ function MobilesContent() {
               key={b.id}
               type="button"
               onClick={() => setSelectedBrand(b.slug)}
-              className={`px-3 py-1.5 rounded-xl font-semibold whitespace-nowrap transition-all border flex items-center gap-1.5 ${
-                selectedBrand === b.slug
+              className={`px-3 py-1.5 rounded-xl font-semibold whitespace-nowrap transition-all border flex items-center gap-1.5 ${selectedBrand === b.slug
                   ? 'bg-vivo-600 text-white border-vivo-500 shadow-glow-blue'
                   : 'bg-slate-900/80 text-slate-400 border-white/10 hover:text-white'
-              }`}
+                }`}
             >
               <span>{b.name}</span>
               {b.is_primary && (
@@ -304,11 +302,11 @@ function MobilesContent() {
 
       {/* Main Layout: Filters Sidebar + Products Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
+
         {/* Desktop Filters Sidebar (and Mobile Modal) */}
         <aside className={`lg:col-span-3 space-y-6 ${mobileFiltersOpen ? 'block' : 'hidden lg:block'}`}>
           <div className="p-6 rounded-2xl glass-panel border border-white/10 space-y-6">
-            
+
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <h3 className="font-display font-bold text-sm text-white flex items-center gap-2">
                 <SlidersHorizontal className="w-4 h-4 text-vivo-400" />
@@ -333,11 +331,10 @@ function MobilesContent() {
                 <button
                   type="button"
                   onClick={() => setSelectedBrand('all')}
-                  className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-between ${
-                    selectedBrand === 'all'
+                  className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-between ${selectedBrand === 'all'
                       ? 'bg-vivo-500/20 text-vivo-300 font-bold'
                       : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                  }`}
+                    }`}
                 >
                   <span>All Brands</span>
                   <span>{phoneProducts.length}</span>
@@ -352,11 +349,10 @@ function MobilesContent() {
                         setSelectedBrand(b.slug);
                         setSelectedSeries('all');
                       }}
-                      className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-between ${
-                        selectedBrand === b.slug
+                      className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-between ${selectedBrand === b.slug
                           ? 'bg-vivo-500/20 text-vivo-300 font-bold'
                           : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                      }`}
+                        }`}
                     >
                       <span className="flex items-center gap-1.5">
                         {b.name}
@@ -379,9 +375,8 @@ function MobilesContent() {
                   <button
                     type="button"
                     onClick={() => setSelectedSeries('all')}
-                    className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                      selectedSeries === 'all' ? 'bg-vivo-500/20 text-vivo-300 font-bold' : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                    }`}
+                    className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${selectedSeries === 'all' ? 'bg-vivo-500/20 text-vivo-300 font-bold' : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                      }`}
                   >
                     All Series
                   </button>
@@ -390,9 +385,8 @@ function MobilesContent() {
                       key={s.id}
                       type="button"
                       onClick={() => setSelectedSeries(s.slug)}
-                      className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                        selectedSeries === s.slug ? 'bg-vivo-500/20 text-vivo-300 font-bold' : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                      }`}
+                      className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${selectedSeries === s.slug ? 'bg-vivo-500/20 text-vivo-300 font-bold' : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                        }`}
                     >
                       {s.name}
                     </button>
@@ -418,11 +412,10 @@ function MobilesContent() {
                     key={item.value}
                     type="button"
                     onClick={() => setPriceRange(item.value)}
-                    className={`text-left px-3 py-1.5 rounded-lg text-xs transition-colors ${
-                      priceRange === item.value
+                    className={`text-left px-3 py-1.5 rounded-lg text-xs transition-colors ${priceRange === item.value
                         ? 'bg-amber-500/20 text-amber-300 font-bold'
                         : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                    }`}
+                      }`}
                   >
                     {item.label}
                   </button>
@@ -441,11 +434,10 @@ function MobilesContent() {
                     key={ram}
                     type="button"
                     onClick={() => setSelectedRam(ram)}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${
-                      selectedRam === ram
+                    className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${selectedRam === ram
                         ? 'bg-vivo-500/20 text-vivo-300 border-vivo-500/40'
                         : 'bg-white/5 text-slate-400 border-white/5 hover:border-white/20'
-                    }`}
+                      }`}
                   >
                     {ram === 'all' ? 'Any' : ram}
                   </button>
@@ -469,11 +461,10 @@ function MobilesContent() {
                     key={st.value}
                     type="button"
                     onClick={() => setSelectedStatus(st.value)}
-                    className={`w-full text-left px-3 py-1.5 rounded-lg text-xs transition-colors ${
-                      selectedStatus === st.value
+                    className={`w-full text-left px-3 py-1.5 rounded-lg text-xs transition-colors ${selectedStatus === st.value
                         ? 'bg-emerald-500/20 text-emerald-300 font-bold'
                         : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                    }`}
+                      }`}
                   >
                     {st.label}
                   </button>
@@ -499,7 +490,7 @@ function MobilesContent() {
 
         {/* Right Product Grid */}
         <div className="lg:col-span-9 space-y-6">
-          
+
           <div className="flex items-center justify-between text-xs text-slate-400">
             <span>Showing <strong className="text-white font-bold">{filteredProducts.length}</strong> smartphone models</span>
             {hasActiveFilters && (
