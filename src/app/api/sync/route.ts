@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import { createClient } from '@supabase/supabase-js';
+import { isRequestAdminAuthenticated } from '@/lib/auth/admin';
 import { 
   INITIAL_PRODUCTS, 
   INITIAL_BRANDS, 
@@ -16,7 +17,7 @@ import {
 export const dynamic = 'force-dynamic';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://qukvnzbhnblyukkuhmwa.supabase.co';
-const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF1a3ZuemJobmJseXVra3VobXdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczODU3NTYsImV4cCI6MjEwMjk2MTc1Nn0.yNQ0oy4uC0BBHtDrzYx97-tyQc3L_5U082r9tM5Ilgs';
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF1a3ZuemJobmJseXVra3VobXdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczODU3NTYsImV4cCI6MjEwMjk2MTc1Nn0.yNQ0oy4uC0BBHtDrzYx97-tyQc3L_5U082r9tM5Ilgs';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -165,7 +166,7 @@ async function saveLiveState(data: any): Promise<number> {
   return version;
 }
 
-// GET: Return live shared state
+// GET: Return live shared state (Public read access)
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -190,7 +191,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST: Save state changes and broadcast to all devices
+// POST: Save state changes with strict authorization
 export async function POST(request: NextRequest) {
   try {
     const payload = await request.json();
@@ -199,8 +200,77 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
     }
 
+    const isAdmin = isRequestAdminAuthenticated(request);
     const current = await getLiveState();
 
+    // Handle Public Customer Actions (Notify Requests & Reviews)
+    if (!isAdmin) {
+      // Check if this is a customer submitting a back-in-stock alert
+      if (payload.customerNotifyRequest) {
+        const nr = payload.customerNotifyRequest;
+        if (!nr.product_id || !nr.customer_name || !nr.customer_phone) {
+          return NextResponse.json({ error: 'Missing required notify fields' }, { status: 400 });
+        }
+
+        const newRequest = {
+          id: `notif-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+          product_id: String(nr.product_id).slice(0, 100),
+          product_name: String(nr.product_name || 'Product').slice(0, 150),
+          variant_id: nr.variant_id ? String(nr.variant_id).slice(0, 100) : undefined,
+          variant_label: nr.variant_label ? String(nr.variant_label).slice(0, 150) : undefined,
+          customer_name: String(nr.customer_name).slice(0, 100).trim(),
+          customer_phone: String(nr.customer_phone).slice(0, 20).replace(/[^0-9+]/g, ''),
+          customer_email: nr.customer_email ? String(nr.customer_email).slice(0, 100) : undefined,
+          status: 'PENDING',
+          notes: nr.notes ? String(nr.notes).slice(0, 300) : undefined,
+          created_at: new Date().toISOString(),
+        };
+
+        const updatedState = {
+          ...current,
+          notifyRequests: [newRequest, ...(current.notifyRequests || [])],
+        };
+
+        const newVersion = await saveLiveState(updatedState);
+        return NextResponse.json({ success: true, version: newVersion, message: 'Notify request received' });
+      }
+
+      // Check if this is a customer submitting a review
+      if (payload.customerReview) {
+        const rev = payload.customerReview;
+        if (!rev.customer_name || !rev.comment || typeof rev.rating !== 'number') {
+          return NextResponse.json({ error: 'Missing required review fields' }, { status: 400 });
+        }
+
+        const newReview = {
+          id: `rev-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+          product_id: rev.product_id ? String(rev.product_id).slice(0, 100) : undefined,
+          customer_name: String(rev.customer_name).slice(0, 100).trim(),
+          rating: Math.max(1, Math.min(5, Math.floor(rev.rating))),
+          title: rev.title ? String(rev.title).slice(0, 100) : undefined,
+          comment: String(rev.comment).slice(0, 1000).trim(),
+          is_verified_store_buyer: true,
+          is_approved: true,
+          created_at: new Date().toISOString(),
+        };
+
+        const updatedState = {
+          ...current,
+          reviews: [newReview, ...(current.reviews || [])],
+        };
+
+        const newVersion = await saveLiveState(updatedState);
+        return NextResponse.json({ success: true, version: newVersion, message: 'Review submitted' });
+      }
+
+      // If unauthenticated user attempts to modify admin-controlled resources (prices, products, inventory, offers, etc.)
+      return NextResponse.json(
+        { error: 'Unauthorized: Admin authentication required to modify store state, prices, and inventory.' },
+        { status: 401 }
+      );
+    }
+
+    // Authenticated Admin State Synchronization:
     // 1. Merge Audit Logs permanently so no audit entry is ever lost or deleted
     const auditMap = new Map();
     [...(current.auditLogs || []), ...(payload.auditLogs || [])].forEach((log: any) => {
@@ -212,14 +282,13 @@ export async function POST(request: NextRequest) {
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     );
 
-    // 2. Build full updated state
+    // 2. Build full updated state with administrative permissions
     const updatedState = {
       ...current,
       ...payload,
       auditLogs: mergedAuditLogs,
     };
 
-    // Ensure collections are accurately updated
     if (Array.isArray(payload.offers)) {
       updatedState.offers = payload.offers;
     }

@@ -1000,6 +1000,17 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       created_at: new Date().toISOString(),
     };
     setNotifyRequests(prev => [newReq, ...prev]);
+
+    // Push dedicated customer notify payload to server
+    try {
+      fetch('/api/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customerNotifyRequest: req }),
+      }).then();
+    } catch {
+      // Ignore network failures
+    }
   };
 
   // 10. Customer Review
@@ -1011,6 +1022,17 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       created_at: new Date().toISOString(),
     };
     setReviews(prev => [newRev, ...prev]);
+
+    // Push dedicated customer review payload to server
+    try {
+      fetch('/api/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customerReview: rev }),
+      }).then();
+    } catch {
+      // Ignore network failures
+    }
   };
 
   // 10. Store Settings

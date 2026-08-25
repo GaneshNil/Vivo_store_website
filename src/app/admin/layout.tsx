@@ -27,10 +27,6 @@ import {
 } from 'lucide-react';
 import { useStore } from '@/lib/store/store-context';
 
-const ADMIN_ID = 'Admin@9067228008';
-const ADMIN_PASS = 'Admin#9067228008';
-const AUTH_STORAGE_KEY = 'galaxy_admin_authenticated';
-
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { offers, products } = useStore();
@@ -39,6 +35,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // Authentication State
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isAuthLoaded, setIsAuthLoaded] = useState<boolean>(false);
+  const [adminUser, setAdminUser] = useState<string>('Begampur Staff');
   
   // Login Form State
   const [loginId, setLoginId] = useState('');
@@ -47,44 +44,70 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [loginError, setLoginError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
+  // Verify server session on load
   useEffect(() => {
-    try {
-      const storedAuth = localStorage.getItem(AUTH_STORAGE_KEY);
-      if (storedAuth === 'true') {
-        setIsAuthenticated(true);
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/auth/admin', { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.authenticated) {
+            setIsAuthenticated(true);
+            if (data.username) setAdminUser(data.username);
+          } else {
+            setIsAuthenticated(false);
+          }
+        }
+      } catch {
+        setIsAuthenticated(false);
+      } finally {
+        setIsAuthLoaded(true);
       }
-    } catch {
-      // Storage unavailable fallback
-    } finally {
-      setIsAuthLoaded(true);
     }
+    checkAuth();
   }, []);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
     setIsLoggingIn(true);
 
-    setTimeout(() => {
-      if (loginId.trim() === ADMIN_ID && loginPass === ADMIN_PASS) {
+    try {
+      const res = await fetch('/api/auth/admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'login',
+          id: loginId,
+          password: loginPass,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
         setIsAuthenticated(true);
-        try {
-          localStorage.setItem(AUTH_STORAGE_KEY, 'true');
-        } catch {
-          // Ignore
-        }
+        if (data.username) setAdminUser(data.username);
+        setLoginPass('');
       } else {
-        setLoginError('Invalid Admin ID or Password. Access denied.');
+        setLoginError(data.error || 'Invalid Admin ID or Password. Access denied.');
       }
+    } catch {
+      setLoginError('Server connection error. Please try again.');
+    } finally {
       setIsLoggingIn(false);
-    }, 400);
+    }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     try {
-      localStorage.removeItem(AUTH_STORAGE_KEY);
+      await fetch('/api/auth/admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'logout' }),
+      });
     } catch {
-      // Ignore
+      // Ignore network error on logout
     }
     setIsAuthenticated(false);
     setLoginPass('');
@@ -317,7 +340,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </Link>
 
           <div className="px-3 py-1.5 text-[11px] text-slate-500 flex items-center justify-between">
-            <span className="truncate">Admin: <strong className="text-slate-300">{ADMIN_ID}</strong></span>
+            <span className="truncate">Admin: <strong className="text-slate-300">{adminUser}</strong></span>
           </div>
 
           <button
