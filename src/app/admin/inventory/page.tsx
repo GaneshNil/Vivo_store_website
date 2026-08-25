@@ -488,10 +488,12 @@ export default function AdminInventoryPage() {
                 <input
                   type="number"
                   min="0"
+                  inputMode="numeric"
                   required
-                  value={adjustData.newStock}
-                  onChange={(e) => setAdjustData({ ...adjustData, newStock: Number(e.target.value) })}
-                  className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold text-base text-emerald-400"
+                  placeholder="0"
+                  value={adjustData.newStock === 0 ? '' : adjustData.newStock}
+                  onChange={(e) => setAdjustData({ ...adjustData, newStock: e.target.value === '' ? 0 : Number(e.target.value) })}
+                  className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold text-base text-emerald-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
               </div>
 
@@ -579,10 +581,12 @@ export default function AdminInventoryPage() {
                   <input
                     type="number"
                     min="1"
+                    inputMode="numeric"
                     required
-                    value={incomingData.quantity}
-                    onChange={(e) => setIncomingData({ ...incomingData, quantity: Number(e.target.value) })}
-                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold text-cyan-400"
+                    placeholder="1"
+                    value={incomingData.quantity === 0 ? '' : incomingData.quantity}
+                    onChange={(e) => setIncomingData({ ...incomingData, quantity: e.target.value === '' ? 0 : Number(e.target.value) })}
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold text-cyan-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
 

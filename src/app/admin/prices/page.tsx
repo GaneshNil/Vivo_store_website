@@ -216,10 +216,12 @@ export default function AdminPricesPage() {
                   <input
                     type="number"
                     min="0"
+                    inputMode="numeric"
                     required
-                    value={editingVariant.mrp}
-                    onChange={(e) => setEditingVariant({ ...editingVariant, mrp: Number(e.target.value) })}
-                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold"
+                    placeholder="e.g. 29999"
+                    value={editingVariant.mrp === 0 ? '' : editingVariant.mrp}
+                    onChange={(e) => setEditingVariant({ ...editingVariant, mrp: e.target.value === '' ? 0 : Number(e.target.value) })}
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
 
@@ -228,10 +230,12 @@ export default function AdminPricesPage() {
                   <input
                     type="number"
                     min="0"
+                    inputMode="numeric"
                     required
-                    value={editingVariant.sellingPrice}
-                    onChange={(e) => setEditingVariant({ ...editingVariant, sellingPrice: Number(e.target.value) })}
-                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold text-emerald-400"
+                    placeholder="e.g. 24999"
+                    value={editingVariant.sellingPrice === 0 ? '' : editingVariant.sellingPrice}
+                    onChange={(e) => setEditingVariant({ ...editingVariant, sellingPrice: e.target.value === '' ? 0 : Number(e.target.value) })}
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold text-emerald-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
               </div>

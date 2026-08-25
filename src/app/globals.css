@@ -20,6 +20,17 @@
     @apply bg-[#080C14] text-slate-100 antialiased selection:bg-vivo-500 selection:text-white;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
+
+  /* Disable number input spin buttons / up & down steppers globally */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
 }
 
 /* Glassmorphism Surface Tokens */

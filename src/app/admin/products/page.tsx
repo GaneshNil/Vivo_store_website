@@ -1281,10 +1281,11 @@ export default function AdminProductsPage() {
                         step="0.1"
                         min="0"
                         max="30"
-                        value={bajajInterestRate}
-                        onChange={(e) => setBajajInterestRate(Number(e.target.value))}
+                        inputMode="decimal"
+                        value={bajajInterestRate === 0 ? '' : bajajInterestRate}
+                        onChange={(e) => setBajajInterestRate(e.target.value === '' ? 0 : Number(e.target.value))}
                         placeholder="0 for Standard Scheme"
-                        className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold focus:outline-none focus:border-amber-500"
+                        className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold focus:outline-none focus:border-amber-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       />
                       <span className="text-[10px] text-slate-400">
                         {bajajInterestRate === 0 ? '✓ Standard Bajaj Finance EMI Scheme' : `Custom ${bajajInterestRate}% Annual Rate Scheme`}
@@ -1591,10 +1592,13 @@ export default function AdminProductsPage() {
                             <label className="text-slate-400 text-[11px]">MRP (₹) *</label>
                             <input
                               type="number"
+                              min="0"
+                              inputMode="numeric"
                               required
-                              value={v.mrp}
-                              onChange={(e) => handleUpdateVariant(index, 'mrp', Number(e.target.value))}
-                              className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white font-bold"
+                              placeholder="e.g. 29999"
+                              value={v.mrp === 0 ? '' : v.mrp}
+                              onChange={(e) => handleUpdateVariant(index, 'mrp', e.target.value === '' ? 0 : Number(e.target.value))}
+                              className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             />
                           </div>
 
@@ -1602,10 +1606,13 @@ export default function AdminProductsPage() {
                             <label className="text-slate-400 text-[11px]">Selling Price (₹) *</label>
                             <input
                               type="number"
+                              min="0"
+                              inputMode="numeric"
                               required
-                              value={v.selling_price}
-                              onChange={(e) => handleUpdateVariant(index, 'selling_price', Number(e.target.value))}
-                              className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-emerald-400 font-bold"
+                              placeholder="e.g. 24999"
+                              value={v.selling_price === 0 ? '' : v.selling_price}
+                              onChange={(e) => handleUpdateVariant(index, 'selling_price', e.target.value === '' ? 0 : Number(e.target.value))}
+                              className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-emerald-400 font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             />
                           </div>
 
@@ -1613,10 +1620,13 @@ export default function AdminProductsPage() {
                             <label className="text-slate-400 text-[11px]">Available Stock (pcs) *</label>
                             <input
                               type="number"
+                              min="0"
+                              inputMode="numeric"
                               required
-                              value={v.current_stock}
-                              onChange={(e) => handleUpdateVariant(index, 'current_stock', Number(e.target.value))}
-                              className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white font-bold"
+                              placeholder="0"
+                              value={v.current_stock === 0 ? '' : v.current_stock}
+                              onChange={(e) => handleUpdateVariant(index, 'current_stock', e.target.value === '' ? 0 : Number(e.target.value))}
+                              className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             />
                           </div>
 
@@ -1624,9 +1634,12 @@ export default function AdminProductsPage() {
                             <label className="text-slate-400 text-[11px]">Low Stock Threshold</label>
                             <input
                               type="number"
-                              value={v.low_stock_threshold}
-                              onChange={(e) => handleUpdateVariant(index, 'low_stock_threshold', Number(e.target.value))}
-                              className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white"
+                              min="0"
+                              inputMode="numeric"
+                              placeholder="0"
+                              value={v.low_stock_threshold === 0 ? '' : v.low_stock_threshold}
+                              onChange={(e) => handleUpdateVariant(index, 'low_stock_threshold', e.target.value === '' ? 0 : Number(e.target.value))}
+                              className="w-full p-2 rounded-lg bg-slate-950 border border-white/10 text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             />
                           </div>
                         </div>
