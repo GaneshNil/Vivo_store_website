@@ -1076,6 +1076,1486 @@ export const INITIAL_PRODUCTS: Product[] = [
         is_active: true
       }
     ]
+  },
+
+  // ==========================================
+  // RAKSHA BANDHAN PROMOTIONAL VIVO PRODUCTS
+  // ==========================================
+
+  // 16. VIVO X300 FE
+  {
+    id: 'prod-vivo-x300-fe',
+    brand_id: 'brand-vivo',
+    category_id: 'cat-smartphones',
+    series_id: 'series-vivo-x',
+    name: 'VIVO X300 FE',
+    slug: 'vivo-x300-fe',
+    tagline: 'Ultra-Slim 1.5K LTPO Fashion Flagship with ZEISS Optics',
+    description: 'The vivo X300 Fashion Edition pairs Qualcomm Snapdragon 8 Gen 5 flagship performance with a compact 6.31-inch 1.5K LTPO 5000 nits AMOLED display, triple 50MP ZEISS optics with periscope telephoto, 6,500mAh BlueOcean battery and 90W FlashCharge.',
+    is_phone: true,
+    is_featured: true,
+    is_new_arrival: true,
+    is_best_seller: true,
+    is_active: true,
+    warranty_info: '1 Year Brand Warranty for Phone and 6 Months for In-Box Accessories',
+    highlights: [
+      '10% Instant Cashback Raksha Bandhan Festive Offer',
+      '₹118 / Day Daily EMI Scheme with ₹0 Down Payment',
+      'Qualcomm Snapdragon 8 Gen 5 (3nm) Flagship Processor',
+      '50MP Main (OIS, ZEISS) + 50MP Periscope Telephoto + 8MP Ultra-Wide',
+      '6.31" 1.5K LTPO AMOLED, 120Hz, 5000 nits Peak Brightness',
+      '6,500 mAh BlueOcean Battery + 90W Wired & 40W Wireless FlashCharge',
+      'IP68 & IP69 Dust and High-Pressure Water Resistance'
+    ],
+    specifications: {
+      display: {
+        size: '6.31 inches (16.03 cm)',
+        resolution: '2640 x 1216 pixels (1.5K LTPO AMOLED)',
+        type: 'Flat LTPO AMOLED, 120Hz Adaptive, 5000 nits Peak',
+        refresh_rate: '120Hz',
+        brightness: '5000 nits Peak Brightness',
+        protection: 'Schott Xensation Glass'
+      },
+      processor: {
+        chipset: 'Qualcomm Snapdragon 8 Gen 5 (3nm)',
+        cpu: 'Octa-core High-Performance Flagship CPU',
+        gpu: 'Next-Gen Adreno GPU',
+        process_node: '3nm TSMC'
+      },
+      camera: {
+        rear_main: '50 MP ZEISS Custom Primary Sensor, f/1.75, OIS',
+        rear_secondary: '50 MP Periscope Telephoto (3x Optical, 100x Digital Zoom) + 8 MP Ultra-Wide',
+        rear_features: 'ZEISS T* Lens Coating, Multifocal Portrait, Super Night Mode',
+        front_camera: '50 MP AF Group Selfie with 4K Video',
+        video_recording: '4K @ 60fps Front & Rear with Cinematic Video Mode',
+        zeiss_optics: true
+      },
+      battery_charging: {
+        capacity: '6500 mAh BlueOcean Silicon-Carbon Battery',
+        charging_speed: '90W FlashCharge',
+        wireless_charging: '40W Wireless FlashCharge',
+        charger_in_box: 'Yes, 90W FlashCharge Power Adapter Included'
+      },
+      connectivity: {
+        network: '5G Dual SIM (Global & Indian 5G Bands)',
+        five_g_bands: 'n1, n3, n5, n8, n28, n40, n77, n78',
+        wifi: 'Wi-Fi 7 Ready, Dual-Band',
+        bluetooth: 'Bluetooth 5.4',
+        nfc: true,
+        usb_type: 'Type-C 3.2 Gen 1, OTG'
+      },
+      operating_system: {
+        os_name: 'OriginOS 6 based on Android 16',
+        os_version: 'Android 16 (5 Major OS Upgrades, 7 Years Security)',
+        ui: 'Origin Fluid Engine Responsive UI'
+      },
+      build_dimensions: {
+        dimensions: '150.83 x 71.76 x 7.99 mm',
+        weight: '191 grams',
+        ip_rating: 'IP68 & IP69 Extreme Dust and Water Jet Resistant',
+        back_material: 'Aerospace Aluminum Frame & Matte AG Velvet Glass'
+      },
+      in_the_box: [
+        'VIVO X300 FE Handset',
+        '90W FlashCharge Power Adapter',
+        'Type-C to Type-C Cable',
+        'Protective Case',
+        'SIM Eject Tool',
+        'Documentation'
+      ]
+    },
+    sort_order: 16,
+    images: [
+      { id: 'img-x300fe-1', product_id: 'prod-vivo-x300-fe', image_url: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO X300 FE Urban Olive Green', view_type: 'front', is_primary: true, sort_order: 1 }
+    ],
+    variants: [
+      {
+        id: 'var-x300fe-8-256-grn',
+        product_id: 'prod-vivo-x300-fe',
+        sku: 'VIVO-X300FE-8-256-GRN',
+        ram: '8GB',
+        storage: '256GB',
+        color: 'Urban Olive Green',
+        color_code: '#4A5D4E',
+        mrp: 89999,
+        selling_price: 84999,
+        discount_percent: 5.56,
+        current_stock: 10,
+        low_stock_threshold: 3,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: true,
+        is_active: true
+      },
+      {
+        id: 'var-x300fe-12-256-grn',
+        product_id: 'prod-vivo-x300-fe',
+        sku: 'VIVO-X300FE-12-256-GRN',
+        ram: '12GB',
+        storage: '256GB',
+        color: 'Urban Olive Green',
+        color_code: '#4A5D4E',
+        mrp: 94999,
+        selling_price: 89999,
+        discount_percent: 5.26,
+        current_stock: 10,
+        low_stock_threshold: 3,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: false,
+        is_active: true
+      },
+      {
+        id: 'var-x300fe-12-512-grn',
+        product_id: 'prod-vivo-x300-fe',
+        sku: 'VIVO-X300FE-12-512-GRN',
+        ram: '12GB',
+        storage: '512GB',
+        color: 'Urban Olive Green',
+        color_code: '#4A5D4E',
+        mrp: 104999,
+        selling_price: 99999,
+        discount_percent: 4.76,
+        current_stock: 8,
+        low_stock_threshold: 2,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: false,
+        is_active: true
+      }
+    ]
+  },
+
+  // 17. VIVO V70 FE
+  {
+    id: 'prod-vivo-v70-fe',
+    brand_id: 'brand-vivo',
+    category_id: 'cat-smartphones',
+    series_id: 'series-vivo-v',
+    name: 'VIVO V70 FE',
+    slug: 'vivo-v70-fe',
+    tagline: '200MP Studio Portrait Master with 7,000mAh Battery',
+    description: 'Fan Edition masterpiece with an industry-leading 200MP Samsung ISOCELL HP5 OIS camera, 6.83-inch 1.5K 120Hz AMOLED display, MediaTek Dimensity 7360 Turbo processor, and massive 7,000mAh BlueOcean battery in a 7.59mm ultra-slim body.',
+    is_phone: true,
+    is_featured: true,
+    is_new_arrival: true,
+    is_best_seller: true,
+    is_active: true,
+    warranty_info: '1 Year Brand Warranty for Phone and 6 Months for In-Box Accessories',
+    highlights: [
+      '10% Instant Cashback Raksha Bandhan Special',
+      '₹62 / Day Daily EMI Scheme with ₹0 Down Payment',
+      '200MP Samsung ISOCELL HP5 (f/1.88, OIS) + Studio Aura Light',
+      'MediaTek Dimensity 7360 Turbo (4nm) Performance',
+      '6.83" 1.5K 120Hz AMOLED Screen with 1900 nits Peak',
+      '7,000 mAh BlueOcean Battery + 90W FlashCharge',
+      'IP69 Extreme High-Pressure Water Jet & Dust Proofing'
+    ],
+    specifications: {
+      display: {
+        size: '6.83 inches (17.35 cm)',
+        resolution: '2800 x 1260 pixels (1.5K AMOLED)',
+        type: '1.5K AMOLED, 120Hz, 1900 nits Peak Brightness',
+        refresh_rate: '120Hz',
+        brightness: '1900 nits Peak Brightness'
+      },
+      processor: {
+        chipset: 'MediaTek Dimensity 7360 Turbo (4nm)',
+        cpu: 'Octa-core 2.8 GHz Performance',
+        gpu: 'Mali-G615 GPU'
+      },
+      camera: {
+        rear_main: '200 MP Samsung ISOCELL HP5 Sensor, f/1.88, OIS',
+        rear_secondary: '8 MP Ultra-Wide Angle + AI Studio Aura Light',
+        rear_features: '200MP Ultra-HD Mode, Studio Portrait, Aura Light 3.0',
+        front_camera: '50 MP AF Portrait Selfie',
+        video_recording: '4K @ 60fps Front & Rear'
+      },
+      battery_charging: {
+        capacity: '7000 mAh BlueOcean Battery',
+        charging_speed: '90W FlashCharge',
+        wireless_charging: 'No',
+        charger_in_box: 'Yes, 90W FlashCharge Adapter Included'
+      },
+      connectivity: {
+        network: '5G Dual SIM',
+        five_g_bands: 'n1, n3, n5, n8, n28, n40, n77, n78',
+        wifi: 'Wi-Fi 6 Dual-Band',
+        bluetooth: 'Bluetooth 5.4',
+        nfc: true,
+        usb_type: 'Type-C 2.0, OTG'
+      },
+      operating_system: {
+        os_name: 'OriginOS 6 based on Android 16',
+        os_version: 'Android 16'
+      },
+      build_dimensions: {
+        dimensions: '163.7 x 76.2 x 7.59 mm',
+        weight: '200 grams',
+        ip_rating: 'IP69 Dust and High-Pressure Jet Proof'
+      },
+      in_the_box: ['VIVO V70 FE', '90W Power Adapter', 'Type-C Cable', 'Case', 'SIM Tool', 'Manuals']
+    },
+    sort_order: 17,
+    images: [
+      { id: 'img-v70fe-1', product_id: 'prod-vivo-v70-fe', image_url: 'https://images.unsplash.com/photo-1565849904461-04a58ad377e0?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO V70 FE Northern Lights Purple', view_type: 'front', is_primary: true, sort_order: 1 }
+    ],
+    variants: [
+      {
+        id: 'var-v70fe-8-128-pur',
+        product_id: 'prod-vivo-v70-fe',
+        sku: 'VIVO-V70FE-8-128-PUR',
+        ram: '8GB',
+        storage: '128GB',
+        color: 'Northern Lights Purple',
+        color_code: '#A855F7',
+        mrp: 49999,
+        selling_price: 44999,
+        discount_percent: 10.0,
+        current_stock: 12,
+        low_stock_threshold: 3,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: true,
+        is_active: true
+      },
+      {
+        id: 'var-v70fe-8-256-pur',
+        product_id: 'prod-vivo-v70-fe',
+        sku: 'VIVO-V70FE-8-256-PUR',
+        ram: '8GB',
+        storage: '256GB',
+        color: 'Northern Lights Purple',
+        color_code: '#A855F7',
+        mrp: 54999,
+        selling_price: 49999,
+        discount_percent: 9.09,
+        current_stock: 12,
+        low_stock_threshold: 3,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: false,
+        is_active: true
+      },
+      {
+        id: 'var-v70fe-12-256-pur',
+        product_id: 'prod-vivo-v70-fe',
+        sku: 'VIVO-V70FE-12-256-PUR',
+        ram: '12GB',
+        storage: '256GB',
+        color: 'Northern Lights Purple',
+        color_code: '#A855F7',
+        mrp: 56999,
+        selling_price: 51999,
+        discount_percent: 8.77,
+        current_stock: 10,
+        low_stock_threshold: 3,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: false,
+        is_active: true
+      }
+    ]
+  },
+
+  // 18. VIVO Y11 5G
+  {
+    id: 'prod-vivo-y11-5g',
+    brand_id: 'brand-vivo',
+    category_id: 'cat-smartphones',
+    series_id: 'series-vivo-y',
+    name: 'VIVO Y11 5G',
+    slug: 'vivo-y11-5g',
+    tagline: 'Long-Lasting 6,500mAh 5G Powerhouse',
+    description: 'Affordable 5G powerhouse featuring MediaTek Dimensity 6300 processor, 6,500mAh massive battery, 6.74-inch 120Hz eye-comfort display, 13MP AI clear camera, and IP65 dust and water resistance.',
+    is_phone: true,
+    is_featured: false,
+    is_new_arrival: true,
+    is_best_seller: false,
+    is_active: true,
+    warranty_info: '1 Year Brand Warranty for Phone and 6 Months for In-Box Accessories',
+    highlights: [
+      '₹1,000 Flat Cashback Festive Offer',
+      '₹25 / Day Daily EMI Scheme with ₹0 Down Payment',
+      'MediaTek Dimensity 6300 5G Chipset',
+      '6,500 mAh Mega Battery with 15W Fast Charge',
+      '6.74" 120Hz Eye Protection Display with 1200 nits',
+      'IP65 Water and Dust Resistance'
+    ],
+    specifications: {
+      display: {
+        size: '6.74 inches (17.12 cm)',
+        resolution: '1600 x 720 pixels (HD+ IPS LCD)',
+        type: 'IPS LCD, 120Hz, 1200 nits Peak',
+        refresh_rate: '120Hz',
+        brightness: '1200 nits Peak Brightness'
+      },
+      processor: {
+        chipset: 'MediaTek Dimensity 6300 (6nm)',
+        cpu: 'Octa-core 2.4 GHz 5G Engine',
+        gpu: 'Mali-G57 MC2'
+      },
+      camera: {
+        rear_main: '13 MP AI Clear Primary Camera, f/2.2',
+        rear_secondary: '0.08 MP Auxiliary Sensor',
+        front_camera: '5 MP HD Selfie Camera',
+        video_recording: '1080p @ 30fps'
+      },
+      battery_charging: {
+        capacity: '6500 mAh Mega Battery',
+        charging_speed: '15W Fast Charge',
+        charger_in_box: 'Yes, Fast Charger Included'
+      },
+      connectivity: {
+        network: '5G Dual SIM Dual Standby',
+        wifi: 'Wi-Fi Dual Band',
+        bluetooth: 'Bluetooth 5.4',
+        usb_type: 'Type-C 2.0'
+      },
+      operating_system: {
+        os_name: 'OriginOS 6 based on Android 16',
+        os_version: 'Android 16'
+      },
+      build_dimensions: {
+        dimensions: '167.4 x 77.1 x 8.4 mm',
+        weight: '209 grams',
+        ip_rating: 'IP65 Dust & Water Resistant'
+      },
+      in_the_box: ['VIVO Y11 5G', 'Charger Adapter', 'Type-C Cable', 'Case', 'SIM Tool', 'Manuals']
+    },
+    sort_order: 18,
+    images: [
+      { id: 'img-y11-1', product_id: 'prod-vivo-y11-5g', image_url: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO Y11 5G Pearl Marble White', view_type: 'front', is_primary: true, sort_order: 1 }
+    ],
+    variants: [
+      {
+        id: 'var-y11-4-64-wht',
+        product_id: 'prod-vivo-y11-5g',
+        sku: 'VIVO-Y11-4-64-WHT',
+        ram: '4GB',
+        storage: '64GB',
+        color: 'Pearl Marble White',
+        color_code: '#F8FAFC',
+        mrp: 19999,
+        selling_price: 17999,
+        discount_percent: 10.0,
+        current_stock: 15,
+        low_stock_threshold: 4,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: true,
+        is_active: true
+      },
+      {
+        id: 'var-y11-4-128-wht',
+        product_id: 'prod-vivo-y11-5g',
+        sku: 'VIVO-Y11-4-128-WHT',
+        ram: '4GB',
+        storage: '128GB',
+        color: 'Pearl Marble White',
+        color_code: '#F8FAFC',
+        mrp: 22999,
+        selling_price: 20999,
+        discount_percent: 8.7,
+        current_stock: 15,
+        low_stock_threshold: 4,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: false,
+        is_active: true
+      }
+    ]
+  },
+
+  // 19. VIVO Y51 Pro 5G
+  {
+    id: 'prod-vivo-y51-pro-5g',
+    brand_id: 'brand-vivo',
+    category_id: 'cat-smartphones',
+    series_id: 'series-vivo-y',
+    name: 'VIVO Y51 Pro 5G',
+    slug: 'vivo-y51-pro-5g',
+    tagline: '5-Star Drop Resistant 5G with 7,200mAh Battery',
+    description: 'Ultra-durable rugged elegance featuring SGS 5-star drop resistance, IP68/IP69 water protection, 7,200mAh massive battery, 44W FlashCharge, and MediaTek Dimensity 7360 Turbo 5G speed.',
+    is_phone: true,
+    is_featured: false,
+    is_new_arrival: true,
+    is_best_seller: true,
+    is_active: true,
+    warranty_info: '1 Year Brand Warranty for Phone and 6 Months for In-Box Accessories',
+    highlights: [
+      '₹2,000 Flat Cashback Festive Offer',
+      '₹46 / Day Daily EMI Scheme with ₹0 Down Payment',
+      'MediaTek Dimensity 7360 Turbo 5G Platform',
+      '7,200 mAh Giant Battery + 44W FlashCharge',
+      '50MP Main AI Camera + 2MP Depth',
+      'SGS 5-Star Drop Resistance & IP68/IP69 Certifications'
+    ],
+    specifications: {
+      display: {
+        size: '6.75 inches (17.15 cm)',
+        resolution: '2408 x 1080 pixels (FHD+ LCD)',
+        type: 'FHD+ LCD, 120Hz, 1250 nits',
+        refresh_rate: '120Hz',
+        brightness: '1250 nits'
+      },
+      processor: {
+        chipset: 'MediaTek Dimensity 7360 Turbo (4nm)',
+        cpu: 'Octa-core 2.8 GHz'
+      },
+      camera: {
+        rear_main: '50 MP Ultra-Clear Main, f/1.8',
+        rear_secondary: '2 MP Depth Sensor',
+        front_camera: '8 MP HD Selfie',
+        video_recording: '1080p @ 60fps'
+      },
+      battery_charging: {
+        capacity: '7200 mAh Monster Battery',
+        charging_speed: '44W FlashCharge',
+        charger_in_box: 'Yes, 44W Adapter Included'
+      },
+      connectivity: {
+        network: '5G Dual SIM',
+        wifi: 'Wi-Fi 6',
+        bluetooth: 'Bluetooth 5.4',
+        usb_type: 'Type-C 2.0'
+      },
+      operating_system: {
+        os_name: 'OriginOS 6 based on Android 16',
+        os_version: 'Android 16'
+      },
+      build_dimensions: {
+        dimensions: '165.7 x 76.0 x 7.99 mm',
+        weight: '205 grams',
+        ip_rating: 'IP68 & IP69 Dust and Water Resistant'
+      },
+      in_the_box: ['VIVO Y51 Pro 5G', '44W Power Adapter', 'Type-C Cable', 'Case', 'SIM Tool', 'Manuals']
+    },
+    sort_order: 19,
+    images: [
+      { id: 'img-y51pro-1', product_id: 'prod-vivo-y51-pro-5g', image_url: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO Y51 Pro 5G Crimson Wine Red', view_type: 'front', is_primary: true, sort_order: 1 }
+    ],
+    variants: [
+      {
+        id: 'var-y51pro-8-128-red',
+        product_id: 'prod-vivo-y51-pro-5g',
+        sku: 'VIVO-Y51P-8-128-RED',
+        ram: '8GB',
+        storage: '128GB',
+        color: 'Crimson Wine Red',
+        color_code: '#991B1B',
+        mrp: 36999,
+        selling_price: 32999,
+        discount_percent: 10.81,
+        current_stock: 10,
+        low_stock_threshold: 3,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: true,
+        is_active: true
+      },
+      {
+        id: 'var-y51pro-8-256-red',
+        product_id: 'prod-vivo-y51-pro-5g',
+        sku: 'VIVO-Y51P-8-256-RED',
+        ram: '8GB',
+        storage: '256GB',
+        color: 'Crimson Wine Red',
+        color_code: '#991B1B',
+        mrp: 41999,
+        selling_price: 37999,
+        discount_percent: 9.52,
+        current_stock: 10,
+        low_stock_threshold: 3,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: false,
+        is_active: true
+      }
+    ]
+  },
+
+  // 20. VIVO X300 Pro
+  {
+    id: 'prod-vivo-x300-pro',
+    brand_id: 'brand-vivo',
+    category_id: 'cat-smartphones',
+    series_id: 'series-vivo-x',
+    name: 'VIVO X300 Pro 5G',
+    slug: 'vivo-x300-pro-5g',
+    tagline: '200MP ZEISS APO Telephoto & Dimensity 9500 Flagship',
+    description: 'The pinnacle of smartphone photography with a 200MP ZEISS APO Telephoto sensor (CIPA 5.5 stabilization), 50MP Sony 1-inch LYT-900 main camera, MediaTek Dimensity 9500 (3nm) flagship processor, V3+ imaging chip, and 6,510mAh battery with 90W FlashCharge.',
+    is_phone: true,
+    is_featured: true,
+    is_new_arrival: true,
+    is_best_seller: true,
+    is_active: true,
+    warranty_info: '1 Year Brand Warranty for Phone and 6 Months for In-Box Accessories',
+    highlights: [
+      '₹10,000 Instant Cashback Festive Offer',
+      '₹167 / Day Ultra Flagship EMI Scheme with ₹0 Down Payment',
+      '200MP ZEISS APO Telephoto (CIPA 5.5 Stabilization, 100x Zoom)',
+      '50MP 1-inch Sony LYT-900 Main Camera with OIS',
+      'MediaTek Dimensity 9500 (3nm) + V3+ Pro Imaging Chip',
+      '6.78" 1.5K LTPO AMOLED, 120Hz, 4500 nits Peak',
+      '6,510 mAh BlueOcean Battery + 90W FlashCharge & 40W Wireless',
+      'Armor Glass & IP68 / IP69 Certifications'
+    ],
+    specifications: {
+      display: {
+        size: '6.78 inches (17.22 cm)',
+        resolution: '2800 x 1260 pixels (1.5K LTPO AMOLED)',
+        type: 'LTPO AMOLED, 120Hz Adaptive, 4500 nits Peak',
+        refresh_rate: '120Hz',
+        brightness: '4500 nits Local Peak',
+        protection: 'Armor Glass Ultra'
+      },
+      processor: {
+        chipset: 'MediaTek Dimensity 9500 (3nm) + V3+ Imaging Chip',
+        cpu: 'Octa-core 3.4 GHz Flagship Core',
+        gpu: 'Immortalis Flagship GPU',
+        process_node: '3nm TSMC'
+      },
+      camera: {
+        rear_main: '50 MP Sony 1-inch LYT-900, f/1.75, OIS',
+        rear_secondary: '200 MP ZEISS APO Telephoto (3.7x Optical, 100x Digital Zoom, CIPA 5.5 OIS) + 50 MP Ultra-Wide',
+        rear_features: 'ZEISS Multifocal Portrait, Telephoto Macro, 4K 120fps Video, Cinematic Portrait Video',
+        front_camera: '50 MP ZEISS AF Selfie Camera',
+        video_recording: '4K @ 120fps Rear, 4K @ 60fps Front',
+        zeiss_optics: true
+      },
+      battery_charging: {
+        capacity: '6510 mAh BlueOcean Battery',
+        charging_speed: '90W FlashCharge',
+        wireless_charging: '40W Wireless FlashCharge',
+        charger_in_box: 'Yes, 90W Power Adapter Included'
+      },
+      connectivity: {
+        network: '5G Dual SIM',
+        five_g_bands: 'n1, n3, n5, n8, n28, n40, n77, n78',
+        wifi: 'Wi-Fi 7 Ready',
+        bluetooth: 'Bluetooth 5.4',
+        nfc: true,
+        usb_type: 'Type-C 3.2 Gen 1'
+      },
+      operating_system: {
+        os_name: 'OriginOS 6 based on Android 16',
+        os_version: 'Android 16 (5 OS upgrades promised)'
+      },
+      build_dimensions: {
+        dimensions: '164.07 x 75.3 x 8.9 mm',
+        weight: '228 grams',
+        ip_rating: 'IP68 & IP69 Dust/Water Jet Resistant',
+        back_material: 'AG Glass with Titanium Alloy Finish'
+      },
+      in_the_box: ['VIVO X300 Pro Handset', '90W FlashCharge Adapter', 'Type-C Cable', 'Case', 'SIM Tool', 'Manuals']
+    },
+    sort_order: 20,
+    images: [
+      { id: 'img-x300pro-1', product_id: 'prod-vivo-x300-pro', image_url: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO X300 Pro 5G Titanium Desert Gold', view_type: 'front', is_primary: true, sort_order: 1 }
+    ],
+    variants: [
+      {
+        id: 'var-x300pro-16-512-gld',
+        product_id: 'prod-vivo-x300-pro',
+        sku: 'VIVO-X300P-16-512-GLD',
+        ram: '16GB',
+        storage: '512GB',
+        color: 'Titanium Desert Gold',
+        color_code: '#D4AF37',
+        mrp: 129999,
+        selling_price: 119999,
+        discount_percent: 7.69,
+        current_stock: 6,
+        low_stock_threshold: 2,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: true,
+        is_active: true
+      }
+    ]
+  },
+
+  // 21. VIVO Y31 5G
+  {
+    id: 'prod-vivo-y31-5g',
+    brand_id: 'brand-vivo',
+    category_id: 'cat-smartphones',
+    series_id: 'series-vivo-y',
+    name: 'VIVO Y31 5G',
+    slug: 'vivo-y31-5g',
+    tagline: 'Ultra-Durable 6,500mAh 5G Powerhouse with IP69 Protection',
+    description: 'Long-lasting 5G champion featuring Qualcomm Snapdragon 4 Gen 2 (4nm), 6,500mAh battery, 44W FlashCharge, 50MP AI main camera, and rugged IP68/IP69 dust and high-pressure water resistance.',
+    is_phone: true,
+    is_featured: false,
+    is_new_arrival: true,
+    is_best_seller: false,
+    is_active: true,
+    warranty_info: '1 Year Brand Warranty for Phone and 6 Months for In-Box Accessories',
+    highlights: [
+      '₹1,000 Flat Cashback Festive Offer',
+      '₹39 / Day Daily EMI Scheme with ₹0 Down Payment',
+      'Qualcomm Snapdragon 4 Gen 2 (4nm) 5G Engine',
+      '6,500 mAh Battery + 44W Fast Charging',
+      '50MP AI Main Camera with Super Night Mode',
+      'IP68 & IP69 Dust, Shock, and Water Resistance'
+    ],
+    specifications: {
+      display: {
+        size: '6.68 inches (16.96 cm)',
+        resolution: '1608 x 720 pixels (HD+ IPS LCD)',
+        type: 'IPS LCD, 120Hz',
+        refresh_rate: '120Hz'
+      },
+      processor: {
+        chipset: 'Qualcomm Snapdragon 4 Gen 2 (4nm)',
+        cpu: 'Octa-core 2.2 GHz 5G Platform'
+      },
+      camera: {
+        rear_main: '50 MP AI Primary Camera, f/1.8',
+        rear_secondary: '0.08 MP Auxiliary Sensor',
+        front_camera: '8 MP HD Selfie Camera'
+      },
+      battery_charging: {
+        capacity: '6500 mAh High-Density Battery',
+        charging_speed: '44W FlashCharge',
+        charger_in_box: 'Yes, 44W Adapter Included'
+      },
+      connectivity: {
+        network: '5G Dual SIM',
+        wifi: 'Wi-Fi Dual Band',
+        bluetooth: 'Bluetooth 5.2',
+        usb_type: 'Type-C 2.0'
+      },
+      operating_system: {
+        os_name: 'OriginOS 6 based on Android 16',
+        os_version: 'Android 16'
+      },
+      build_dimensions: {
+        dimensions: '165.7 x 76.0 x 7.99 mm',
+        weight: '199 grams',
+        ip_rating: 'IP68 & IP69 Extreme Jet Proof'
+      },
+      in_the_box: ['VIVO Y31 5G', '44W Power Adapter', 'Type-C Cable', 'Case', 'SIM Tool', 'Manuals']
+    },
+    sort_order: 21,
+    images: [
+      { id: 'img-y31-1', product_id: 'prod-vivo-y31-5g', image_url: 'https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO Y31 5G Dark Emerald Green', view_type: 'front', is_primary: true, sort_order: 1 }
+    ],
+    variants: [
+      {
+        id: 'var-y31-6-128-grn',
+        product_id: 'prod-vivo-y31-5g',
+        sku: 'VIVO-Y31-6-128-GRN',
+        ram: '6GB',
+        storage: '128GB',
+        color: 'Dark Emerald Forest Green',
+        color_code: '#064E3B',
+        mrp: 31999,
+        selling_price: 27999,
+        discount_percent: 12.5,
+        current_stock: 12,
+        low_stock_threshold: 3,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: true,
+        is_active: true
+      },
+      {
+        id: 'var-y31-6-256-grn',
+        product_id: 'prod-vivo-y31-5g',
+        sku: 'VIVO-Y31-6-256-GRN',
+        ram: '6GB',
+        storage: '256GB',
+        color: 'Dark Emerald Forest Green',
+        color_code: '#064E3B',
+        mrp: 35999,
+        selling_price: 31999,
+        discount_percent: 11.11,
+        current_stock: 12,
+        low_stock_threshold: 3,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: false,
+        is_active: true
+      }
+    ]
+  },
+
+  // 22. VIVO V70 Elite
+  {
+    id: 'prod-vivo-v70-elite',
+    brand_id: 'brand-vivo',
+    category_id: 'cat-smartphones',
+    series_id: 'series-vivo-v',
+    name: 'VIVO V70 Elite',
+    slug: 'vivo-v70-elite',
+    tagline: 'Ultra-Bright 5000 nits 1.5K ZEISS Portrait Master',
+    description: 'Elite portrait powerhouse featuring Snapdragon 8s Gen 3, triple 50MP ZEISS cameras, 6.59-inch 1.5K 120Hz 5000 nits AMOLED display, 6,500mAh BlueOcean battery, and 90W FlashCharge in a 7.4mm slim body.',
+    is_phone: true,
+    is_featured: true,
+    is_new_arrival: true,
+    is_best_seller: true,
+    is_active: true,
+    warranty_info: '1 Year Brand Warranty for Phone and 6 Months for In-Box Accessories',
+    highlights: [
+      '₹5,000 Instant Cashback Festive Offer',
+      '₹93 / Day Studio Flagship EMI with ₹0 Down Payment',
+      'Qualcomm Snapdragon 8s Gen 3 (4nm) Flagship Performance',
+      '6.59" 1.5K 120Hz AMOLED Screen with 5000 nits Peak',
+      'Triple 50MP ZEISS Optics System (OIS Main + Telephoto)',
+      '6,500 mAh BlueOcean Battery + 90W FlashCharge in 7.4mm Ultra-Slim Body',
+      'IP68 & IP69 Dust & High-Pressure Water Jet Proof'
+    ],
+    specifications: {
+      display: {
+        size: '6.59 inches (16.73 cm)',
+        resolution: '2750 x 1260 pixels (1.5K AMOLED)',
+        type: '1.5K AMOLED, 120Hz, 5000 nits Peak',
+        refresh_rate: '120Hz',
+        brightness: '5000 nits Local Peak'
+      },
+      processor: {
+        chipset: 'Qualcomm Snapdragon 8s Gen 3 (4nm)',
+        cpu: 'Octa-core 3.0 GHz Flagship',
+        gpu: 'Adreno 735'
+      },
+      camera: {
+        rear_main: '50 MP ZEISS Custom Sensor, f/1.88, OIS',
+        rear_secondary: '50 MP ZEISS Telephoto / Ultra-Wide Lens',
+        front_camera: '50 MP AF Portrait Selfie',
+        video_recording: '4K @ 60fps Front & Rear',
+        zeiss_optics: true
+      },
+      battery_charging: {
+        capacity: '6500 mAh BlueOcean Battery',
+        charging_speed: '90W FlashCharge',
+        charger_in_box: 'Yes, 90W Adapter Included'
+      },
+      connectivity: {
+        network: '5G Dual SIM',
+        five_g_bands: 'n1, n3, n5, n8, n28, n40, n77, n78',
+        wifi: 'Wi-Fi 7 Ready',
+        bluetooth: 'Bluetooth 5.4',
+        nfc: true,
+        usb_type: 'Type-C 2.0'
+      },
+      operating_system: {
+        os_name: 'OriginOS 6 based on Android 16',
+        os_version: 'Android 16 (4 OS Upgrades, 6 Years Security)'
+      },
+      build_dimensions: {
+        dimensions: '157.52 x 74.33 x 7.4 mm',
+        weight: '187 grams',
+        ip_rating: 'IP68 & IP69 Certified'
+      },
+      in_the_box: ['VIVO V70 Elite Handset', '90W Power Adapter', 'Type-C Cable', 'Case', 'SIM Tool', 'Manuals']
+    },
+    sort_order: 22,
+    images: [
+      { id: 'img-v70e-1', product_id: 'prod-vivo-v70-elite', image_url: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO V70 Elite Sunset Rose Coral', view_type: 'front', is_primary: true, sort_order: 1 }
+    ],
+    variants: [
+      {
+        id: 'var-v70e-8-256-cor',
+        product_id: 'prod-vivo-v70-elite',
+        sku: 'VIVO-V70E-8-256-COR',
+        ram: '8GB',
+        storage: '256GB',
+        color: 'Sunset Rose / Coral',
+        color_code: '#E11D48',
+        mrp: 74999,
+        selling_price: 66999,
+        discount_percent: 10.67,
+        current_stock: 8,
+        low_stock_threshold: 2,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: true,
+        is_active: true
+      },
+      {
+        id: 'var-v70e-12-256-cor',
+        product_id: 'prod-vivo-v70-elite',
+        sku: 'VIVO-V70E-12-256-COR',
+        ram: '12GB',
+        storage: '256GB',
+        color: 'Sunset Rose / Coral',
+        color_code: '#E11D48',
+        mrp: 79999,
+        selling_price: 71999,
+        discount_percent: 10.0,
+        current_stock: 8,
+        low_stock_threshold: 2,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: false,
+        is_active: true
+      }
+    ]
+  },
+
+  // 23. VIVO X300 Ultra
+  {
+    id: 'prod-vivo-x300-ultra',
+    brand_id: 'brand-vivo',
+    category_id: 'cat-smartphones',
+    series_id: 'series-vivo-x',
+    name: 'VIVO X300 Ultra 5G',
+    slug: 'vivo-x300-ultra-5g',
+    tagline: 'Ultimate Dual 200MP ZEISS Telephoto Imaging Flagship',
+    description: 'The supreme mobile imaging titan featuring dual 200MP ZEISS cameras, Snapdragon 8 Elite Gen 5 (3nm), 6.82-inch 2K 144Hz LTPO AMOLED display with Dolby Vision, 6,600mAh battery, and 100W FlashCharge.',
+    is_phone: true,
+    is_featured: true,
+    is_new_arrival: true,
+    is_best_seller: true,
+    is_active: true,
+    warranty_info: '1 Year Brand Warranty for Phone and 6 Months for In-Box Accessories',
+    highlights: [
+      '10% Instant Cashback Raksha Bandhan Offer',
+      '₹222 / Day Ultimate Flagship EMI with ₹0 Down Payment',
+      'Qualcomm Snapdragon 8 Elite Gen 5 (3nm) Apex Processor',
+      'Dual 200MP ZEISS Cameras (200MP 1" Primary + 200MP Periscope Telephoto)',
+      '6.82" 2K 144Hz LTPO AMOLED with Dolby Vision & HDR10+',
+      '6,600 mAh Monster Battery + 100W Wired & 50W Wireless Charging',
+      'IP68 & IP69 Armor Glass Protection'
+    ],
+    specifications: {
+      display: {
+        size: '6.82 inches (17.32 cm)',
+        resolution: '3168 x 1440 pixels (2K LTPO AMOLED)',
+        type: '2K LTPO AMOLED, 144Hz, Dolby Vision',
+        refresh_rate: '144Hz',
+        brightness: '5500 nits Peak Brightness',
+        protection: 'Armor Glass Sapphire Edition'
+      },
+      processor: {
+        chipset: 'Qualcomm Snapdragon 8 Elite Gen 5 (3nm)',
+        cpu: 'Oryon Next-Gen CPU 4.32 GHz',
+        gpu: 'Adreno Flagship GPU'
+      },
+      camera: {
+        rear_main: '200 MP 1-inch Custom ZEISS Sensor, f/1.75, OIS',
+        rear_secondary: '200 MP ZEISS APO Periscope Telephoto (up to 200x Zoom) + 50 MP Ultra-Wide',
+        rear_features: 'Dual 200MP System, Photography Grip Support, 4K 120fps Dolby Vision',
+        front_camera: '50 MP ZEISS AF Selfie Camera',
+        video_recording: '8K @ 30fps, 4K @ 120fps',
+        zeiss_optics: true
+      },
+      battery_charging: {
+        capacity: '6600 mAh BlueOcean Battery',
+        charging_speed: '100W FlashCharge',
+        wireless_charging: '50W Wireless FlashCharge',
+        charger_in_box: 'Yes, 100W Power Adapter Included'
+      },
+      connectivity: {
+        network: '5G Dual SIM All Global Bands',
+        five_g_bands: 'n1, n3, n5, n8, n28, n40, n77, n78, n79',
+        wifi: 'Wi-Fi 7',
+        bluetooth: 'Bluetooth 5.4',
+        nfc: true,
+        usb_type: 'Type-C 3.2 Gen 2'
+      },
+      operating_system: {
+        os_name: 'OriginOS 6 based on Android 16',
+        os_version: 'Android 16 (5 OS Upgrades, 7 Years Security)'
+      },
+      build_dimensions: {
+        dimensions: '164.8 x 76.5 x 9.1 mm',
+        weight: '235 grams',
+        ip_rating: 'IP68 & IP69 Extreme Jet Resistant',
+        back_material: 'Titanium Grade 5 Frame & Ceramic Shield AG Glass'
+      },
+      in_the_box: ['VIVO X300 Ultra Handset', '100W Power Adapter', 'Type-C Cable', 'VIP Protective Case', 'SIM Tool', 'Manuals']
+    },
+    sort_order: 23,
+    images: [
+      { id: 'img-x300u-1', product_id: 'prod-vivo-x300-ultra', image_url: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO X300 Ultra Titanium Mint Green', view_type: 'front', is_primary: true, sort_order: 1 }
+    ],
+    variants: [
+      {
+        id: 'var-x300u-16-512-mnt',
+        product_id: 'prod-vivo-x300-ultra',
+        sku: 'VIVO-X300U-16-512-MNT',
+        ram: '16GB',
+        storage: '512GB',
+        color: 'Titanium Mint Green',
+        color_code: '#A7F3D0',
+        mrp: 174999,
+        selling_price: 159999,
+        discount_percent: 8.57,
+        current_stock: 5,
+        low_stock_threshold: 2,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: true,
+        is_active: true
+      }
+    ]
+  },
+
+  // 24. VIVO Y31t 5G
+  {
+    id: 'prod-vivo-y31t-5g',
+    brand_id: 'brand-vivo',
+    category_id: 'cat-smartphones',
+    series_id: 'series-vivo-y',
+    name: 'VIVO Y31t 5G',
+    slug: 'vivo-y31t-5g',
+    tagline: '7,200mAh Mega Battery 5G with 44W Fast Charge',
+    description: 'Battery heavyweight packed with 7,200mAh giant capacity, Snapdragon 4 Gen 2 (4nm) processor, 50MP AI camera with underwater photography mode, and rugged IP68/IP69 water resistance.',
+    is_phone: true,
+    is_featured: false,
+    is_new_arrival: true,
+    is_best_seller: false,
+    is_active: true,
+    warranty_info: '1 Year Brand Warranty for Phone and 6 Months for In-Box Accessories',
+    highlights: [
+      '₹1,500 Flat Cashback Festive Special',
+      '₹36 / Day Daily EMI Scheme with ₹0 Down Payment',
+      'Qualcomm Snapdragon 4 Gen 2 (4nm) 5G Engine',
+      '7,200 mAh Giant Battery with 44W Fast Charge',
+      '50MP AI Main Camera + 2MP Depth',
+      'IP68 & IP69 Water, Shock and Dust Resistance'
+    ],
+    specifications: {
+      display: {
+        size: '6.75 inches (17.15 cm)',
+        resolution: '1608 x 720 pixels (HD+ LCD)',
+        type: 'LCD, 120Hz, 1250 nits',
+        refresh_rate: '120Hz'
+      },
+      processor: {
+        chipset: 'Qualcomm Snapdragon 4 Gen 2 (4nm)',
+        cpu: 'Octa-core 2.2 GHz'
+      },
+      camera: {
+        rear_main: '50 MP AI Camera, f/1.8',
+        rear_secondary: '2 MP Depth Sensor',
+        front_camera: '8 MP Selfie'
+      },
+      battery_charging: {
+        capacity: '7200 mAh High Capacity',
+        charging_speed: '44W FlashCharge',
+        charger_in_box: 'Yes, 44W Adapter Included'
+      },
+      connectivity: {
+        network: '5G Dual SIM',
+        wifi: 'Wi-Fi Dual Band',
+        bluetooth: 'Bluetooth 5.2',
+        usb_type: 'Type-C 2.0'
+      },
+      operating_system: {
+        os_name: 'OriginOS 6 based on Android 16',
+        os_version: 'Android 16'
+      },
+      build_dimensions: {
+        dimensions: '165.7 x 76.0 x 8.1 mm',
+        weight: '208 grams',
+        ip_rating: 'IP68 & IP69 Water Resistant'
+      },
+      in_the_box: ['VIVO Y31t 5G', '44W Power Adapter', 'Type-C Cable', 'Case', 'SIM Tool', 'Manuals']
+    },
+    sort_order: 24,
+    images: [
+      { id: 'img-y31t-1', product_id: 'prod-vivo-y31t-5g', image_url: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO Y31t 5G Burgundy Wine Red', view_type: 'front', is_primary: true, sort_order: 1 }
+    ],
+    variants: [
+      {
+        id: 'var-y31t-4-128-red',
+        product_id: 'prod-vivo-y31t-5g',
+        sku: 'VIVO-Y31T-4-128-RED',
+        ram: '4GB',
+        storage: '128GB',
+        color: 'Burgundy Wine Red',
+        color_code: '#881337',
+        mrp: 29999,
+        selling_price: 25999,
+        discount_percent: 13.33,
+        current_stock: 10,
+        low_stock_threshold: 3,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: true,
+        is_active: true
+      },
+      {
+        id: 'var-y31t-6-128-red',
+        product_id: 'prod-vivo-y31t-5g',
+        sku: 'VIVO-Y31T-6-128-RED',
+        ram: '6GB',
+        storage: '128GB',
+        color: 'Burgundy Wine Red',
+        color_code: '#881337',
+        mrp: 33999,
+        selling_price: 29999,
+        discount_percent: 11.77,
+        current_stock: 10,
+        low_stock_threshold: 3,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: false,
+        is_active: true
+      },
+      {
+        id: 'var-y31t-6-256-red',
+        product_id: 'prod-vivo-y31t-5g',
+        sku: 'VIVO-Y31T-6-256-RED',
+        ram: '6GB',
+        storage: '256GB',
+        color: 'Burgundy Wine Red',
+        color_code: '#881337',
+        mrp: 38999,
+        selling_price: 34999,
+        discount_percent: 10.26,
+        current_stock: 10,
+        low_stock_threshold: 3,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: false,
+        is_active: true
+      }
+    ]
+  },
+
+  // 25. VIVO Y400 5G
+  {
+    id: 'prod-vivo-y400-5g',
+    brand_id: 'brand-vivo',
+    category_id: 'cat-smartphones',
+    series_id: 'series-vivo-y',
+    name: 'VIVO Y400 5G',
+    slug: 'vivo-y400-5g',
+    tagline: '6.67" 120Hz AMOLED & 90W FlashCharge 5G',
+    description: 'Stunning 6.67-inch FHD+ 120Hz AMOLED smartphone with Snapdragon 4 Gen 2 (4nm), 50MP Sony IMX852 main camera, 32MP HD selfie camera, 6,000mAh battery, and blazingly fast 90W FlashCharge.',
+    is_phone: true,
+    is_featured: false,
+    is_new_arrival: true,
+    is_best_seller: true,
+    is_active: true,
+    warranty_info: '1 Year Brand Warranty for Phone and 6 Months for In-Box Accessories',
+    highlights: [
+      '₹2,000 Flat Cashback Festive Offer',
+      '₹44 / Day Daily EMI Scheme with ₹0 Down Payment',
+      'Qualcomm Snapdragon 4 Gen 2 (4nm) 5G Speed',
+      '6.67" FHD+ 120Hz AMOLED with 1800 nits Peak',
+      '50MP Sony IMX852 Sensor + 32MP High-Res Selfie',
+      '6,000 mAh Battery + 90W Wired Super Fast Charge',
+      'IP68 & IP69 Water & Dust Resistance'
+    ],
+    specifications: {
+      display: {
+        size: '6.67 inches (16.94 cm)',
+        resolution: '2400 x 1080 pixels (FHD+ AMOLED)',
+        type: 'AMOLED, 120Hz, 1800 nits Peak',
+        refresh_rate: '120Hz',
+        brightness: '1800 nits Peak'
+      },
+      processor: {
+        chipset: 'Qualcomm Snapdragon 4 Gen 2 (4nm)',
+        cpu: 'Octa-core 2.2 GHz 5G Engine'
+      },
+      camera: {
+        rear_main: '50 MP Sony IMX852 Main Sensor, f/1.8',
+        rear_secondary: '2 MP Depth Sensor',
+        front_camera: '32 MP Ultra-Clear Selfie',
+        video_recording: '1080p @ 60fps'
+      },
+      battery_charging: {
+        capacity: '6000 mAh Battery',
+        charging_speed: '90W FlashCharge',
+        charger_in_box: 'Yes, 90W Fast Charger Included'
+      },
+      connectivity: {
+        network: '5G Dual SIM',
+        wifi: 'Wi-Fi Dual Band',
+        bluetooth: 'Bluetooth 5.2',
+        usb_type: 'Type-C 2.0'
+      },
+      operating_system: {
+        os_name: 'OriginOS 6 based on Android 16',
+        os_version: 'Android 16'
+      },
+      build_dimensions: {
+        dimensions: '163.17 x 75.81 x 7.79 mm',
+        weight: '190 grams',
+        ip_rating: 'IP68 & IP69 Certified'
+      },
+      in_the_box: ['VIVO Y400 5G', '90W Power Adapter', 'Type-C Cable', 'Case', 'SIM Tool', 'Manuals']
+    },
+    sort_order: 25,
+    images: [
+      { id: 'img-y400-1', product_id: 'prod-vivo-y400-5g', image_url: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO Y400 5G Military Olive Green', view_type: 'front', is_primary: true, sort_order: 1 }
+    ],
+    variants: [
+      {
+        id: 'var-y400-8-128-grn',
+        product_id: 'prod-vivo-y400-5g',
+        sku: 'VIVO-Y400-8-128-GRN',
+        ram: '8GB',
+        storage: '128GB',
+        color: 'Military Olive Green',
+        color_code: '#3F6212',
+        mrp: 35999,
+        selling_price: 31999,
+        discount_percent: 11.11,
+        current_stock: 12,
+        low_stock_threshold: 3,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: true,
+        is_active: true
+      },
+      {
+        id: 'var-y400-8-256-grn',
+        product_id: 'prod-vivo-y400-5g',
+        sku: 'VIVO-Y400-8-256-GRN',
+        ram: '8GB',
+        storage: '256GB',
+        color: 'Military Olive Green',
+        color_code: '#3F6212',
+        mrp: 38999,
+        selling_price: 34999,
+        discount_percent: 10.26,
+        current_stock: 12,
+        low_stock_threshold: 3,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: false,
+        is_active: true
+      }
+    ]
+  },
+
+  // 26. VIVO Y05
+  {
+    id: 'prod-vivo-y05',
+    brand_id: 'brand-vivo',
+    category_id: 'cat-smartphones',
+    series_id: 'series-vivo-y',
+    name: 'VIVO Y05',
+    slug: 'vivo-y05',
+    tagline: 'Everyday Essential 6,500mAh Powerhouse with 120Hz Display',
+    description: 'Reliable entry-level champion with 6,500mAh massive battery, 6.74-inch 120Hz sunlight display, Unisoc T7225 octa-core processor, IP65 water resistance, and MIL-STD shock protection.',
+    is_phone: true,
+    is_featured: false,
+    is_new_arrival: true,
+    is_best_seller: false,
+    is_active: true,
+    warranty_info: '1 Year Brand Warranty for Phone and 6 Months for In-Box Accessories',
+    highlights: [
+      'Festive Special Introductory Price',
+      '₹28 / Day Daily EMI Scheme with ₹0 Down Payment',
+      'Unisoc T7225 Octa-Core Processor',
+      '6.74" 120Hz Sunlight Display with 1200 nits Peak',
+      '6,500 mAh Mega Battery + 15W Fast Charge',
+      'IP65 Water/Dust Resistance & MIL-STD Shock Protection'
+    ],
+    specifications: {
+      display: {
+        size: '6.74 inches (17.12 cm)',
+        resolution: '1600 x 720 pixels (HD+ IPS LCD)',
+        type: 'IPS LCD, 120Hz, 1200 nits',
+        refresh_rate: '120Hz'
+      },
+      processor: {
+        chipset: 'Unisoc T7225 (12nm)',
+        cpu: 'Octa-core 2.0 GHz'
+      },
+      camera: {
+        rear_main: '8 MP AI Camera with LED Flash',
+        front_camera: '5 MP Selfie Camera'
+      },
+      battery_charging: {
+        capacity: '6500 mAh Battery',
+        charging_speed: '15W Fast Charge',
+        charger_in_box: 'Yes, Charger Included'
+      },
+      connectivity: {
+        network: '4G LTE Dual SIM',
+        wifi: 'Wi-Fi Dual Band',
+        bluetooth: 'Bluetooth 5.2',
+        usb_type: 'Type-C 2.0'
+      },
+      operating_system: {
+        os_name: 'OriginOS 6 based on Android 16',
+        os_version: 'Android 16'
+      },
+      build_dimensions: {
+        dimensions: '167.4 x 77.1 x 8.4 mm',
+        weight: '209 grams',
+        ip_rating: 'IP65 Dust & Water Resistant'
+      },
+      in_the_box: ['VIVO Y05', 'Power Adapter', 'Type-C Cable', 'Case', 'SIM Tool', 'Manuals']
+    },
+    sort_order: 26,
+    images: [
+      { id: 'img-y05-1', product_id: 'prod-vivo-y05', image_url: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO Y05 Pearl Ivory White', view_type: 'front', is_primary: true, sort_order: 1 }
+    ],
+    variants: [
+      {
+        id: 'var-y05-4-64-wht',
+        product_id: 'prod-vivo-y05',
+        sku: 'VIVO-Y05-4-64-WHT',
+        ram: '4GB',
+        storage: '64GB',
+        color: 'Pearl Ivory White',
+        color_code: '#FDFBF7',
+        mrp: 16999,
+        selling_price: 14999,
+        discount_percent: 11.77,
+        current_stock: 15,
+        low_stock_threshold: 4,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: true,
+        is_active: true
+      }
+    ]
+  },
+
+  // 27. VIVO V70 5G
+  {
+    id: 'prod-vivo-v70-5g',
+    brand_id: 'brand-vivo',
+    category_id: 'cat-smartphones',
+    series_id: 'series-vivo-v',
+    name: 'VIVO V70 5G',
+    slug: 'vivo-v70-5g',
+    tagline: '50MP ZEISS Periscope Telephoto & Snapdragon 7 Gen 4',
+    description: 'Portrait excellence with Snapdragon 7 Gen 4 processor, 50MP ZEISS primary camera with OIS, 50MP ZEISS periscope telephoto lens with 100x zoom, 6.59-inch 1.5K 120Hz AMOLED display, 6,500mAh BlueOcean battery, and 90W FlashCharge in a 7.4mm slim body.',
+    is_phone: true,
+    is_featured: true,
+    is_new_arrival: true,
+    is_best_seller: true,
+    is_active: true,
+    warranty_info: '1 Year Brand Warranty for Phone and 6 Months for In-Box Accessories',
+    highlights: [
+      '₹4,000 Instant Cashback Raksha Bandhan Offer',
+      '₹83 / Day Studio Portrait EMI with ₹0 Down Payment',
+      'Qualcomm Snapdragon 7 Gen 4 (4nm) Engine',
+      '50MP Main OIS + 50MP ZEISS Periscope Telephoto (3x Optical, 100x Digital Zoom)',
+      '6.59" 1.5K 120Hz AMOLED in Ultra-Slim 7.4mm Profile',
+      '6,500 mAh BlueOcean Battery + 90W FlashCharge',
+      'IP68 & IP69 Extreme Dust and Water Resistance'
+    ],
+    specifications: {
+      display: {
+        size: '6.59 inches (16.73 cm)',
+        resolution: '2750 x 1260 pixels (1.5K AMOLED)',
+        type: '1.5K AMOLED, 120Hz',
+        refresh_rate: '120Hz'
+      },
+      processor: {
+        chipset: 'Qualcomm Snapdragon 7 Gen 4 (4nm)',
+        cpu: 'Octa-core 2.8 GHz'
+      },
+      camera: {
+        rear_main: '50 MP ZEISS Custom Sensor, f/1.88, OIS',
+        rear_secondary: '50 MP ZEISS Periscope Telephoto (3x Optical, 100x Digital) + 8 MP Ultra-Wide',
+        rear_features: 'ZEISS Multifocal Portrait, Studio Aura Light 3.0',
+        front_camera: '50 MP AF Portrait Selfie',
+        video_recording: '4K @ 60fps Front & Rear',
+        zeiss_optics: true
+      },
+      battery_charging: {
+        capacity: '6500 mAh BlueOcean Battery',
+        charging_speed: '90W FlashCharge',
+        charger_in_box: 'Yes, 90W Adapter Included'
+      },
+      connectivity: {
+        network: '5G Dual SIM',
+        five_g_bands: 'n1, n3, n5, n8, n28, n40, n77, n78',
+        wifi: 'Wi-Fi 6',
+        bluetooth: 'Bluetooth 5.4',
+        nfc: true,
+        usb_type: 'Type-C 2.0'
+      },
+      operating_system: {
+        os_name: 'OriginOS 6 based on Android 16',
+        os_version: 'Android 16 (4 OS Upgrades, 6 Years Security)'
+      },
+      build_dimensions: {
+        dimensions: '157.52 x 74.33 x 7.4 mm',
+        weight: '187 grams',
+        ip_rating: 'IP68 & IP69 Certified'
+      },
+      in_the_box: ['VIVO V70 5G Handset', '90W Power Adapter', 'Type-C Cable', 'Case', 'SIM Tool', 'Manuals']
+    },
+    sort_order: 27,
+    images: [
+      { id: 'img-v70-1', product_id: 'prod-vivo-v70-5g', image_url: 'https://images.unsplash.com/photo-1565849904461-04a58ad377e0?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO V70 5G Desert Champagne Gold', view_type: 'front', is_primary: true, sort_order: 1 }
+    ],
+    variants: [
+      {
+        id: 'var-v70-8-256-gld',
+        product_id: 'prod-vivo-v70-5g',
+        sku: 'VIVO-V70-8-256-GLD',
+        ram: '8GB',
+        storage: '256GB',
+        color: 'Desert Champagne Gold',
+        color_code: '#EAB308',
+        mrp: 65999,
+        selling_price: 59999,
+        discount_percent: 9.09,
+        current_stock: 10,
+        low_stock_threshold: 3,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: true,
+        is_active: true
+      },
+      {
+        id: 'var-v70-12-256-gld',
+        product_id: 'prod-vivo-v70-5g',
+        sku: 'VIVO-V70-12-256-GLD',
+        ram: '12GB',
+        storage: '256GB',
+        color: 'Desert Champagne Gold',
+        color_code: '#EAB308',
+        mrp: 69999,
+        selling_price: 64999,
+        discount_percent: 7.14,
+        current_stock: 10,
+        low_stock_threshold: 3,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: false,
+        is_active: true
+      }
+    ]
+  },
+
+  // 28. VIVO Y21 5G (2026)
+  {
+    id: 'prod-vivo-y21-5g',
+    brand_id: 'brand-vivo',
+    category_id: 'cat-smartphones',
+    series_id: 'series-vivo-y',
+    name: 'VIVO Y21 5G',
+    slug: 'vivo-y21-5g',
+    tagline: '50MP AI Camera & 44W FlashCharge 5G with SGS 5-Star Drop Protection',
+    description: 'Fast and durable 5G device powered by MediaTek Dimensity 6300 (6nm), 6,500mAh long-lasting battery, 44W FlashCharge, 50MP AI primary camera, SGS 5-star drop resistance and IP65 splash resistance.',
+    is_phone: true,
+    is_featured: false,
+    is_new_arrival: true,
+    is_best_seller: false,
+    is_active: true,
+    warranty_info: '1 Year Brand Warranty for Phone and 6 Months for In-Box Accessories',
+    highlights: [
+      '₹1,000 Flat Cashback Festive Offer',
+      '₹31 / Day Daily EMI Scheme with ₹0 Down Payment',
+      'MediaTek Dimensity 6300 5G (6nm) Processor',
+      '6,500 mAh Battery + 44W FlashCharge',
+      '50MP AI Primary Camera + 0.08MP Auxiliary',
+      'SGS 5-Star Drop Resistance & IP65 Water Protection'
+    ],
+    specifications: {
+      display: {
+        size: '6.74 inches (17.12 cm)',
+        resolution: '1600 x 720 pixels (HD+ IPS LCD)',
+        type: 'IPS LCD, 120Hz, 1200 nits',
+        refresh_rate: '120Hz'
+      },
+      processor: {
+        chipset: 'MediaTek Dimensity 6300 5G (6nm)',
+        cpu: 'Octa-core 2.4 GHz'
+      },
+      camera: {
+        rear_main: '50 MP AI Primary Camera, f/1.8',
+        rear_secondary: '0.08 MP Auxiliary Sensor',
+        front_camera: '5 MP Selfie Camera'
+      },
+      battery_charging: {
+        capacity: '6500 mAh Battery',
+        charging_speed: '44W FlashCharge',
+        charger_in_box: 'Yes, 44W Adapter Included'
+      },
+      connectivity: {
+        network: '5G Dual SIM (14 5G Bands)',
+        wifi: 'Wi-Fi Dual Band',
+        bluetooth: 'Bluetooth 5.1',
+        usb_type: 'Type-C 2.0'
+      },
+      operating_system: {
+        os_name: 'OriginOS 6 based on Android 16',
+        os_version: 'Android 16'
+      },
+      build_dimensions: {
+        dimensions: '167.4 x 77.1 x 8.4 mm',
+        weight: '202 grams',
+        ip_rating: 'IP65 Water/Dust Resistant & SGS 5-Star Drop Proof'
+      },
+      in_the_box: ['VIVO Y21 5G', '44W Adapter', 'Type-C Cable', 'Case', 'SIM Tool', 'Manuals']
+    },
+    sort_order: 28,
+    images: [
+      { id: 'img-y21-1', product_id: 'prod-vivo-y21-5g', image_url: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=800&q=80', alt_text: 'VIVO Y21 5G Midnight Cosmic Navy', view_type: 'front', is_primary: true, sort_order: 1 }
+    ],
+    variants: [
+      {
+        id: 'var-y21-4-128-nvy',
+        product_id: 'prod-vivo-y21-5g',
+        sku: 'VIVO-Y21-4-128-NVY',
+        ram: '4GB',
+        storage: '128GB',
+        color: 'Midnight Cosmic Navy',
+        color_code: '#1E293B',
+        mrp: 25999,
+        selling_price: 22999,
+        discount_percent: 11.54,
+        current_stock: 15,
+        low_stock_threshold: 4,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: true,
+        is_active: true
+      },
+      {
+        id: 'var-y21-6-128-nvy',
+        product_id: 'prod-vivo-y21-5g',
+        sku: 'VIVO-Y21-6-128-NVY',
+        ram: '6GB',
+        storage: '128GB',
+        color: 'Midnight Cosmic Navy',
+        color_code: '#1E293B',
+        mrp: 29999,
+        selling_price: 26499,
+        discount_percent: 11.67,
+        current_stock: 15,
+        low_stock_threshold: 4,
+        incoming_stock: 0,
+        manual_status: null,
+        computed_status: 'IN_STOCK',
+        is_default: false,
+        is_active: true
+      }
+    ]
   }
 ];
 
