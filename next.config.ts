@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   images: {
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {
         protocol: "https",
@@ -19,6 +21,10 @@ const nextConfig: NextConfig = {
             value: 'on',
           },
           {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
+          },
+          {
             key: 'X-Frame-Options',
             value: 'SAMEORIGIN',
           },
@@ -31,8 +37,21 @@ const nextConfig: NextConfig = {
             value: 'strict-origin-when-cross-origin',
           },
           {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=()',
+          },
+        ],
+      },
+      {
+        source: '/assets/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },

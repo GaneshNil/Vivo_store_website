@@ -1,42 +1,34 @@
-'use client';
+import type { Metadata } from 'next';
+import { NewArrivalsClient } from '@/components/customer/NewArrivalsClient';
+import { getBaseUrl, generateBreadcrumbSchema } from '@/lib/seo/config';
 
-import React from 'react';
-import Link from 'next/link';
-import { useStore } from '@/lib/store/store-context';
-import { ProductCard } from '@/components/customer/ProductCard';
-import { Sparkles, Smartphone, ArrowRight } from 'lucide-react';
+export const metadata: Metadata = {
+  title: 'New Smartphone Launches & Fresh Store Stock',
+  description: 'Check newly launched 5G smartphones and fresh in-store stock at Galaxy Mobile Gallery, Begampur. Live demo units available for hands-on trial.',
+  alternates: {
+    canonical: '/new-arrivals',
+  },
+  openGraph: {
+    title: 'New Smartphone Launches & In-Store Stock | Galaxy Mobile Gallery',
+    description: 'Explore the newest 5G smartphones from VIVO, Samsung, and OPPO. Touch and feel live handsets in Begampur, Solapur.',
+    url: `${getBaseUrl()}/new-arrivals`,
+    type: 'website',
+  },
+};
 
 export default function NewArrivalsPage() {
-  const { products } = useStore();
-
-  const newProducts = products.filter(p => (p.is_new_arrival || p.variants.some(v => v.computed_status === 'COMING_SOON')) && p.is_active);
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: 'New Arrivals', url: '/new-arrivals' },
+  ]);
 
   return (
-    <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-      
-      {/* Header Banner */}
-      <div className="relative rounded-3xl p-6 sm:p-8 border border-slate-200 bg-gradient-to-r from-blue-50/70 via-white to-slate-50 overflow-hidden shadow-sm">
-        <div className="max-w-2xl space-y-2">
-          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-vivo-600 uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>JUST LAUNCHED & COMING SOON</span>
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 font-display">
-            New Smartphone Launches
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-600">
-            Check newly arrived flagship smartphones and upcoming shipments arriving at our Begampur store.
-          </p>
-        </div>
-      </div>
-
-      {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {newProducts.map(prod => (
-          <ProductCard key={prod.id} product={prod} />
-        ))}
-      </div>
-
-    </div>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <NewArrivalsClient />
+    </>
   );
 }

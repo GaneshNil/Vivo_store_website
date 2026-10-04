@@ -184,8 +184,9 @@ export const HeroSection: React.FC = () => {
                     {primaryImage ? (
                       <Image
                         src={primaryImage.image_url}
-                        alt={heroProduct.name}
+                        alt={`${heroProduct.name} - Official Flagship Showcase`}
                         fill
+                        sizes="(max-width: 640px) 240px, 320px"
                         className="object-contain"
                         priority
                       />

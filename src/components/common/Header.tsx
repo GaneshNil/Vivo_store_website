@@ -92,6 +92,7 @@ export const Header: React.FC = () => {
                   src="/assets/store-logo/IMG-20260822-WA0004.jpg"
                   alt="Galaxy Mobile Gallery Logo"
                   fill
+                  sizes="(max-width: 640px) 36px, 44px"
                   className="object-cover"
                   priority
                 />
@@ -170,6 +171,7 @@ export const Header: React.FC = () => {
                 href="/compare"
                 className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-all hidden sm:flex items-center justify-center"
                 title="Compare Specifications"
+                aria-label={`Compare Specifications${compareList.length > 0 ? ` (${compareList.length} items)` : ''}`}
               >
                 <Layers className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                 {compareList.length > 0 && (
@@ -193,7 +195,9 @@ export const Header: React.FC = () => {
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="lg:hidden w-9 h-9 sm:w-10 sm:h-10 rounded-xl text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center justify-center transition-all"
-                aria-label="Toggle menu"
+                aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+                aria-expanded={mobileMenuOpen}
+                aria-controls="mobile-navigation-menu"
               >
                 {mobileMenuOpen ? <X className="w-4.5 h-4.5" /> : <Menu className="w-4.5 h-4.5" />}
               </button>
@@ -203,7 +207,7 @@ export const Header: React.FC = () => {
 
         {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden bg-white/98 backdrop-blur-xl border-t border-slate-200 px-4 pt-3 pb-6 space-y-2 shadow-lg animate-in fade-in slide-in-from-top-2">
+          <div id="mobile-navigation-menu" className="lg:hidden bg-white/98 backdrop-blur-xl border-t border-slate-200 px-4 pt-3 pb-6 space-y-2 shadow-lg animate-in fade-in slide-in-from-top-2">
             <div className="p-3 bg-slate-50 rounded-xl mb-3 border border-slate-200 text-xs text-slate-600 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-vivo-600" />
