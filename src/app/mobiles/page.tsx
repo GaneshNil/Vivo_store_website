@@ -187,16 +187,17 @@ function MobilesContent() {
     <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
 
       {/* Header Banner */}
-      <div className="relative rounded-3xl glass-panel p-6 sm:p-8 border border-white/10 bg-gradient-to-r from-vivo-950/40 via-slate-900 to-origin-surface/40 overflow-hidden">
-        <div className="max-w-2xl space-y-2">
-          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-vivo-400 uppercase tracking-wider">
+      <div className="relative rounded-3xl p-6 sm:p-8 bg-white border border-slate-200/90 shadow-2xs overflow-hidden">
+        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-vivo-50/60 to-transparent pointer-events-none" />
+        <div className="relative max-w-2xl space-y-2">
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-vivo-600 uppercase tracking-wider">
             <Smartphone className="w-3.5 h-3.5" />
             <span>DISCOVER SMARTPHONES</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white font-display">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 font-display">
             Mobile Showroom & Specifications
           </h1>
-          <p className="text-xs sm:text-sm text-slate-300">
+          <p className="text-xs sm:text-sm text-slate-600">
             Compare camera optics, processors, battery and check live Begampur store availability for VIVO, Samsung, Oppo & Realme.
           </p>
         </div>
@@ -214,12 +215,12 @@ function MobilesContent() {
               placeholder="Search vivo 5g, 256GB, X100, V40, Snapdragon..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/80 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-vivo-500 transition-colors"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-vivo-600 focus:ring-1 focus:ring-vivo-600 shadow-2xs transition-colors"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -232,19 +233,19 @@ function MobilesContent() {
             <button
               type="button"
               onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
-              className="lg:hidden flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-medium"
+              className="lg:hidden flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-800 text-xs font-semibold shadow-2xs"
             >
-              <SlidersHorizontal className="w-4 h-4 text-vivo-400" />
+              <SlidersHorizontal className="w-4 h-4 text-vivo-600" />
               <span>Filters {hasActiveFilters && '(Active)'}</span>
             </button>
 
             {/* Sort Selector */}
-            <div className="flex items-center gap-2 text-xs text-slate-400">
-              <span className="hidden sm:inline">Sort:</span>
+            <div className="flex items-center gap-2 text-xs text-slate-600">
+              <span className="hidden sm:inline font-medium">Sort:</span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-white text-xs focus:outline-none focus:border-vivo-500"
+                className="bg-white border border-slate-300 rounded-xl px-3 py-2 text-slate-800 text-xs font-medium focus:outline-none focus:border-vivo-600 shadow-2xs"
               >
                 <option value="featured">Featured First</option>
                 <option value="price-low">Price: Low to High</option>
@@ -257,7 +258,7 @@ function MobilesContent() {
               <button
                 type="button"
                 onClick={resetFilters}
-                className="p-2 text-slate-400 hover:text-white text-xs flex items-center gap-1"
+                className="p-2 text-slate-500 hover:text-vivo-600 text-xs flex items-center gap-1 font-medium"
                 title="Reset all filters"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
@@ -274,9 +275,9 @@ function MobilesContent() {
           <button
             type="button"
             onClick={() => setSelectedBrand('all')}
-            className={`px-3 py-1.5 rounded-xl font-semibold whitespace-nowrap transition-all border ${selectedBrand === 'all'
-                ? 'bg-vivo-600 text-white border-vivo-500 shadow-glow-blue'
-                : 'bg-slate-900/80 text-slate-400 border-white/10 hover:text-white'
+            className={`px-3.5 py-1.5 rounded-xl font-semibold whitespace-nowrap transition-all border shadow-2xs ${selectedBrand === 'all'
+                ? 'bg-vivo-600 text-white border-vivo-600'
+                : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
               }`}
           >
             All Brands
@@ -286,14 +287,14 @@ function MobilesContent() {
               key={b.id}
               type="button"
               onClick={() => setSelectedBrand(b.slug)}
-              className={`px-3 py-1.5 rounded-xl font-semibold whitespace-nowrap transition-all border flex items-center gap-1.5 ${selectedBrand === b.slug
-                  ? 'bg-vivo-600 text-white border-vivo-500 shadow-glow-blue'
-                  : 'bg-slate-900/80 text-slate-400 border-white/10 hover:text-white'
+              className={`px-3.5 py-1.5 rounded-xl font-semibold whitespace-nowrap transition-all border flex items-center gap-1.5 shadow-2xs ${selectedBrand === b.slug
+                  ? 'bg-vivo-600 text-white border-vivo-600'
+                  : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                 }`}
             >
               <span>{b.name}</span>
               {b.is_primary && (
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
               )}
             </button>
           ))}
@@ -305,17 +306,17 @@ function MobilesContent() {
 
         {/* Desktop Filters Sidebar (and Mobile Modal) */}
         <aside className={`lg:col-span-3 space-y-6 ${mobileFiltersOpen ? 'block' : 'hidden lg:block'}`}>
-          <div className="p-6 rounded-2xl glass-panel border border-white/10 space-y-6">
+          <div className="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-6">
 
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <h3 className="font-display font-bold text-sm text-white flex items-center gap-2">
-                <SlidersHorizontal className="w-4 h-4 text-vivo-400" />
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="font-display font-bold text-sm text-slate-900 flex items-center gap-2">
+                <SlidersHorizontal className="w-4 h-4 text-vivo-600" />
                 <span>Filter Specifications</span>
               </h3>
               {hasActiveFilters && (
                 <button
                   onClick={resetFilters}
-                  className="text-[11px] text-vivo-400 hover:underline"
+                  className="text-[11px] text-vivo-600 hover:underline font-medium"
                 >
                   Clear All
                 </button>
@@ -324,7 +325,7 @@ function MobilesContent() {
 
             {/* 1. Brand Filter */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider block">
+              <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
                 Brand
               </label>
               <div className="space-y-1">
@@ -332,12 +333,12 @@ function MobilesContent() {
                   type="button"
                   onClick={() => setSelectedBrand('all')}
                   className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-between ${selectedBrand === 'all'
-                      ? 'bg-vivo-500/20 text-vivo-300 font-bold'
-                      : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                      ? 'bg-vivo-50 text-vivo-700 font-bold border border-vivo-200'
+                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                     }`}
                 >
                   <span>All Brands</span>
-                  <span>{phoneProducts.length}</span>
+                  <span className="text-slate-400 font-normal">{phoneProducts.length}</span>
                 </button>
                 {availableBrands.map(b => {
                   const count = phoneProducts.filter(p => p.brand_id === b.id).length;
@@ -350,15 +351,15 @@ function MobilesContent() {
                         setSelectedSeries('all');
                       }}
                       className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center justify-between ${selectedBrand === b.slug
-                          ? 'bg-vivo-500/20 text-vivo-300 font-bold'
-                          : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                          ? 'bg-vivo-50 text-vivo-700 font-bold border border-vivo-200'
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                         }`}
                     >
                       <span className="flex items-center gap-1.5">
                         {b.name}
-                        {b.is_primary && <span className="text-[9px] bg-vivo-500/30 text-vivo-300 px-1 rounded">Primary</span>}
+                        {b.is_primary && <span className="text-[9px] bg-vivo-100 text-vivo-700 px-1 py-0.5 rounded font-semibold">Primary</span>}
                       </span>
-                      <span>{count}</span>
+                      <span className="text-slate-400 font-normal">{count}</span>
                     </button>
                   );
                 })}
@@ -367,15 +368,15 @@ function MobilesContent() {
 
             {/* 2. Series Filter */}
             {availableSeries.length > 0 && (
-              <div className="space-y-2 pt-3 border-t border-white/5">
-                <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider block">
+              <div className="space-y-2 pt-3 border-t border-slate-100">
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
                   Series
                 </label>
                 <div className="space-y-1 max-h-40 overflow-y-auto pr-1">
                   <button
                     type="button"
                     onClick={() => setSelectedSeries('all')}
-                    className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${selectedSeries === 'all' ? 'bg-vivo-500/20 text-vivo-300 font-bold' : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                    className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${selectedSeries === 'all' ? 'bg-vivo-50 text-vivo-700 font-bold border border-vivo-200' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                       }`}
                   >
                     All Series
@@ -385,7 +386,7 @@ function MobilesContent() {
                       key={s.id}
                       type="button"
                       onClick={() => setSelectedSeries(s.slug)}
-                      className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${selectedSeries === s.slug ? 'bg-vivo-500/20 text-vivo-300 font-bold' : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                      className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${selectedSeries === s.slug ? 'bg-vivo-50 text-vivo-700 font-bold border border-vivo-200' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                         }`}
                     >
                       {s.name}
@@ -396,8 +397,8 @@ function MobilesContent() {
             )}
 
             {/* 3. Price Filter */}
-            <div className="space-y-2 pt-3 border-t border-white/5">
-              <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider block">
+            <div className="space-y-2 pt-3 border-t border-slate-100">
+              <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
                 Budget / Price
               </label>
               <div className="grid grid-cols-1 gap-1">
@@ -413,8 +414,8 @@ function MobilesContent() {
                     type="button"
                     onClick={() => setPriceRange(item.value)}
                     className={`text-left px-3 py-1.5 rounded-lg text-xs transition-colors ${priceRange === item.value
-                        ? 'bg-amber-500/20 text-amber-300 font-bold'
-                        : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                        ? 'bg-amber-50 text-amber-900 font-bold border border-amber-200'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                       }`}
                   >
                     {item.label}
@@ -424,8 +425,8 @@ function MobilesContent() {
             </div>
 
             {/* 4. RAM & Storage */}
-            <div className="space-y-2 pt-3 border-t border-white/5">
-              <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider block">
+            <div className="space-y-2 pt-3 border-t border-slate-100">
+              <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
                 RAM Size
               </label>
               <div className="flex flex-wrap gap-1.5">
@@ -434,9 +435,9 @@ function MobilesContent() {
                     key={ram}
                     type="button"
                     onClick={() => setSelectedRam(ram)}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${selectedRam === ram
-                        ? 'bg-vivo-500/20 text-vivo-300 border-vivo-500/40'
-                        : 'bg-white/5 text-slate-400 border-white/5 hover:border-white/20'
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-colors ${selectedRam === ram
+                        ? 'bg-vivo-50 text-vivo-700 border-vivo-300'
+                        : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200/70 hover:text-slate-900'
                       }`}
                   >
                     {ram === 'all' ? 'Any' : ram}
@@ -446,8 +447,8 @@ function MobilesContent() {
             </div>
 
             {/* 5. In-Store Stock Availability */}
-            <div className="space-y-2 pt-3 border-t border-white/5">
-              <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider block">
+            <div className="space-y-2 pt-3 border-t border-slate-100">
+              <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
                 In-Store Stock
               </label>
               <div className="space-y-1">
@@ -462,8 +463,8 @@ function MobilesContent() {
                     type="button"
                     onClick={() => setSelectedStatus(st.value)}
                     className={`w-full text-left px-3 py-1.5 rounded-lg text-xs transition-colors ${selectedStatus === st.value
-                        ? 'bg-emerald-500/20 text-emerald-300 font-bold'
-                        : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                        ? 'bg-emerald-50 text-emerald-800 font-bold border border-emerald-200'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                       }`}
                   >
                     {st.label}
@@ -473,15 +474,15 @@ function MobilesContent() {
             </div>
 
             {/* 6. 5G Toggle */}
-            <div className="pt-3 border-t border-white/5">
+            <div className="pt-3 border-t border-slate-100">
               <label className="flex items-center gap-2.5 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={fiveGOnly}
                   onChange={(e) => setFiveGOnly(e.target.checked)}
-                  className="rounded bg-slate-900 border-white/10 text-vivo-500 focus:ring-0 w-4 h-4"
+                  className="rounded border-slate-300 text-vivo-600 focus:ring-vivo-500 w-4 h-4"
                 />
-                <span className="text-xs text-white font-medium">5G High-Speed Only</span>
+                <span className="text-xs text-slate-800 font-semibold">5G High-Speed Only</span>
               </label>
             </div>
 
@@ -491,26 +492,26 @@ function MobilesContent() {
         {/* Right Product Grid */}
         <div className="lg:col-span-9 space-y-6">
 
-          <div className="flex items-center justify-between text-xs text-slate-400">
-            <span>Showing <strong className="text-white font-bold">{filteredProducts.length}</strong> smartphone models</span>
+          <div className="flex items-center justify-between text-xs text-slate-500">
+            <span>Showing <strong className="text-slate-900 font-bold">{filteredProducts.length}</strong> smartphone models</span>
             {hasActiveFilters && (
-              <span className="text-vivo-400">Filters applied</span>
+              <span className="text-vivo-600 font-medium">Filters applied</span>
             )}
           </div>
 
           {filteredProducts.length === 0 ? (
-            <div className="p-12 text-center rounded-3xl glass-panel border border-white/10 space-y-4">
-              <Smartphone className="w-12 h-12 text-slate-500 mx-auto" />
+            <div className="p-12 text-center rounded-3xl bg-white border border-slate-200 shadow-2xs space-y-4">
+              <Smartphone className="w-12 h-12 text-slate-400 mx-auto" />
               <div className="space-y-1">
-                <h3 className="text-lg font-bold text-white">No Phones Found</h3>
-                <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                <h3 className="text-lg font-bold text-slate-900">No Phones Found</h3>
+                <p className="text-xs text-slate-500 max-w-sm mx-auto">
                   Try adjusting your filter criteria or search keyword to find matching mobile models.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={resetFilters}
-                className="px-4 py-2 rounded-xl bg-vivo-600 text-white text-xs font-semibold"
+                className="px-4 py-2 rounded-xl bg-vivo-600 text-white text-xs font-semibold shadow-2xs hover:bg-vivo-700 transition-colors"
               >
                 Reset All Filters
               </button>

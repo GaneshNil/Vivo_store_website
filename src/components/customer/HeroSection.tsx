@@ -7,14 +7,12 @@ import { motion } from 'framer-motion';
 import { 
   Sparkles, 
   MapPin, 
-  Phone, 
   ShieldCheck, 
   Zap, 
   ArrowRight, 
   CreditCard,
   Camera,
   Cpu,
-  Layers,
   Star
 } from 'lucide-react';
 import { useStore } from '@/lib/store/store-context';
@@ -47,15 +45,11 @@ export const HeroSection: React.FC = () => {
   const batteryText = (typeof s.battery_charging === 'string' ? s.battery_charging : (s.battery_charging?.capacity || s.battery_charging?.battery_capacity)) || (typeof s.battery === 'string' ? s.battery : s.battery?.capacity) || s.battery_capacity || '5500 mAh BlueVolt';
 
   return (
-    <section className="relative overflow-hidden pt-6 pb-16 md:py-20">
+    <section className="relative overflow-hidden bg-gradient-to-b from-white via-slate-50/50 to-white pt-6 pb-12 md:py-16 border-b border-slate-200/60">
       
-      {/* Dynamic OriginOS Ambient Light Gradients */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-gradient-to-tr from-vivo-600/20 via-origin-violet/20 to-cyan-500/15 blur-[120px] rounded-full pointer-events-none -z-10" />
-      <div className="absolute top-10 right-10 w-96 h-96 bg-origin-violet/10 blur-[90px] rounded-full pointer-events-none -z-10" />
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
           
           {/* Left Column: Storytelling & In-Store Discovery */}
           <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
@@ -65,9 +59,9 @@ export const HeroSection: React.FC = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-vivo-500/30 text-xs font-semibold text-vivo-300 shadow-glow-blue/30 backdrop-blur-md"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-vivo-50 border border-vivo-200 text-xs font-bold text-vivo-700 shadow-2xs"
             >
-              <Sparkles className="w-3.5 h-3.5 text-origin-cyan" />
+              <Sparkles className="w-3.5 h-3.5 text-vivo-600" />
               <span>OFFICIAL VIVO EXPERIENCE & MULTI-BRAND SHOWROOM</span>
             </motion.div>
 
@@ -76,7 +70,7 @@ export const HeroSection: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.15]"
+              className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.15]"
             >
               Experience the Future of{' '}
               <span className="text-gradient-vivo">VIVO Flagships</span>{' '}
@@ -88,9 +82,9 @@ export const HeroSection: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed"
+              className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed"
             >
-              Explore live demo units of the latest <strong className="text-white">{heroProduct?.name || 'VIVO Flagship'}</strong> and popular multi-brand smartphones. Compare specifications online, check live store stock, and visit our Begampur showroom for instant purchase.
+              Explore live demo units of the latest <strong className="text-slate-900 font-semibold">{heroProduct?.name || 'VIVO Flagship'}</strong> and popular multi-brand smartphones. Compare specifications online, check live store stock, and visit our Begampur showroom for instant purchase.
             </motion.p>
 
             {/* In-Store CTAs */}
@@ -98,11 +92,11 @@ export const HeroSection: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2"
+              className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 pt-2"
             >
               <Link
                 href="/mobiles"
-                className="flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-gradient-to-r from-vivo-600 via-vivo-500 to-origin-violet hover:from-vivo-500 hover:to-origin-purple text-white font-semibold text-sm shadow-glow-blue hover:shadow-glow-violet transition-all transform hover:-translate-y-0.5"
+                className="flex items-center gap-2 px-6 py-3.5 rounded-xl bg-vivo-600 hover:bg-vivo-700 text-white font-semibold text-sm shadow-sm hover:shadow transition-all"
               >
                 <span>Browse All Mobiles</span>
                 <ArrowRight className="w-4 h-4" />
@@ -110,9 +104,9 @@ export const HeroSection: React.FC = () => {
 
               <Link
                 href="/store"
-                className="flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white border border-white/10 text-sm font-semibold transition-all backdrop-blur-md"
+                className="flex items-center gap-2 px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 text-sm font-semibold shadow-2xs hover:border-slate-300 transition-all"
               >
-                <MapPin className="w-4 h-4 text-vivo-400" />
+                <MapPin className="w-4 h-4 text-vivo-600" />
                 <span>Visit Begampur Store</span>
               </Link>
             </motion.div>
@@ -122,75 +116,71 @@ export const HeroSection: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="grid grid-cols-3 gap-3 pt-6 border-t border-white/10 text-left max-w-xl mx-auto lg:mx-0"
+              className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-6 border-t border-slate-200/80 text-left max-w-xl mx-auto lg:mx-0"
             >
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex-shrink-0">
+              <div className="flex items-center gap-2.5 p-2 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+                <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 flex-shrink-0">
                   <CreditCard className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-amber-300">Bajaj Finance EMI Available</p>
-                  <p className="text-[10px] text-slate-400">Instant In-Store Approval</p>
+                  <p className="text-xs font-bold text-slate-900">Bajaj Finance EMI</p>
+                  <p className="text-[10px] text-slate-500">10-Min In-Store Approval</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-lg bg-vivo-500/10 text-vivo-400 border border-vivo-500/20 flex-shrink-0">
+              <div className="flex items-center gap-2.5 p-2 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+                <div className="p-2 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 flex-shrink-0">
                   <ShieldCheck className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-white">100% Genuine</p>
-                  <p className="text-[10px] text-slate-400">Official warranty</p>
+                  <p className="text-xs font-bold text-slate-900">100% Genuine</p>
+                  <p className="text-[10px] text-slate-500">Official Brand Warranty</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 flex-shrink-0">
+              <div className="flex items-center gap-2.5 p-2 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
+                <div className="p-2 rounded-lg bg-amber-50 text-amber-700 border border-amber-200 flex-shrink-0">
                   <Zap className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-white">Free Setup</p>
-                  <p className="text-[10px] text-slate-400">UV glass & data</p>
+                  <p className="text-xs font-bold text-slate-900">Free Setup</p>
+                  <p className="text-[10px] text-slate-500">UV Glass & Data Transfer</p>
                 </div>
               </div>
             </motion.div>
 
           </div>
 
-          {/* Right Column: Hero Cinematic Product Card (Dynamic Admin Configured) */}
+          {/* Right Column: Hero Showcase Product Card */}
           <div className="lg:col-span-5 relative flex items-center justify-center">
             
-            {/* Ambient Studio Ring */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-vivo-500/20 via-origin-violet/20 to-transparent rounded-3xl blur-2xl transform rotate-3" />
-
             {heroProduct && (
               <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.96 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.7, delay: 0.2 }}
-                className="relative w-full max-w-md rounded-3xl glass-panel border border-white/10 p-6 shadow-2xl shadow-black/80 space-y-6"
+                className="relative w-full max-w-md rounded-3xl bg-white border border-slate-200 shadow-xl p-6 space-y-5"
               >
                 
                 {/* Card Header */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-vivo-500/20 text-vivo-300 border border-vivo-500/30 flex items-center gap-1 shadow">
-                      <Star className="w-3 h-3 fill-vivo-400 text-vivo-400" />
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-vivo-50 text-vivo-700 border border-vivo-200 flex items-center gap-1 shadow-2xs">
+                      <Star className="w-3 h-3 fill-vivo-600 text-vivo-600" />
                       <span>FLAGSHIP SHOWCASE</span>
                     </span>
                     <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${statusConfig.bg} ${statusConfig.text} ${statusConfig.border}`}>
                       {statusConfig.label}
                     </span>
                   </div>
-                  <span className="text-xs font-semibold text-slate-300 truncate max-w-[140px]">
+                  <span className="text-xs font-bold text-slate-700 truncate max-w-[140px]">
                     {heroProduct.name}
                   </span>
                 </div>
 
-                {/* Showcase Image with Floating Light */}
-                <div className="relative aspect-square w-full rounded-2xl bg-gradient-to-b from-slate-900 to-slate-950 flex items-center justify-center p-6 border border-white/5 overflow-hidden">
-                  <div className="absolute inset-0 bg-radial-gradient from-vivo-500/15 via-transparent to-transparent pointer-events-none" />
-                  <div className="relative w-64 h-64 animate-float">
+                {/* Showcase Image Stage */}
+                <div className="relative aspect-square w-full rounded-2xl bg-slate-50/90 border border-slate-100 flex items-center justify-center p-6 overflow-hidden">
+                  <div className="relative w-60 h-60">
                     {primaryImage ? (
                       <Image
                         src={primaryImage.image_url}
@@ -200,7 +190,7 @@ export const HeroSection: React.FC = () => {
                         priority
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-slate-600">
+                      <div className="w-full h-full flex items-center justify-center text-slate-400">
                         No Image
                       </div>
                     )}
@@ -209,41 +199,41 @@ export const HeroSection: React.FC = () => {
 
                 {/* Spec Hotspots */}
                 <div className="grid grid-cols-3 gap-2 text-center">
-                  <div className="p-2.5 bg-white/5 rounded-xl border border-white/5">
-                    <Camera className="w-4 h-4 text-vivo-400 mx-auto mb-1" />
-                    <p className="text-xs font-bold text-white truncate" title={cameraText}>
+                  <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-100">
+                    <Camera className="w-4 h-4 text-vivo-600 mx-auto mb-1" />
+                    <p className="text-xs font-bold text-slate-900 truncate" title={cameraText}>
                       {cameraText.length > 14 ? cameraText.slice(0, 14) + '...' : cameraText}
                     </p>
-                    <p className="text-[10px] text-slate-400">Camera System</p>
+                    <p className="text-[10px] text-slate-500 font-medium">Camera System</p>
                   </div>
-                  <div className="p-2.5 bg-white/5 rounded-xl border border-white/5">
-                    <Cpu className="w-4 h-4 text-origin-violet mx-auto mb-1" />
-                    <p className="text-xs font-bold text-white truncate" title={processorText}>
+                  <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-100">
+                    <Cpu className="w-4 h-4 text-indigo-600 mx-auto mb-1" />
+                    <p className="text-xs font-bold text-slate-900 truncate" title={processorText}>
                       {processorText.length > 14 ? processorText.slice(0, 14) + '...' : processorText}
                     </p>
-                    <p className="text-[10px] text-slate-400">Performance</p>
+                    <p className="text-[10px] text-slate-500 font-medium">Performance</p>
                   </div>
-                  <div className="p-2.5 bg-white/5 rounded-xl border border-white/5">
-                    <Zap className="w-4 h-4 text-amber-400 mx-auto mb-1" />
-                    <p className="text-xs font-bold text-white truncate" title={batteryText}>
+                  <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-100">
+                    <Zap className="w-4 h-4 text-amber-600 mx-auto mb-1" />
+                    <p className="text-xs font-bold text-slate-900 truncate" title={batteryText}>
                       {batteryText.length > 14 ? batteryText.slice(0, 14) + '...' : batteryText}
                     </p>
-                    <p className="text-[10px] text-slate-400">Battery & Power</p>
+                    <p className="text-[10px] text-slate-500 font-medium">Battery & Power</p>
                   </div>
                 </div>
 
                 {/* Pricing & Store CTA */}
-                <div className="pt-2 flex items-center justify-between border-t border-white/10">
+                <div className="pt-2 flex items-center justify-between border-t border-slate-100">
                   <div>
-                    <p className="text-[11px] text-slate-400">In-Store Starting Price</p>
-                    <p className="text-xl font-bold text-white">
+                    <p className="text-[11px] text-slate-400 font-medium">In-Store Starting Price</p>
+                    <p className="text-xl font-bold text-slate-900 font-display">
                       {formatPrice(defaultVariant?.selling_price || 0)}
                     </p>
                   </div>
 
                   <Link
                     href={`/product/${heroProduct.slug}`}
-                    className="px-4 py-2 rounded-xl bg-vivo-600 hover:bg-vivo-500 text-white text-xs font-semibold shadow-glow-blue transition-all flex items-center gap-1.5"
+                    className="px-4 py-2.5 rounded-xl bg-vivo-600 hover:bg-vivo-700 text-white text-xs font-semibold shadow-xs transition-all flex items-center gap-1.5"
                   >
                     <span>View Details & Stock</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -262,3 +252,4 @@ export const HeroSection: React.FC = () => {
     </section>
   );
 };
+

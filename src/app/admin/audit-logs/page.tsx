@@ -194,18 +194,18 @@ export default function AdminAuditLogsPage() {
       
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-extrabold text-white font-display">System Audit Logs</h1>
-        <p className="text-xs text-slate-400">
+        <h1 className="text-2xl font-extrabold text-slate-900 font-display">System Audit Logs</h1>
+        <p className="text-xs text-slate-500">
           Immutable security ledger permanently recording every administrative mutation, price change & stock movement in clear English.
         </p>
       </div>
 
       {/* Search & Filter Toolbar */}
-      <div className="p-4 rounded-2xl glass-panel border border-white/10 space-y-3">
+      <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+          <span className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
             <span>Filter & Search Audit Activity</span>
-            <span className="px-2 py-0.5 rounded-full bg-vivo-500/20 text-vivo-300 border border-vivo-500/30 text-[10px]">
+            <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10px]">
               {filteredLogs.length} of {auditLogs.length} logs
             </span>
           </span>
@@ -214,7 +214,7 @@ export default function AdminAuditLogsPage() {
             <button
               type="button"
               onClick={handleResetFilters}
-              className="text-[11px] text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1 transition-colors"
+              className="text-[11px] text-rose-600 hover:text-rose-700 font-semibold flex items-center gap-1 transition-colors"
             >
               <span>Reset Filters</span>
             </button>
@@ -224,34 +224,34 @@ export default function AdminAuditLogsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
           {/* Keyword Search Input */}
           <div className="space-y-1">
-            <label className="text-[11px] text-slate-400 font-medium">Search Activity / Keyword</label>
+            <label className="text-[11px] text-slate-600 font-medium">Search Activity / Keyword</label>
             <input
               type="text"
               placeholder="Search by offer, phone name, price, user..."
               value={searchKeyword}
               onChange={(e) => setSearchKeyword(e.target.value)}
-              className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white placeholder:text-slate-500 focus:border-vivo-500 focus:outline-none"
+              className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-vivo-600 focus:bg-white focus:outline-none"
             />
           </div>
 
           {/* Date Picker Filter */}
           <div className="space-y-1">
-            <label className="text-[11px] text-slate-400 font-medium">Filter by Specific Date</label>
+            <label className="text-[11px] text-slate-600 font-medium">Filter by Specific Date</label>
             <input
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:border-vivo-500 focus:outline-none"
+              className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:border-vivo-600 focus:bg-white focus:outline-none"
             />
           </div>
 
           {/* Action Type Category Filter */}
           <div className="space-y-1">
-            <label className="text-[11px] text-slate-400 font-medium">Filter by Action Category</label>
+            <label className="text-[11px] text-slate-600 font-medium">Filter by Action Category</label>
             <select
               value={selectedActionGroup}
               onChange={(e) => setSelectedActionGroup(e.target.value)}
-              className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:border-vivo-500 focus:outline-none"
+              className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:border-vivo-600 focus:bg-white focus:outline-none"
             >
               <option value="ALL">All Recorded Actions</option>
               <option value="OFFER">Store Offers & Schemes</option>
@@ -267,18 +267,18 @@ export default function AdminAuditLogsPage() {
       </div>
 
       {/* Audit Logs Table */}
-      <div className="rounded-2xl glass-panel border border-white/10 overflow-hidden shadow-xl">
-        <div className="p-4 border-b border-white/10 flex items-center justify-between bg-slate-950/40">
-          <h3 className="font-bold text-sm text-white flex items-center gap-2">
-            <ShieldAlert className="w-4 h-4 text-origin-violet" />
+      <div className="rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-sm">
+        <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
+          <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+            <ShieldAlert className="w-4 h-4 text-indigo-600" />
             <span>Audit Trail Ledger</span>
           </h3>
-          <span className="text-xs text-slate-400 font-medium">Immutable chronological activity stream</span>
+          <span className="text-xs text-slate-500 font-medium">Immutable chronological activity stream</span>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
-            <thead className="bg-slate-900/90 border-b border-white/10 text-slate-400 uppercase tracking-wider">
+            <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider">
               <tr>
                 <th className="p-4">Timestamp</th>
                 <th className="p-4">Admin User</th>
@@ -288,11 +288,11 @@ export default function AdminAuditLogsPage() {
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-slate-100">
               {filteredLogs.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-slate-400">
-                    <p className="font-semibold text-slate-300 text-sm">No audit logs matching your filter criteria.</p>
+                  <td colSpan={5} className="p-8 text-center text-slate-500">
+                    <p className="font-semibold text-slate-700 text-sm">No audit logs matching your filter criteria.</p>
                     <p className="text-xs text-slate-500 mt-1">Try changing your search keyword, date, or action category filter.</p>
                   </td>
                 </tr>
@@ -300,29 +300,29 @@ export default function AdminAuditLogsPage() {
                 filteredLogs.map(log => {
                   const plainEnglishText = formatAuditToPlainEnglish(log);
                   return (
-                    <tr key={log.id} className="hover:bg-white/[0.02] transition-colors">
-                      <td className="p-4 text-slate-400 whitespace-nowrap">{formatDateTime(log.created_at)}</td>
+                    <tr key={log.id} className="hover:bg-slate-50/70 transition-colors">
+                      <td className="p-4 text-slate-500 whitespace-nowrap">{formatDateTime(log.created_at)}</td>
                       
-                      <td className="p-4 font-semibold text-slate-200 whitespace-nowrap">
+                      <td className="p-4 font-semibold text-slate-800 whitespace-nowrap">
                         <span className="flex items-center gap-1.5">
-                          <UserCheck className="w-3.5 h-3.5 text-vivo-400" />
+                          <UserCheck className="w-3.5 h-3.5 text-vivo-600" />
                           <span>{log.admin_email}</span>
                         </span>
                       </td>
 
                       <td className="p-4 whitespace-nowrap">
-                        <span className="px-2.5 py-1 rounded-lg font-mono text-[10px] font-bold bg-vivo-500/15 text-vivo-300 border border-vivo-500/30">
+                        <span className="px-2.5 py-1 rounded-lg font-mono text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
                           {log.action}
                         </span>
                       </td>
 
-                      <td className="p-4 font-mono text-slate-300 whitespace-nowrap">
-                        <span className="px-2 py-0.5 rounded bg-slate-900 border border-white/5 text-[11px] text-slate-300">
+                      <td className="p-4 font-mono text-slate-700 whitespace-nowrap">
+                        <span className="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-[11px] text-slate-700">
                           {log.entity_type}
                         </span>
                       </td>
 
-                      <td className="p-4 text-slate-200 text-xs leading-relaxed font-medium min-w-[320px]">
+                      <td className="p-4 text-slate-800 text-xs leading-relaxed font-medium min-w-[320px]">
                         {plainEnglishText}
                       </td>
                     </tr>

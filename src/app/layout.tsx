@@ -23,13 +23,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark scroll-smooth">
+    <html lang="en" className="scroll-smooth">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-sans min-h-screen flex flex-col bg-[#080C14] text-slate-100 antialiased overflow-x-hidden">
+      <body className="font-sans min-h-screen flex flex-col bg-[#FAFAFB] text-slate-900 antialiased overflow-x-hidden">
         <StoreProvider>
           <Header />
           <main className="flex-1 pb-16 md:pb-0">

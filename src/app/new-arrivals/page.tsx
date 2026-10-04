@@ -15,16 +15,16 @@ export default function NewArrivalsPage() {
     <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
       
       {/* Header Banner */}
-      <div className="relative rounded-3xl glass-panel p-6 sm:p-8 border border-white/10 bg-gradient-to-r from-cyan-950/30 via-slate-900 to-vivo-950/40 overflow-hidden">
+      <div className="relative rounded-3xl p-6 sm:p-8 border border-slate-200 bg-gradient-to-r from-blue-50/70 via-white to-slate-50 overflow-hidden shadow-sm">
         <div className="max-w-2xl space-y-2">
-          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-origin-cyan uppercase tracking-wider">
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-vivo-600 uppercase tracking-wider">
             <Sparkles className="w-3.5 h-3.5" />
             <span>JUST LAUNCHED & COMING SOON</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white font-display">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 font-display">
             New Smartphone Launches
           </h1>
-          <p className="text-xs sm:text-sm text-slate-300">
+          <p className="text-xs sm:text-sm text-slate-600">
             Check newly arrived flagship smartphones and upcoming shipments arriving at our Begampur store.
           </p>
         </div>

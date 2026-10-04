@@ -111,13 +111,13 @@ export default function ProductDetailPage() {
   if (!isLoaded) {
     return (
       <div className="py-24 max-w-5xl mx-auto px-4 space-y-8 animate-pulse">
-        <div className="h-8 bg-slate-800 rounded-2xl w-48 mx-auto" />
+        <div className="h-8 bg-slate-200 rounded-2xl w-48 mx-auto" />
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <div className="lg:col-span-6 h-96 bg-slate-800/60 rounded-3xl" />
+          <div className="lg:col-span-6 h-96 bg-slate-100 rounded-3xl border border-slate-200" />
           <div className="lg:col-span-6 space-y-4">
-            <div className="h-10 bg-slate-800 rounded-xl w-3/4" />
-            <div className="h-6 bg-slate-800/60 rounded-lg w-1/2" />
-            <div className="h-24 bg-slate-800/40 rounded-2xl" />
+            <div className="h-10 bg-slate-200 rounded-xl w-3/4" />
+            <div className="h-6 bg-slate-100 rounded-lg w-1/2" />
+            <div className="h-24 bg-slate-100 rounded-2xl border border-slate-200" />
           </div>
         </div>
       </div>
@@ -127,9 +127,9 @@ export default function ProductDetailPage() {
   if (!product) {
     return (
       <div className="py-24 max-w-4xl mx-auto px-4 text-center space-y-4">
-        <h2 className="text-2xl font-bold text-white font-display">Product Not Found</h2>
-        <p className="text-sm text-slate-400">The mobile phone or accessory model you are looking for does not exist or has been discontinued.</p>
-        <Link href="/mobiles" className="inline-block px-5 py-2.5 rounded-xl bg-vivo-600 hover:bg-vivo-500 text-white text-xs font-semibold shadow-glow-blue transition-all">
+        <h2 className="text-2xl font-bold text-slate-900 font-display">Product Not Found</h2>
+        <p className="text-sm text-slate-600">The mobile phone or accessory model you are looking for does not exist or has been discontinued.</p>
+        <Link href="/mobiles" className="inline-block px-5 py-2.5 rounded-xl bg-vivo-600 hover:bg-vivo-700 text-white text-xs font-semibold shadow-2xs transition-all">
           Browse Smartphone Catalog
         </Link>
       </div>
@@ -169,25 +169,25 @@ export default function ProductDetailPage() {
     <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
       
       {/* Breadcrumb Navigation */}
-      <nav className="flex items-center gap-2 text-xs text-slate-400">
-        <Link href="/" className="hover:text-white">Home</Link>
-        <ChevronRight className="w-3.5 h-3.5" />
-        <Link href={product.is_phone ? '/mobiles' : '/accessories'} className="hover:text-white">
+      <nav className="flex items-center gap-2 text-xs text-slate-500">
+        <Link href="/" className="hover:text-vivo-600 transition-colors">Home</Link>
+        <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+        <Link href={product.is_phone ? '/mobiles' : '/accessories'} className="hover:text-vivo-600 transition-colors">
           {product.is_phone ? 'Mobiles' : 'Accessories'}
         </Link>
-        <ChevronRight className="w-3.5 h-3.5" />
-        <span className="text-white font-medium truncate">{product.name}</span>
+        <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+        <span className="text-slate-900 font-semibold truncate">{product.name}</span>
       </nav>
 
       {/* Main Product Showcase: Gallery + Variant & In-Store Purchase Hub */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         
-        {/* Left Column: Flipkart / Amazon Style Multi-Angle Gallery */}
+        {/* Left Column: Multi-Angle Gallery */}
         <div className="lg:col-span-6 space-y-4">
           
           <div className="flex flex-col-reverse md:flex-row gap-4 items-start">
             
-            {/* Multi-Angle Thumbnails Strip (Amazon/Flipkart vertical sidebar on desktop) */}
+            {/* Multi-Angle Thumbnails Strip */}
             {product.images.length > 1 && (
               <div className="flex md:flex-col gap-2.5 overflow-x-auto md:overflow-y-auto max-h-[480px] w-full md:w-24 flex-shrink-0 pb-2 md:pb-0 scrollbar-thin">
                 {product.images.map((img, idx) => {
@@ -202,10 +202,10 @@ export default function ProductDetailPage() {
                       type="button"
                       onMouseEnter={() => setActiveImageIndex(idx)}
                       onClick={() => setActiveImageIndex(idx)}
-                      className={`relative w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-slate-900 overflow-hidden border-2 flex-shrink-0 transition-all text-left group p-1 flex flex-col items-center justify-center ${
+                      className={`relative w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-white overflow-hidden border-2 flex-shrink-0 transition-all text-left group p-1 flex flex-col items-center justify-center shadow-2xs ${
                         isActive
-                          ? 'border-vivo-500 shadow-glow-blue ring-2 ring-vivo-500/30 scale-105 bg-slate-800'
-                          : 'border-white/10 hover:border-vivo-400/50 hover:bg-slate-800/80 opacity-70 hover:opacity-100'
+                          ? 'border-vivo-600 ring-2 ring-vivo-200 scale-105 bg-slate-50'
+                          : 'border-slate-200 hover:border-vivo-400 hover:bg-slate-50 opacity-80 hover:opacity-100'
                       }`}
                     >
                       <div className="relative w-full h-full">
@@ -216,7 +216,7 @@ export default function ProductDetailPage() {
                           className="object-contain p-1"
                         />
                       </div>
-                      <span className="absolute bottom-0.5 inset-x-0 bg-slate-950/80 text-slate-300 text-[8px] font-bold text-center tracking-tighter py-0.5 rounded-b-xl border-t border-white/5">
+                      <span className="absolute bottom-0.5 inset-x-0 bg-slate-900/80 text-white text-[8px] font-bold text-center tracking-tighter py-0.5 rounded-b-xl">
                         {viewLabel}
                       </span>
                     </button>
@@ -225,16 +225,16 @@ export default function ProductDetailPage() {
               </div>
             )}
 
-            {/* Main Stage Image with Amazon-Style Interactive Magnifier */}
+            {/* Main Stage Image with Interactive Magnifier */}
             <div className="flex-1 w-full space-y-2">
               <div 
-                className="relative aspect-square w-full rounded-3xl glass-panel border border-white/10 bg-gradient-to-b from-slate-900/95 to-slate-950 flex items-center justify-center p-6 overflow-hidden shadow-2xl cursor-crosshair group select-none"
+                className="relative aspect-square w-full rounded-3xl bg-white border border-slate-200/90 flex items-center justify-center p-6 overflow-hidden shadow-2xs cursor-crosshair group select-none"
                 onMouseEnter={() => setIsZooming(true)}
                 onMouseLeave={() => setIsZooming(false)}
                 onMouseMove={handleMouseMove}
                 onClick={() => setLightboxOpen(true)}
               >
-                <div className="absolute inset-0 bg-radial-gradient from-vivo-500/10 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-radial-gradient from-vivo-50/40 via-transparent to-transparent pointer-events-none" />
                 
                 {/* Status Badge */}
                 <div className="absolute top-4 left-4 z-20 pointer-events-none">
@@ -247,7 +247,7 @@ export default function ProductDetailPage() {
                 {/* Discount Callout */}
                 {activeVariant && activeVariant.discount_percent > 0 && (
                   <div className="absolute top-4 right-4 z-20 pointer-events-none">
-                    <span className="px-3 py-1 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                    <span className="px-3 py-1 rounded-xl text-xs font-bold bg-amber-50 text-amber-800 border border-amber-300 shadow-2xs">
                       SAVE {Math.round(activeVariant.discount_percent)}% OFF
                     </span>
                   </div>
@@ -259,7 +259,7 @@ export default function ProductDetailPage() {
                     <button
                       type="button"
                       onClick={handlePrevImage}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-slate-900/80 hover:bg-vivo-600 text-white border border-white/10 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 shadow-lg"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/90 hover:bg-vivo-600 text-slate-800 hover:text-white border border-slate-200 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 shadow-md"
                       title="Previous angle"
                     >
                       <ChevronLeft className="w-4 h-4" />
@@ -267,7 +267,7 @@ export default function ProductDetailPage() {
                     <button
                       type="button"
                       onClick={handleNextImage}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-slate-900/80 hover:bg-vivo-600 text-white border border-white/10 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 shadow-lg"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/90 hover:bg-vivo-600 text-slate-800 hover:text-white border border-slate-200 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 shadow-md"
                       title="Next angle"
                     >
                       <ChevronRight className="w-4 h-4" />
@@ -296,15 +296,15 @@ export default function ProductDetailPage() {
 
                 {/* Bottom Control Bar */}
                 <div className="absolute bottom-3 inset-x-4 flex items-center justify-between z-20 pointer-events-none">
-                  <div className="bg-slate-950/80 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 text-[10px] text-slate-300 font-medium flex items-center gap-1.5 shadow">
-                    <ZoomIn className="w-3 h-3 text-vivo-400" />
+                  <div className="bg-white/95 backdrop-blur-md px-3 py-1 rounded-full border border-slate-200 text-[10px] text-slate-600 font-medium flex items-center gap-1.5 shadow-2xs">
+                    <ZoomIn className="w-3 h-3 text-vivo-600" />
                     <span>{isZooming ? 'Panning HD Details' : 'Hover to Zoom · Click for Fullscreen'}</span>
                   </div>
 
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); setLightboxOpen(true); }}
-                    className="pointer-events-auto bg-slate-900/80 hover:bg-vivo-600 text-white p-2 rounded-full border border-white/10 transition-colors shadow"
+                    className="pointer-events-auto bg-white/90 hover:bg-vivo-600 text-slate-700 hover:text-white p-2 rounded-full border border-slate-200 transition-colors shadow-2xs"
                     title="Open Fullscreen Gallery"
                   >
                     <Maximize2 className="w-3.5 h-3.5" />
@@ -314,10 +314,10 @@ export default function ProductDetailPage() {
               </div>
 
               {/* View Tags / Dot Indicators */}
-              <div className="flex items-center justify-between px-2 text-[11px] text-slate-400">
+              <div className="flex items-center justify-between px-2 text-[11px] text-slate-500">
                 <span className="flex items-center gap-1.5 font-medium">
-                  <span className="w-2 h-2 rounded-full bg-vivo-400" />
-                  Showing: <strong className="text-white">{activeImageIndex === 0 ? 'Front View' : activeImageIndex === 1 ? 'Back View' : activeImageIndex === 2 ? 'Side Profile' : `Angle #${activeImageIndex + 1}`}</strong>
+                  <span className="w-2 h-2 rounded-full bg-vivo-600" />
+                  Showing: <strong className="text-slate-800">{activeImageIndex === 0 ? 'Front View' : activeImageIndex === 1 ? 'Back View' : activeImageIndex === 2 ? 'Side Profile' : `Angle #${activeImageIndex + 1}`}</strong>
                 </span>
                 <span>{activeImageIndex + 1} of {product.images.length} Photos</span>
               </div>
@@ -327,20 +327,20 @@ export default function ProductDetailPage() {
 
           {/* In-Store Guarantee Icons */}
           <div className="grid grid-cols-3 gap-3 pt-2">
-            <div className="p-3 rounded-2xl glass-card text-center space-y-1">
-              <ShieldCheck className="w-5 h-5 text-emerald-400 mx-auto" />
-              <p className="text-xs font-bold text-white">100% Genuine</p>
-              <p className="text-[10px] text-slate-400">Official Brand Seal</p>
+            <div className="p-3 rounded-2xl bg-white border border-slate-200/90 shadow-2xs text-center space-y-1">
+              <ShieldCheck className="w-5 h-5 text-emerald-600 mx-auto" />
+              <p className="text-xs font-bold text-slate-900">100% Genuine</p>
+              <p className="text-[10px] text-slate-500">Official Brand Seal</p>
             </div>
-            <div className="p-3 rounded-2xl glass-card text-center space-y-1">
-              <CreditCard className="w-5 h-5 text-amber-400 mx-auto" />
-              <p className="text-xs font-bold text-amber-300">Bajaj EMI</p>
-              <p className="text-[10px] text-slate-400">Available in store</p>
+            <div className="p-3 rounded-2xl bg-white border border-slate-200/90 shadow-2xs text-center space-y-1">
+              <CreditCard className="w-5 h-5 text-amber-600 mx-auto" />
+              <p className="text-xs font-bold text-amber-800">Bajaj EMI</p>
+              <p className="text-[10px] text-slate-500">Available in store</p>
             </div>
-            <div className="p-3 rounded-2xl glass-card text-center space-y-1">
-              <Zap className="w-5 h-5 text-vivo-400 mx-auto" />
-              <p className="text-xs font-bold text-white">Free Setup</p>
-              <p className="text-[10px] text-slate-400">UV Glass & Transfer</p>
+            <div className="p-3 rounded-2xl bg-white border border-slate-200/90 shadow-2xs text-center space-y-1">
+              <Zap className="w-5 h-5 text-vivo-600 mx-auto" />
+              <p className="text-xs font-bold text-slate-900">Free Setup</p>
+              <p className="text-[10px] text-slate-500">UV Glass & Transfer</p>
             </div>
           </div>
 
@@ -352,7 +352,7 @@ export default function ProductDetailPage() {
           {/* Header Info */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold tracking-widest text-vivo-400 uppercase">
+              <span className="text-xs font-bold tracking-widest text-vivo-600 uppercase">
                 {product.brand?.name} {product.series?.name ? `· ${product.series.name}` : ''}
               </span>
               <div className="flex items-center gap-2">
@@ -360,10 +360,10 @@ export default function ProductDetailPage() {
                   <button
                     type="button"
                     onClick={() => isCompared ? null : addToCompare(product)}
-                    className={`flex items-center gap-1 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all ${
+                    className={`flex items-center gap-1 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all shadow-2xs ${
                       isCompared
-                        ? 'bg-origin-violet text-white border-origin-violet'
-                        : 'bg-white/5 text-slate-300 border-white/10 hover:text-white'
+                        ? 'bg-vivo-600 text-white border-vivo-600'
+                        : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 hover:text-slate-900'
                     }`}
                   >
                     <Layers className="w-3.5 h-3.5" />
@@ -373,40 +373,40 @@ export default function ProductDetailPage() {
                 <button
                   type="button"
                   onClick={() => toggleWishlist(product.id)}
-                  className={`p-2 rounded-xl border transition-all ${
+                  className={`p-2 rounded-xl border transition-all shadow-2xs ${
                     isWishlisted
-                      ? 'bg-rose-600 text-white border-rose-500'
-                      : 'bg-white/5 text-slate-300 border-white/10 hover:text-white'
+                      ? 'bg-rose-50 text-rose-600 border-rose-200'
+                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 hover:text-slate-900'
                   }`}
                   title="Wishlist"
                 >
-                  <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-current' : ''}`} />
+                  <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-current text-rose-600' : ''}`} />
                 </button>
               </div>
             </div>
 
-            <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-white">
+            <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900">
               {product.name}
             </h1>
 
             {product.tagline && (
-              <p className="text-sm text-slate-300 leading-relaxed font-normal">
+              <p className="text-sm text-slate-600 leading-relaxed font-normal">
                 {product.tagline}
               </p>
             )}
           </div>
 
           {/* Pricing & EMI Strip */}
-          <div className="p-5 rounded-2xl glass-panel border border-white/10 bg-slate-900/80 space-y-3">
+          <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs space-y-3">
             <div className="flex items-baseline justify-between">
               <div>
-                <p className="text-xs text-slate-400 font-medium">In-Store Showroom Price</p>
+                <p className="text-xs text-slate-500 font-medium">In-Store Showroom Price</p>
                 <div className="flex items-baseline gap-3 mt-1">
-                  <span className="text-3xl font-extrabold font-display text-white">
+                  <span className="text-3xl font-extrabold font-display text-slate-900">
                     {formatPrice(activeVariant?.selling_price || 0)}
                   </span>
                   {activeVariant && activeVariant.mrp > activeVariant.selling_price && (
-                    <span className="text-sm text-slate-500 line-through">
+                    <span className="text-sm text-slate-400 line-through">
                       MRP {formatPrice(activeVariant.mrp)}
                     </span>
                   )}
@@ -415,30 +415,30 @@ export default function ProductDetailPage() {
 
               {product.is_bajaj_emi_enabled !== false && emiAmount > 0 && (
                 <div className="text-right">
-                  <span className="text-[10px] font-bold text-amber-300 uppercase tracking-wide block">
+                  <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wide block">
                     ⚡ Bajaj Finance EMI Available
                   </span>
-                  <span className="text-sm font-bold text-emerald-400">
+                  <span className="text-sm font-bold text-emerald-700">
                     from {formatPrice(emiAmount)}/mo
                   </span>
-                  <span className="text-[9px] text-amber-300/80 font-medium block">
+                  <span className="text-[9px] text-amber-700 font-medium block">
                     {tenureMonths} Months EMI Available
                   </span>
                 </div>
               )}
             </div>
 
-            <p className="text-[11px] text-slate-400 border-t border-white/5 pt-2 flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5 text-vivo-400" />
+            <p className="text-[11px] text-slate-500 border-t border-slate-100 pt-2 flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5 text-vivo-600" />
               <span>Prices inclusive of all taxes. Special discounts & exchange bonus applied in-store.</span>
             </p>
           </div>
 
           {/* Variant Matrix Selector (RAM / Storage / Color) */}
-          <div className="space-y-4 p-5 rounded-2xl glass-panel border border-white/10">
+          <div className="space-y-4 p-5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-white uppercase tracking-wider">Select Variant</span>
-              <span className="text-slate-400">SKU: <strong className="text-slate-200">{activeVariant?.sku}</strong></span>
+              <span className="font-bold text-slate-900 uppercase tracking-wider">Select Variant</span>
+              <span className="text-slate-500">SKU: <strong className="text-slate-800">{activeVariant?.sku}</strong></span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -453,8 +453,8 @@ export default function ProductDetailPage() {
                     onClick={() => setSelectedVariantIndex(idx)}
                     className={`p-3 rounded-xl border text-left transition-all ${
                       isSelected
-                        ? 'bg-vivo-600/20 border-vivo-500 shadow-glow-blue text-white'
-                        : 'bg-white/5 border-white/5 hover:border-white/20 text-slate-300'
+                        ? 'bg-vivo-50 border-vivo-500 text-slate-900 shadow-2xs ring-1 ring-vivo-200'
+                        : 'bg-slate-50/70 border-slate-200 text-slate-700 hover:bg-slate-100'
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -464,8 +464,8 @@ export default function ProductDetailPage() {
                       <span className={`w-2 h-2 rounded-full ${vStatusConfig.dot}`} />
                     </div>
                     <div className="flex items-baseline justify-between mt-1 text-xs">
-                      <span className="font-semibold text-vivo-400">{formatPrice(v.selling_price)}</span>
-                      <span className="text-[10px] text-slate-400">{v.color}</span>
+                      <span className="font-semibold text-vivo-700">{formatPrice(v.selling_price)}</span>
+                      <span className="text-[10px] text-slate-500">{v.color}</span>
                     </div>
                   </button>
                 );
@@ -480,7 +480,7 @@ export default function ProductDetailPage() {
               <button
                 type="button"
                 onClick={() => setNotifyModalOpen(true)}
-                className="w-full py-4 px-6 rounded-2xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-sm shadow-lg flex items-center justify-center gap-2 transition-all"
+                className="w-full py-4 px-6 rounded-2xl bg-vivo-600 hover:bg-vivo-700 text-white font-bold text-sm shadow-2xs flex items-center justify-center gap-2 transition-all"
               >
                 <Bell className="w-4 h-4" />
                 <span>Notify Me When In Stock at Begampur Store</span>
@@ -489,9 +489,9 @@ export default function ProductDetailPage() {
               <button
                 type="button"
                 onClick={() => setVisitModalOpen(true)}
-                className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-vivo-600 via-vivo-500 to-origin-violet hover:from-vivo-500 hover:to-origin-purple text-white font-bold text-base shadow-glow-blue hover:shadow-glow-violet flex items-center justify-center gap-2 transition-all transform hover:-translate-y-0.5"
+                className="w-full py-4 px-6 rounded-2xl bg-vivo-600 hover:bg-vivo-700 text-white font-bold text-base shadow-2xs flex items-center justify-center gap-2 transition-all"
               >
-                <MapPin className="w-5 h-5 text-cyan-200" />
+                <MapPin className="w-5 h-5 text-white" />
                 <span>Visit Store to Purchase</span>
               </button>
             )}
@@ -501,28 +501,28 @@ export default function ProductDetailPage() {
                 href={`https://wa.me/91${storeSettings.whatsapp}?text=${whatsappMessage}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="py-3 px-4 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 font-semibold text-xs flex items-center justify-center gap-2 transition-colors"
+                className="py-3 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-semibold text-xs flex items-center justify-center gap-2 transition-colors shadow-2xs"
               >
-                <span>💬 WhatsApp Store Inquiry</span>
+                <span>💬 WhatsApp Inquiry</span>
               </a>
 
               <a
                 href={`tel:${storeSettings.phone}`}
-                className="py-3 px-4 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 font-semibold text-xs flex items-center justify-center gap-2 transition-colors"
+                className="py-3 px-4 rounded-xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-semibold text-xs flex items-center justify-center gap-2 transition-colors shadow-2xs"
               >
-                <Phone className="w-3.5 h-3.5 text-vivo-400" />
-                <span>Call Store ({storeSettings.phone})</span>
+                <Phone className="w-3.5 h-3.5 text-vivo-600" />
+                <span>Call ({storeSettings.phone})</span>
               </a>
             </div>
 
           </div>
 
           {/* In-Store Location Reminder */}
-          <div className="p-3.5 rounded-xl bg-white/5 border border-white/5 text-xs text-slate-300 flex items-start gap-2.5">
-            <MapPin className="w-4 h-4 text-vivo-400 flex-shrink-0 mt-0.5" />
+          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 flex items-start gap-2.5">
+            <MapPin className="w-4 h-4 text-vivo-600 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="font-semibold text-white">Galaxy Mobile Gallery, Begampur</p>
-              <p className="text-[11px] text-slate-400">{storeSettings.address}, {storeSettings.taluka}, {storeSettings.district}</p>
+              <p className="font-bold text-slate-900">Galaxy Mobile Gallery, Begampur</p>
+              <p className="text-[11px] text-slate-500">{storeSettings.address}, {storeSettings.taluka}, {storeSettings.district}</p>
             </div>
           </div>
 
@@ -531,18 +531,18 @@ export default function ProductDetailPage() {
       </div>
 
       {/* Specifications Detailed Section */}
-      <section className="pt-12 border-t border-white/10 space-y-6">
+      <section className="pt-12 border-t border-slate-200 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-white font-display">
+            <h2 className="text-2xl font-bold text-slate-900 font-display">
               Technical Specifications & Features
             </h2>
-            <p className="text-xs text-slate-400">Complete hardware breakdown & features for {product.name}</p>
+            <p className="text-xs text-slate-500">Complete hardware breakdown & features for {product.name}</p>
           </div>
 
           {product.warranty_info && (
-            <div className="text-xs bg-white/5 px-3 py-1.5 rounded-xl border border-white/5 text-slate-300">
-              🛡️ Warranty: <strong className="text-white">{product.warranty_info}</strong>
+            <div className="text-xs bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 text-slate-700">
+              🛡️ Warranty: <strong className="text-slate-900">{product.warranty_info}</strong>
             </div>
           )}
         </div>
@@ -662,51 +662,51 @@ export default function ProductDetailPage() {
           });
 
           return (
-            <div className="rounded-3xl glass-panel border border-white/10 overflow-hidden">
-              <div className="divide-y divide-white/5">
+            <div className="rounded-3xl bg-white border border-slate-200/90 shadow-2xs overflow-hidden">
+              <div className="divide-y divide-slate-100">
                 
                 {/* General Overview Card */}
-                <div className="p-6 space-y-3 bg-white/[0.02]">
-                  <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                    <Smartphone className="w-3.5 h-3.5 text-vivo-400" /> General & Selected Variant Details
+                <div className="p-6 space-y-3 bg-slate-50/50">
+                  <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                    <Smartphone className="w-3.5 h-3.5 text-vivo-600" /> General & Selected Variant Details
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                    <div className="flex justify-between border-b border-white/5 pb-2">
-                      <span className="text-slate-400">Brand</span>
-                      <span className="text-white font-semibold">{product.brand?.name || 'VIVO'}</span>
+                    <div className="flex justify-between border-b border-slate-100 pb-2">
+                      <span className="text-slate-500">Brand</span>
+                      <span className="text-slate-900 font-semibold">{product.brand?.name || 'VIVO'}</span>
                     </div>
-                    <div className="flex justify-between border-b border-white/5 pb-2">
-                      <span className="text-slate-400">Model Name</span>
-                      <span className="text-white font-semibold">{product.name}</span>
+                    <div className="flex justify-between border-b border-slate-100 pb-2">
+                      <span className="text-slate-500">Model Name</span>
+                      <span className="text-slate-900 font-semibold">{product.name}</span>
                     </div>
-                    <div className="flex justify-between border-b border-white/5 pb-2">
-                      <span className="text-slate-400">Category</span>
-                      <span className="text-white font-semibold">{product.category?.name || (product.is_phone ? 'Smartphone' : 'Accessories')}</span>
+                    <div className="flex justify-between border-b border-slate-100 pb-2">
+                      <span className="text-slate-500">Category</span>
+                      <span className="text-slate-900 font-semibold">{product.category?.name || (product.is_phone ? 'Smartphone' : 'Accessories')}</span>
                     </div>
-                    <div className="flex justify-between border-b border-white/5 pb-2">
-                      <span className="text-slate-400">Selected Color</span>
-                      <span className="text-white font-semibold">{activeVariant?.color || 'Standard'}</span>
+                    <div className="flex justify-between border-b border-slate-100 pb-2">
+                      <span className="text-slate-500">Selected Color</span>
+                      <span className="text-slate-900 font-semibold">{activeVariant?.color || 'Standard'}</span>
                     </div>
                     {activeVariant?.ram && (
-                      <div className="flex justify-between border-b border-white/5 pb-2">
-                        <span className="text-slate-400">RAM Capacity</span>
-                        <span className="text-white font-semibold">{activeVariant.ram}</span>
+                      <div className="flex justify-between border-b border-slate-100 pb-2">
+                        <span className="text-slate-500">RAM Capacity</span>
+                        <span className="text-slate-900 font-semibold">{activeVariant.ram}</span>
                       </div>
                     )}
                     {activeVariant?.storage && (
-                      <div className="flex justify-between border-b border-white/5 pb-2">
-                        <span className="text-slate-400">Internal Storage</span>
-                        <span className="text-white font-semibold">{activeVariant.storage}</span>
+                      <div className="flex justify-between border-b border-slate-100 pb-2">
+                        <span className="text-slate-500">Internal Storage</span>
+                        <span className="text-slate-900 font-semibold">{activeVariant.storage}</span>
                       </div>
                     )}
-                    <div className="flex justify-between border-b border-white/5 pb-2">
-                      <span className="text-slate-400">Stock Availability</span>
-                      <span className="text-emerald-400 font-semibold">{statusConfig.label} ({activeVariant?.current_stock || 0} Units In Store)</span>
+                    <div className="flex justify-between border-b border-slate-100 pb-2">
+                      <span className="text-slate-500">Stock Availability</span>
+                      <span className="text-emerald-700 font-bold">{statusConfig.label} ({activeVariant?.current_stock || 0} Units In Store)</span>
                     </div>
                     {product.warranty_info && (
-                      <div className="flex justify-between border-b border-white/5 pb-2">
-                        <span className="text-slate-400">Warranty</span>
-                        <span className="text-white font-medium">{product.warranty_info}</span>
+                      <div className="flex justify-between border-b border-slate-100 pb-2">
+                        <span className="text-slate-500">Warranty</span>
+                        <span className="text-slate-900 font-semibold">{product.warranty_info}</span>
                       </div>
                     )}
                   </div>
@@ -715,14 +715,14 @@ export default function ProductDetailPage() {
                 {/* Display Specs */}
                 {displayItems.length > 0 && (
                   <div className="p-6 space-y-3">
-                    <h4 className="text-xs font-bold text-vivo-400 uppercase tracking-wider flex items-center gap-2">
-                      <Sparkles className="w-3.5 h-3.5" /> Display & Screen
+                    <h4 className="text-xs font-bold text-vivo-700 uppercase tracking-wider flex items-center gap-2">
+                      <Sparkles className="w-3.5 h-3.5 text-vivo-600" /> Display & Screen
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                       {displayItems.map((item, idx) => (
-                        <div key={idx} className="flex justify-between border-b border-white/5 pb-2">
-                          <span className="text-slate-400 capitalize">{item.label}</span>
-                          <span className="text-white font-medium text-right">{item.value}</span>
+                        <div key={idx} className="flex justify-between border-b border-slate-100 pb-2">
+                          <span className="text-slate-500 capitalize">{item.label}</span>
+                          <span className="text-slate-900 font-semibold text-right">{item.value}</span>
                         </div>
                       ))}
                     </div>
@@ -732,14 +732,14 @@ export default function ProductDetailPage() {
                 {/* Camera Specs */}
                 {cameraItems.length > 0 && (
                   <div className="p-6 space-y-3">
-                    <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-2">
-                      <Camera className="w-3.5 h-3.5" /> Camera System
+                    <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                      <Camera className="w-3.5 h-3.5 text-vivo-600" /> Camera System
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                       {cameraItems.map((item, idx) => (
-                        <div key={idx} className="flex justify-between border-b border-white/5 pb-2">
-                          <span className="text-slate-400 capitalize">{item.label}</span>
-                          <span className="text-white font-medium text-right">{item.value}</span>
+                        <div key={idx} className="flex justify-between border-b border-slate-100 pb-2">
+                          <span className="text-slate-500 capitalize">{item.label}</span>
+                          <span className="text-slate-900 font-semibold text-right">{item.value}</span>
                         </div>
                       ))}
                     </div>
@@ -749,14 +749,14 @@ export default function ProductDetailPage() {
                 {/* Processor & Hardware */}
                 {processorItems.length > 0 && (
                   <div className="p-6 space-y-3">
-                    <h4 className="text-xs font-bold text-origin-violet uppercase tracking-wider flex items-center gap-2">
-                      <Cpu className="w-3.5 h-3.5" /> Processor & Performance
+                    <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                      <Cpu className="w-3.5 h-3.5 text-vivo-600" /> Processor & Performance
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                       {processorItems.map((item, idx) => (
-                        <div key={idx} className="flex justify-between border-b border-white/5 pb-2">
-                          <span className="text-slate-400 capitalize">{item.label}</span>
-                          <span className="text-white font-medium text-right">{item.value}</span>
+                        <div key={idx} className="flex justify-between border-b border-slate-100 pb-2">
+                          <span className="text-slate-500 capitalize">{item.label}</span>
+                          <span className="text-slate-900 font-semibold text-right">{item.value}</span>
                         </div>
                       ))}
                     </div>
@@ -766,14 +766,14 @@ export default function ProductDetailPage() {
                 {/* Battery & Charging */}
                 {batteryItems.length > 0 && (
                   <div className="p-6 space-y-3">
-                    <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
-                      <Battery className="w-3.5 h-3.5" /> Battery & Power Delivery
+                    <h4 className="text-xs font-bold text-emerald-800 uppercase tracking-wider flex items-center gap-2">
+                      <Battery className="w-3.5 h-3.5 text-emerald-600" /> Battery & Power Delivery
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                       {batteryItems.map((item, idx) => (
-                        <div key={idx} className="flex justify-between border-b border-white/5 pb-2">
-                          <span className="text-slate-400 capitalize">{item.label}</span>
-                          <span className="text-white font-medium text-right">{item.value}</span>
+                        <div key={idx} className="flex justify-between border-b border-slate-100 pb-2">
+                          <span className="text-slate-500 capitalize">{item.label}</span>
+                          <span className="text-slate-900 font-semibold text-right">{item.value}</span>
                         </div>
                       ))}
                     </div>
@@ -783,14 +783,14 @@ export default function ProductDetailPage() {
                 {/* Connectivity & Ports */}
                 {connectivityItems.length > 0 && (
                   <div className="p-6 space-y-3">
-                    <h4 className="text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center gap-2">
-                      <Zap className="w-3.5 h-3.5" /> Connectivity & Ports
+                    <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                      <Zap className="w-3.5 h-3.5 text-vivo-600" /> Connectivity & Ports
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                       {connectivityItems.map((item, idx) => (
-                        <div key={idx} className="flex justify-between border-b border-white/5 pb-2">
-                          <span className="text-slate-400 capitalize">{item.label}</span>
-                          <span className="text-white font-medium text-right">{item.value}</span>
+                        <div key={idx} className="flex justify-between border-b border-slate-100 pb-2">
+                          <span className="text-slate-500 capitalize">{item.label}</span>
+                          <span className="text-slate-900 font-semibold text-right">{item.value}</span>
                         </div>
                       ))}
                     </div>
@@ -800,14 +800,14 @@ export default function ProductDetailPage() {
                 {/* Design, Build & Durability */}
                 {buildItems.length > 0 && (
                   <div className="p-6 space-y-3">
-                    <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
-                      <ShieldCheck className="w-3.5 h-3.5" /> Design, Build & Durability
+                    <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                      <ShieldCheck className="w-3.5 h-3.5 text-vivo-600" /> Design, Build & Durability
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                       {buildItems.map((item, idx) => (
-                        <div key={idx} className="flex justify-between border-b border-white/5 pb-2">
-                          <span className="text-slate-400 capitalize">{item.label}</span>
-                          <span className="text-white font-medium text-right">{item.value}</span>
+                        <div key={idx} className="flex justify-between border-b border-slate-100 pb-2">
+                          <span className="text-slate-500 capitalize">{item.label}</span>
+                          <span className="text-slate-900 font-semibold text-right">{item.value}</span>
                         </div>
                       ))}
                     </div>
@@ -817,14 +817,14 @@ export default function ProductDetailPage() {
                 {/* Audio & Sound */}
                 {audioItems.length > 0 && (
                   <div className="p-6 space-y-3">
-                    <h4 className="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center gap-2">
-                      <Zap className="w-3.5 h-3.5" /> Audio & Sound
+                    <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                      <Zap className="w-3.5 h-3.5 text-vivo-600" /> Audio & Sound
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                       {audioItems.map((item, idx) => (
-                        <div key={idx} className="flex justify-between border-b border-white/5 pb-2">
-                          <span className="text-slate-400 capitalize">{item.label}</span>
-                          <span className="text-white font-medium text-right">{item.value}</span>
+                        <div key={idx} className="flex justify-between border-b border-slate-100 pb-2">
+                          <span className="text-slate-500 capitalize">{item.label}</span>
+                          <span className="text-slate-900 font-semibold text-right">{item.value}</span>
                         </div>
                       ))}
                     </div>
@@ -834,14 +834,14 @@ export default function ProductDetailPage() {
                 {/* Category-Specific & Custom Specifications */}
                 {flatCategoryItems.length > 0 && (
                   <div className="p-6 space-y-3">
-                    <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
-                      <Sliders className="w-3.5 h-3.5" /> Technical Specifications & Features
+                    <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                      <Sliders className="w-3.5 h-3.5 text-vivo-600" /> Technical Specifications & Features
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                       {flatCategoryItems.map((spec, idx) => (
-                        <div key={idx} className="flex justify-between border-b border-white/5 pb-2">
-                          <span className="text-slate-400 capitalize">{spec.label}</span>
-                          <span className="text-white font-medium text-right">{spec.value}</span>
+                        <div key={idx} className="flex justify-between border-b border-slate-100 pb-2">
+                          <span className="text-slate-500 capitalize">{spec.label}</span>
+                          <span className="text-slate-900 font-semibold text-right">{spec.value}</span>
                         </div>
                       ))}
                     </div>
@@ -851,10 +851,10 @@ export default function ProductDetailPage() {
                 {/* In the Box Items */}
                 {inTheBoxItems.length > 0 && (
                   <div className="p-6 space-y-2">
-                    <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">In The Box Items:</h4>
+                    <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">In The Box Items:</h4>
                     <div className="flex flex-wrap gap-2 text-xs">
                       {inTheBoxItems.map((item, idx) => (
-                        <span key={idx} className="px-3 py-1 rounded-lg bg-white/5 text-slate-300 border border-white/5">
+                        <span key={idx} className="px-3 py-1 rounded-lg bg-slate-100 text-slate-800 border border-slate-200 font-medium">
                           ✓ {item}
                         </span>
                       ))}
@@ -870,15 +870,15 @@ export default function ProductDetailPage() {
 
       {/* Recommended Compatible Accessories Shelf */}
       {compatibleAccessories.length > 0 && (
-        <section className="pt-12 border-t border-white/10 space-y-6">
+        <section className="pt-12 border-t border-slate-200 space-y-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-white font-display">
+              <h2 className="text-2xl font-bold text-slate-900 font-display">
                 Recommended Accessories for this Mobile
               </h2>
-              <p className="text-xs text-slate-400">Available for immediate bundle discount at our Begampur store</p>
+              <p className="text-xs text-slate-500">Available for immediate bundle discount at our Begampur store</p>
             </div>
-            <Link href="/accessories" className="text-xs font-semibold text-vivo-400 hover:text-vivo-300">
+            <Link href="/accessories" className="text-xs font-semibold text-vivo-600 hover:text-vivo-700">
               View All Accessories →
             </Link>
           </div>
@@ -893,50 +893,50 @@ export default function ProductDetailPage() {
 
       {/* Visit Store Action Modal */}
       {visitModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-full max-w-lg rounded-3xl glass-panel border border-vivo-500/40 p-6 sm:p-8 space-y-6 animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-lg rounded-3xl bg-white border border-slate-200 p-6 sm:p-8 space-y-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-3 rounded-2xl bg-vivo-600/20 text-vivo-400 border border-vivo-500/30">
+                <div className="p-3 rounded-2xl bg-vivo-50 text-vivo-600 border border-vivo-200">
                   <MapPin className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white">Visit Galaxy Mobile Gallery</h3>
-                  <p className="text-xs text-slate-400">Physical Store Purchase & Live Demo</p>
+                  <h3 className="text-lg font-bold text-slate-900">Visit Galaxy Mobile Gallery</h3>
+                  <p className="text-xs text-slate-500">Physical Store Purchase & Live Demo</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setVisitModalOpen(false)}
-                className="p-1 text-slate-400 hover:text-white"
+                className="p-1 text-slate-400 hover:text-slate-700"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-4 rounded-2xl bg-white/5 border border-white/5 space-y-2 text-xs">
-              <p className="text-white font-semibold">{product.name}</p>
-              <p className="text-slate-400">
-                Selected Variant: <span className="text-vivo-300 font-bold">{activeVariant?.ram || ''} {activeVariant?.storage || ''} ({activeVariant?.color})</span>
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
+              <p className="text-slate-900 font-bold">{product.name}</p>
+              <p className="text-slate-500">
+                Selected Variant: <span className="text-vivo-700 font-bold">{activeVariant?.ram || ''} {activeVariant?.storage || ''} ({activeVariant?.color})</span>
               </p>
-              <p className="text-lg font-extrabold text-white font-display">
+              <p className="text-lg font-extrabold text-slate-900 font-display">
                 {formatPrice(activeVariant?.selling_price || 0)}
               </p>
             </div>
 
-            <div className="space-y-3 text-xs text-slate-300">
+            <div className="space-y-3 text-xs text-slate-600">
               <div className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
                 <span>Showroom Location: {storeSettings.address}, {storeSettings.landmark}, Begampur, Solapur.</span>
               </div>
               <div className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
                 <span>Showroom Timings: {storeSettings.hours}</span>
               </div>
               <div className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                <span>Payment: <strong className="text-amber-300">Bajaj Finance EMI Available</strong>, Credit/Debit Cards, UPI & Cash.</span>
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                <span>Payment: <strong className="text-amber-800">Bajaj Finance EMI Available</strong>, Credit/Debit Cards, UPI & Cash.</span>
               </div>
             </div>
 
@@ -945,7 +945,7 @@ export default function ProductDetailPage() {
                 href={storeSettings.google_maps_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full py-3.5 px-4 rounded-xl bg-vivo-600 hover:bg-vivo-500 text-white font-semibold text-xs flex items-center justify-center gap-2 transition-all shadow-glow-blue"
+                className="w-full py-3.5 px-4 rounded-xl bg-vivo-600 hover:bg-vivo-700 text-white font-semibold text-xs flex items-center justify-center gap-2 transition-all shadow-2xs"
               >
                 <MapPin className="w-4 h-4" />
                 <span>Open Google Maps Directions</span>
@@ -955,7 +955,7 @@ export default function ProductDetailPage() {
                 href={`https://wa.me/91${storeSettings.whatsapp}?text=${whatsappMessage}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full py-3.5 px-4 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 font-semibold text-xs flex items-center justify-center gap-2 transition-colors"
+                className="w-full py-3.5 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-semibold text-xs flex items-center justify-center gap-2 transition-colors shadow-2xs"
               >
                 <span>💬 WhatsApp Store Chat</span>
               </a>
@@ -967,16 +967,16 @@ export default function ProductDetailPage() {
 
       {/* Notify Me Modal for Coming Soon / Out of Stock */}
       {notifyModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-full max-w-md rounded-3xl glass-panel border border-cyan-500/40 p-6 sm:p-8 space-y-6">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-md rounded-3xl bg-white border border-slate-200 p-6 sm:p-8 space-y-6 shadow-2xl">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-cyan-600/20 text-cyan-400 border border-cyan-500/30">
+                <div className="p-2.5 rounded-xl bg-vivo-50 text-vivo-600 border border-vivo-200">
                   <Bell className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">Back-In-Stock Alert</h3>
-                  <p className="text-xs text-slate-400">Get notified when stock arrives in store</p>
+                  <h3 className="text-base font-bold text-slate-900">Back-In-Stock Alert</h3>
+                  <p className="text-xs text-slate-500">Get notified when stock arrives in store</p>
                 </div>
               </div>
               <button
@@ -985,7 +985,7 @@ export default function ProductDetailPage() {
                   setNotifyModalOpen(false);
                   setNotifySubmitted(false);
                 }}
-                className="p-1 text-slate-400 hover:text-white"
+                className="p-1 text-slate-400 hover:text-slate-700"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -993,9 +993,9 @@ export default function ProductDetailPage() {
 
             {notifySubmitted ? (
               <div className="py-6 text-center space-y-3">
-                <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto" />
-                <h4 className="text-base font-bold text-white">Alert Registered!</h4>
-                <p className="text-xs text-slate-300">
+                <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto" />
+                <h4 className="text-base font-bold text-slate-900">Alert Registered!</h4>
+                <p className="text-xs text-slate-600">
                   Our store manager will call or message you on WhatsApp as soon as this mobile arrives at Begampur store.
                 </p>
                 <button
@@ -1004,7 +1004,7 @@ export default function ProductDetailPage() {
                     setNotifyModalOpen(false);
                     setNotifySubmitted(false);
                   }}
-                  className="px-5 py-2 rounded-xl bg-white/10 text-white text-xs font-semibold"
+                  className="px-5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold"
                 >
                   Close
                 </button>
@@ -1012,43 +1012,43 @@ export default function ProductDetailPage() {
             ) : (
               <form onSubmit={handleNotifySubmit} className="space-y-4 text-xs">
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-medium">Your Name *</label>
+                  <label className="text-slate-700 font-semibold">Your Name *</label>
                   <input
                     type="text"
                     required
                     placeholder="Enter your full name"
                     value={notifyName}
                     onChange={(e) => setNotifyName(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-cyan-500"
+                    className="w-full p-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-vivo-600"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-medium">Mobile / WhatsApp Number *</label>
+                  <label className="text-slate-700 font-semibold">Mobile / WhatsApp Number *</label>
                   <input
                     type="tel"
                     required
                     placeholder="10-digit mobile number"
                     value={notifyPhone}
                     onChange={(e) => setNotifyPhone(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-cyan-500"
+                    className="w-full p-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-vivo-600"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-medium">Email (Optional)</label>
+                  <label className="text-slate-700 font-semibold">Email (Optional)</label>
                   <input
                     type="email"
                     placeholder="you@example.com"
                     value={notifyEmail}
                     onChange={(e) => setNotifyEmail(e.target.value)}
-                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white focus:outline-none focus:border-cyan-500"
+                    className="w-full p-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-vivo-600"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-3 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs transition-colors shadow-lg"
+                  className="w-full py-3 rounded-xl bg-vivo-600 hover:bg-vivo-700 text-white font-bold text-xs transition-colors shadow-2xs"
                 >
                   Register Stock Notification
                 </button>
@@ -1059,7 +1059,7 @@ export default function ProductDetailPage() {
         </div>
       )}
 
-      {/* Amazon/Flipkart Fullscreen HD Lightbox Modal */}
+      {/* Fullscreen HD Lightbox Modal */}
       {lightboxOpen && (
         <div 
           className="fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl flex flex-col justify-between p-4 sm:p-6"
@@ -1155,11 +1155,11 @@ export default function ProductDetailPage() {
       )}
 
       {/* Mobile Phone Sticky Action Bar */}
-      <div className="md:hidden fixed bottom-[52px] left-0 right-0 z-30 bg-[#070b16]/95 backdrop-blur-xl border-t border-white/10 p-2.5 px-4 shadow-[0_-8px_25px_rgba(0,0,0,0.8)]">
+      <div className="md:hidden fixed bottom-[52px] left-0 right-0 z-30 bg-white/95 backdrop-blur-xl border-t border-slate-200 p-2.5 px-4 shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
         <div className="flex items-center justify-between gap-3 max-w-lg mx-auto">
           <div>
-            <span className="text-[10px] text-slate-400 block">Showroom Price</span>
-            <span className="text-base font-extrabold text-white font-display">
+            <span className="text-[10px] text-slate-500 block font-medium">Showroom Price</span>
+            <span className="text-base font-extrabold text-slate-900 font-display">
               {formatPrice(activeVariant?.selling_price || 0)}
             </span>
           </div>
@@ -1169,7 +1169,7 @@ export default function ProductDetailPage() {
               href={`https://wa.me/91${storeSettings.whatsapp}?text=Hello%20Galaxy%20Mobile%20Gallery,%20I%20am%20interested%20in%20${encodeURIComponent(product.name)}%20(${encodeURIComponent(activeVariant?.ram || '')}%20${encodeURIComponent(activeVariant?.storage || '')}%20${encodeURIComponent(activeVariant?.color || '')}).%20Is%20it%20available%20at%20Begampur%20store?`}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-glow-emerald"
+              className="p-2 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-xs flex items-center gap-1.5 shadow-2xs"
               title="WhatsApp inquiry"
             >
               <MessageSquare className="w-3.5 h-3.5 fill-current" />
@@ -1179,7 +1179,7 @@ export default function ProductDetailPage() {
             <button
               type="button"
               onClick={() => setVisitModalOpen(true)}
-              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-vivo-600 to-vivo-500 hover:from-vivo-500 text-white font-bold text-xs shadow-glow-blue flex items-center gap-1.5"
+              className="px-3.5 py-2 rounded-xl bg-vivo-600 hover:bg-vivo-700 text-white font-bold text-xs shadow-2xs flex items-center gap-1.5"
             >
               <MapPin className="w-3.5 h-3.5" />
               <span>Visit Store</span>

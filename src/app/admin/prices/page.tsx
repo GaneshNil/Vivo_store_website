@@ -61,16 +61,16 @@ export default function AdminPricesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-white font-display">Price & Discount Management</h1>
-          <p className="text-xs text-slate-400">Manage MRPs, in-store selling prices, live discount percentages and price history.</p>
+          <h1 className="text-2xl font-extrabold text-slate-900 font-display">Price & Discount Management</h1>
+          <p className="text-xs text-slate-500">Manage MRPs, in-store selling prices, live discount percentages and price history.</p>
         </div>
       </div>
 
       {/* Main Pricing Table */}
-      <div className="rounded-2xl glass-panel border border-white/10 overflow-hidden shadow-xl">
-        <div className="p-4 border-b border-white/10 flex items-center justify-between">
-          <h3 className="font-bold text-sm text-white flex items-center gap-2">
-            <Tag className="w-4 h-4 text-amber-400" />
+      <div className="rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-sm">
+        <div className="p-4 border-b border-slate-200 flex items-center justify-between">
+          <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+            <Tag className="w-4 h-4 text-amber-500" />
             <span>Active Product Pricing ({allVariantsWithProd.length} variants)</span>
           </h3>
           <input
@@ -78,13 +78,13 @@ export default function AdminPricesPage() {
             placeholder="Search variant..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="p-1.5 px-3 rounded-xl bg-slate-900 border border-white/10 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-amber-400"
+            className="p-1.5 px-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs placeholder-slate-400 focus:outline-none focus:border-vivo-600 focus:bg-white"
           />
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
-            <thead className="bg-slate-900/90 border-b border-white/10 text-slate-400 uppercase tracking-wider">
+            <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider">
               <tr>
                 <th className="p-4">Model & Variant</th>
                 <th className="p-4">SKU</th>
@@ -95,27 +95,27 @@ export default function AdminPricesPage() {
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-slate-100">
               {filteredVariants.map(v => (
-                <tr key={v.id} className="hover:bg-white/[0.02]">
+                <tr key={v.id} className="hover:bg-slate-50/70 transition-colors">
                   <td className="p-4">
-                    <p className="font-bold text-white text-sm">{v.productName}</p>
-                    <p className="text-[11px] text-slate-400">{v.ram ? `${v.ram}/` : ''}{v.storage || ''} {v.color}</p>
+                    <p className="font-bold text-slate-900 text-sm">{v.productName}</p>
+                    <p className="text-[11px] text-slate-500">{v.ram ? `${v.ram}/` : ''}{v.storage || ''} {v.color}</p>
                   </td>
 
-                  <td className="p-4 font-mono text-slate-300">{v.sku}</td>
+                  <td className="p-4 font-mono text-slate-600">{v.sku}</td>
 
-                  <td className="p-4 text-slate-400 font-semibold">{formatPrice(v.mrp)}</td>
+                  <td className="p-4 text-slate-500 font-semibold">{formatPrice(v.mrp)}</td>
 
-                  <td className="p-4 text-emerald-400 font-bold text-sm">{formatPrice(v.selling_price)}</td>
+                  <td className="p-4 text-emerald-700 font-bold text-sm">{formatPrice(v.selling_price)}</td>
 
                   <td className="p-4">
                     {v.discount_percent > 0 ? (
-                      <span className="px-2 py-0.5 rounded-lg text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                      <span className="px-2 py-0.5 rounded-lg text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
                         {v.discount_percent}% OFF
                       </span>
                     ) : (
-                      <span className="text-slate-500">0%</span>
+                      <span className="text-slate-400">0%</span>
                     )}
                   </td>
 
@@ -131,7 +131,7 @@ export default function AdminPricesPage() {
                         sellingPrice: v.selling_price,
                         reason: '',
                       })}
-                      className="px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-semibold transition-colors"
+                      className="px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-semibold transition-colors"
                     >
                       Update Price
                     </button>
@@ -144,17 +144,17 @@ export default function AdminPricesPage() {
       </div>
 
       {/* Historical Price Changes Table */}
-      <div className="rounded-2xl glass-panel border border-white/10 overflow-hidden shadow-xl">
-        <div className="p-4 border-b border-white/10">
-          <h3 className="font-bold text-sm text-white flex items-center gap-2">
-            <History className="w-4 h-4 text-origin-violet" />
+      <div className="rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-sm">
+        <div className="p-4 border-b border-slate-200">
+          <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+            <History className="w-4 h-4 text-indigo-600" />
             <span>Price Audit History ({priceHistory.length})</span>
           </h3>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
-            <thead className="bg-slate-900/90 border-b border-white/10 text-slate-400 uppercase tracking-wider">
+            <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider">
               <tr>
                 <th className="p-4">Timestamp</th>
                 <th className="p-4">Product & Variant</th>
@@ -165,23 +165,23 @@ export default function AdminPricesPage() {
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-slate-100">
               {priceHistory.map(ph => (
-                <tr key={ph.id} className="hover:bg-white/[0.02]">
-                  <td className="p-4 text-slate-400 whitespace-nowrap">{formatDateTime(ph.created_at)}</td>
+                <tr key={ph.id} className="hover:bg-slate-50/70 transition-colors">
+                  <td className="p-4 text-slate-500 whitespace-nowrap">{formatDateTime(ph.created_at)}</td>
                   <td className="p-4">
-                    <p className="font-bold text-white">{ph.product_name}</p>
-                    <p className="text-[11px] text-slate-400">{ph.variant_label}</p>
+                    <p className="font-bold text-slate-900">{ph.product_name}</p>
+                    <p className="text-[11px] text-slate-500">{ph.variant_label}</p>
                   </td>
                   <td className="p-4">
-                    <span className="text-slate-500 line-through mr-1">{formatPrice(ph.old_selling_price)}</span>
-                    → <strong className="text-emerald-400 font-bold text-sm">{formatPrice(ph.new_selling_price)}</strong>
+                    <span className="text-slate-400 line-through mr-1">{formatPrice(ph.old_selling_price)}</span>
+                    → <strong className="text-emerald-700 font-bold text-sm">{formatPrice(ph.new_selling_price)}</strong>
                   </td>
-                  <td className="p-4 text-amber-300 font-semibold">
+                  <td className="p-4 text-amber-800 font-semibold">
                     {ph.old_discount}% → {ph.new_discount}%
                   </td>
-                  <td className="p-4 text-slate-400">{ph.admin_email}</td>
-                  <td className="p-4 text-slate-300">{ph.reason}</td>
+                  <td className="p-4 text-slate-600">{ph.admin_email}</td>
+                  <td className="p-4 text-slate-700">{ph.reason}</td>
                 </tr>
               ))}
             </tbody>
@@ -191,28 +191,28 @@ export default function AdminPricesPage() {
 
       {/* Edit Price Modal */}
       {editingVariant && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-full max-w-md rounded-3xl glass-panel border border-amber-500/40 p-6 sm:p-8 space-y-6">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <h3 className="text-base font-bold text-white">Update Product Price</h3>
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-md rounded-3xl bg-white border border-slate-200 p-6 sm:p-8 space-y-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="text-base font-bold text-slate-900">Update Product Price</h3>
               <button
                 type="button"
                 onClick={() => setEditingVariant(null)}
-                className="p-1 text-slate-400 hover:text-white"
+                className="p-1 text-slate-400 hover:text-slate-600"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handlePriceUpdate} className="space-y-4 text-xs">
-              <div className="p-3 rounded-xl bg-white/5 border border-white/5 space-y-1">
-                <p className="font-bold text-white">{editingVariant.productName}</p>
-                <p className="text-slate-400">{editingVariant.variantLabel}</p>
+              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                <p className="font-bold text-slate-900">{editingVariant.productName}</p>
+                <p className="text-slate-500">{editingVariant.variantLabel}</p>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-medium">MRP (₹) *</label>
+                  <label className="text-slate-700 font-medium">MRP (₹) *</label>
                   <input
                     type="number"
                     min="0"
@@ -221,12 +221,12 @@ export default function AdminPricesPage() {
                     placeholder="e.g. 29999"
                     value={editingVariant.mrp === 0 ? '' : editingVariant.mrp}
                     onChange={(e) => setEditingVariant({ ...editingVariant, mrp: e.target.value === '' ? 0 : Number(e.target.value) })}
-                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none focus:border-vivo-600 focus:bg-white"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-medium">Selling Price (₹) *</label>
+                  <label className="text-slate-700 font-medium">Selling Price (₹) *</label>
                   <input
                     type="number"
                     min="0"
@@ -235,40 +235,40 @@ export default function AdminPricesPage() {
                     placeholder="e.g. 24999"
                     value={editingVariant.sellingPrice === 0 ? '' : editingVariant.sellingPrice}
                     onChange={(e) => setEditingVariant({ ...editingVariant, sellingPrice: e.target.value === '' ? 0 : Number(e.target.value) })}
-                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold text-emerald-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-bold text-emerald-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none focus:border-vivo-600 focus:bg-white"
                   />
                 </div>
               </div>
 
               {/* Live Computed Discount Preview */}
-              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between">
-                <span className="text-amber-300 font-medium">Live Computed Discount:</span>
-                <span className="text-base font-bold text-amber-300">{previewDiscount}% OFF</span>
+              <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-between">
+                <span className="text-amber-800 font-medium">Live Computed Discount:</span>
+                <span className="text-base font-bold text-amber-800">{previewDiscount}% OFF</span>
               </div>
 
               <div className="space-y-1">
-                <label className="text-slate-300 font-medium">Reason for Price Change *</label>
+                <label className="text-slate-700 font-medium">Reason for Price Change *</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Festive promotional price drop"
                   value={editingVariant.reason}
                   onChange={(e) => setEditingVariant({ ...editingVariant, reason: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:border-vivo-600 focus:bg-white"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setEditingVariant(null)}
-                  className="px-4 py-2 rounded-xl bg-white/5 text-slate-300"
+                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold shadow-lg"
+                  className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold shadow-sm transition-all"
                 >
                   Save & Log to Price History
                 </button>

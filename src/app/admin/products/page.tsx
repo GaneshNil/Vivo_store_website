@@ -838,24 +838,24 @@ export default function AdminProductsPage() {
       {/* Header & Add Button */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-white font-display">Products & Variants</h1>
-          <p className="text-xs text-slate-400">Add, edit hardware specifications, Bajaj EMI ON/OFF toggle, photos & stock for mobiles & accessories.</p>
+          <h1 className="text-2xl font-extrabold text-slate-900 font-display">Products & Variants</h1>
+          <p className="text-xs text-slate-500">Add, edit hardware specifications, Bajaj EMI ON/OFF toggle, photos & stock for mobiles & accessories.</p>
         </div>
         
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => handleOpenBrandModal()}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-white/10 text-slate-200 text-xs font-semibold hover:border-vivo-500/50 transition-all"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold shadow-sm hover:border-slate-300 transition-all"
           >
-            <Layers className="w-4 h-4 text-vivo-400" />
+            <Layers className="w-4 h-4 text-vivo-600" />
             <span>Manage Brands ({brands.length})</span>
           </button>
 
           <button
             type="button"
             onClick={handleOpenAddModal}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-vivo-600 to-vivo-500 hover:from-vivo-500 hover:to-vivo-400 text-white text-xs font-bold shadow-glow-blue transition-all"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-vivo-600 hover:bg-vivo-700 text-white text-xs font-bold shadow-sm transition-all"
           >
             <PlusCircle className="w-4 h-4" />
             <span>Add New Product</span>
@@ -864,7 +864,7 @@ export default function AdminProductsPage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="p-4 rounded-2xl glass-card border border-white/5 flex flex-col md:flex-row gap-4 justify-between items-center">
+      <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col md:flex-row gap-4 justify-between items-center">
         
         <div className="relative w-full md:w-80">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
@@ -873,17 +873,17 @@ export default function AdminProductsPage() {
             placeholder="Search by product name or slug..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-900 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-vivo-500"
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-vivo-600 focus:bg-white transition-colors"
           />
         </div>
 
         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
           <div className="flex items-center gap-2 text-xs">
-            <span className="text-slate-400">Type:</span>
+            <span className="text-slate-600 font-medium">Type:</span>
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value as any)}
-              className="bg-slate-900 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-vivo-500"
+              className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-vivo-600 focus:bg-white"
             >
               <option value="all">All Catalog</option>
               <option value="phone">Smartphones Only</option>
@@ -892,11 +892,11 @@ export default function AdminProductsPage() {
           </div>
 
           <div className="flex items-center gap-2 text-xs">
-            <span className="text-slate-400">Brand:</span>
+            <span className="text-slate-600 font-medium">Brand:</span>
             <select
               value={selectedBrand}
               onChange={(e) => setSelectedBrand(e.target.value)}
-              className="bg-slate-900 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-vivo-500"
+              className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-vivo-600 focus:bg-white"
             >
               <option value="all">All Brands</option>
               {brands.map(b => (
@@ -909,10 +909,10 @@ export default function AdminProductsPage() {
       </div>
 
       {/* Products Table */}
-      <div className="rounded-2xl glass-card border border-white/5 overflow-hidden">
+      <div className="rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-300">
-            <thead className="bg-slate-900/80 border-b border-white/10 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
+          <table className="w-full text-left text-xs text-slate-700">
+            <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[10px]">
               <tr>
                 <th className="p-4">Product Info</th>
                 <th className="p-4">Brand / Series</th>
@@ -923,7 +923,7 @@ export default function AdminProductsPage() {
                 <th className="p-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-slate-100">
               {filteredProducts.map(prod => {
                 const defaultVar = prod.variants.find(v => v.is_default) || prod.variants[0];
                 const totalStock = prod.variants.reduce((acc, v) => acc + v.current_stock, 0);
@@ -935,12 +935,12 @@ export default function AdminProductsPage() {
                 const emiValue = defaultVar ? calculateEMI(defaultVar.selling_price, emiTenure, emiRate) : 0;
 
                 return (
-                  <tr key={prod.id} className="hover:bg-white/5 transition-colors">
+                  <tr key={prod.id} className="hover:bg-slate-50/70 transition-colors">
                     
                     {/* Image & Title */}
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-slate-900 border border-white/10 flex-shrink-0">
+                        <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-slate-50 border border-slate-200 flex-shrink-0 shadow-inner">
                           {primaryImg && (
                             <Image
                               src={primaryImg.image_url}
@@ -950,37 +950,37 @@ export default function AdminProductsPage() {
                             />
                           )}
                           {prod.images.length > 1 && (
-                            <span className="absolute bottom-0.5 right-0.5 bg-vivo-600 text-white text-[8px] font-bold px-1 rounded">
+                            <span className="absolute bottom-0.5 right-0.5 bg-vivo-600 text-white text-[8px] font-bold px-1 rounded shadow-xs">
                               +{prod.images.length - 1}
                             </span>
                           )}
                         </div>
                         <div>
                           <div className="flex items-center gap-1.5 flex-wrap">
-                            <p className="font-bold text-white text-sm">{prod.name}</p>
+                            <p className="font-bold text-slate-900 text-sm">{prod.name}</p>
                             {storeSettings.hero_flagship_product_id === prod.id && (
-                              <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-extrabold text-[9px] border border-amber-500/30 flex items-center gap-0.5 shadow-sm">
-                                <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400" /> Hero Flagship
+                              <span className="px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 font-extrabold text-[9px] border border-amber-200 flex items-center gap-0.5 shadow-xs">
+                                <Star className="w-2.5 h-2.5 fill-amber-500 text-amber-500" /> Hero Flagship
                               </span>
                             )}
                           </div>
-                          <p className="text-[11px] text-slate-400">/{prod.slug}</p>
+                          <p className="text-[11px] text-slate-500">/{prod.slug}</p>
                         </div>
                       </div>
                     </td>
 
                     {/* Brand / Series */}
-                    <td className="p-4 text-slate-300">
-                      <span className="font-semibold text-white">{prod.brand?.name}</span>
-                      {prod.series?.name && <p className="text-[11px] text-slate-400">{prod.series.name}</p>}
+                    <td className="p-4 text-slate-700">
+                      <span className="font-semibold text-slate-900">{prod.brand?.name}</span>
+                      {prod.series?.name && <p className="text-[11px] text-slate-500">{prod.series.name}</p>}
                     </td>
 
                     {/* Variants */}
                     <td className="p-4">
                       <div className="flex flex-wrap gap-1.5">
                         {prod.variants.map((v, i) => (
-                          <span key={i} className="px-2 py-0.5 rounded-lg bg-white/5 text-[10px] text-slate-200 border border-white/10 font-medium">
-                            {v.ram ? `${v.ram}/` : ''}{v.storage || v.color} · <strong className="text-emerald-400">{formatPrice(v.selling_price)}</strong> ({v.current_stock} pcs)
+                          <span key={i} className="px-2 py-0.5 rounded-lg bg-slate-50 text-[10px] text-slate-800 border border-slate-200 font-medium">
+                            {v.ram ? `${v.ram}/` : ''}{v.storage || v.color} · <strong className="text-emerald-700">{formatPrice(v.selling_price)}</strong> ({v.current_stock} pcs)
                           </span>
                         ))}
                       </div>
@@ -990,16 +990,16 @@ export default function AdminProductsPage() {
                     <td className="p-4">
                       {isEmiOn ? (
                         <div>
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-300 border border-amber-500/20 font-bold text-[10px]">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200 font-bold text-[10px]">
                             <CreditCard className="w-3 h-3" />
                             <span>Bajaj Finance EMI Available</span>
                           </span>
-                          <p className="text-[10px] text-slate-400 mt-0.5">
+                          <p className="text-[10px] text-slate-500 mt-0.5">
                             {formatPrice(emiValue)}/mo · {emiTenure} mos
                           </p>
                         </div>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-800 text-slate-400 border border-white/5 font-semibold text-[10px]">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200 font-semibold text-[10px]">
                           Disabled (OFF)
                         </span>
                       )}
@@ -1007,7 +1007,7 @@ export default function AdminProductsPage() {
 
                     {/* Price */}
                     <td className="p-4">
-                      <p className="font-bold text-white">{formatPrice(defaultVar?.selling_price || 0)}</p>
+                      <p className="font-bold text-slate-900">{formatPrice(defaultVar?.selling_price || 0)}</p>
                       {defaultVar && defaultVar.mrp > defaultVar.selling_price && (
                         <p className="text-[10px] text-slate-400 line-through">MRP {formatPrice(defaultVar.mrp)}</p>
                       )}
@@ -1034,12 +1034,12 @@ export default function AdminProductsPage() {
                             }}
                             className={`p-1.5 rounded-lg border transition-colors ${
                               storeSettings.hero_flagship_product_id === prod.id
-                                ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-sm'
-                                : 'bg-white/5 hover:bg-white/10 text-slate-400 hover:text-amber-300 border-white/5'
+                                ? 'bg-amber-100 text-amber-800 border-amber-300 shadow-xs'
+                                : 'bg-white hover:bg-slate-50 text-slate-400 hover:text-amber-600 border-slate-200'
                             }`}
                             title={storeSettings.hero_flagship_product_id === prod.id ? 'Current Hero Flagship Model' : 'Set as Hero Section Flagship Model'}
                           >
-                            <Star className={`w-4 h-4 ${storeSettings.hero_flagship_product_id === prod.id ? 'fill-amber-400 text-amber-400' : ''}`} />
+                            <Star className={`w-4 h-4 ${storeSettings.hero_flagship_product_id === prod.id ? 'fill-amber-500 text-amber-500' : ''}`} />
                           </button>
                         )}
 
@@ -1047,7 +1047,7 @@ export default function AdminProductsPage() {
                         <button
                           type="button"
                           onClick={() => handleOpenEditModal(prod)}
-                          className="p-1.5 rounded-lg bg-vivo-600/20 hover:bg-vivo-600/40 text-vivo-300 border border-vivo-500/30 transition-colors"
+                          className="p-1.5 rounded-lg bg-vivo-50 hover:bg-vivo-100 text-vivo-700 border border-vivo-200 transition-colors"
                           title="Edit Product, Specs & Bajaj EMI"
                         >
                           <Edit3 className="w-4 h-4" />
@@ -1061,7 +1061,7 @@ export default function AdminProductsPage() {
                               deleteProduct(prod.id, false);
                             }
                           }}
-                          className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-red-500/20 transition-colors"
+                          className="p-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 border border-red-200 transition-colors"
                           title="Delete Product"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -1079,17 +1079,17 @@ export default function AdminProductsPage() {
 
       {/* Product Modal (Add & Full Edit Mode) */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-          <div className="w-full max-w-4xl rounded-3xl bg-[#0a0f1d] border border-vivo-500/30 overflow-hidden my-auto max-h-[92vh] flex flex-col shadow-2xl animate-in fade-in zoom-in-95">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+          <div className="w-full max-w-4xl rounded-3xl bg-white border border-slate-200 overflow-hidden my-auto max-h-[92vh] flex flex-col shadow-2xl animate-in fade-in zoom-in-95">
             
             {/* Sticky Header */}
-            <div className="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between bg-slate-900/90 backdrop-blur-md flex-shrink-0">
+            <div className="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between bg-white flex-shrink-0">
               <div>
-                <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-                  {editingProductId ? <Edit3 className="w-5 h-5 text-vivo-400" /> : <Smartphone className="w-5 h-5 text-vivo-400" />}
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                  {editingProductId ? <Edit3 className="w-5 h-5 text-vivo-600" /> : <Smartphone className="w-5 h-5 text-vivo-600" />}
                   <span>{editingProductId ? 'Edit Product & Technical Specifications' : 'Add New Product to Catalog'}</span>
                 </h3>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-500">
                   {editingProductId 
                     ? 'Update name, prices, variants, photos, Bajaj EMI ON/OFF status and full hardware breakdown.' 
                     : 'Configure multi-RAM/ROM tiers, photos, Bajaj EMI ON/OFF switch & full specifications.'}
@@ -1098,7 +1098,7 @@ export default function AdminProductsPage() {
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="px-3 py-1.5 text-slate-300 hover:text-white rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                className="px-3 py-1.5 text-slate-700 hover:text-slate-900 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors"
                 title="Close"
               >
                 <X className="w-4 h-4" />
@@ -1106,7 +1106,7 @@ export default function AdminProductsPage() {
               </button>
             </div>
 
-            <form id="productMainForm" onSubmit={handleSaveProduct} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 text-xs">
+            <form id="productMainForm" onSubmit={handleSaveProduct} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 text-xs bg-slate-50/50">
               
               {/* Product Basic Info */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1800,11 +1800,11 @@ export default function AdminProductsPage() {
             </form>
 
             {/* Sticky Form Footer */}
-            <div className="p-4 px-6 border-t border-white/10 bg-slate-900/95 backdrop-blur-md flex items-center justify-between gap-3 sticky bottom-0 z-10 flex-shrink-0">
+            <div className="p-4 px-6 border-t border-slate-200 bg-white flex items-center justify-between gap-3 sticky bottom-0 z-10 flex-shrink-0">
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white text-xs font-semibold transition-colors"
+                className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors"
               >
                 Close & Cancel
               </button>
@@ -1812,7 +1812,7 @@ export default function AdminProductsPage() {
               <button
                 type="submit"
                 form="productMainForm"
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-vivo-600 to-vivo-500 hover:from-vivo-500 hover:to-vivo-400 text-white font-bold text-xs shadow-glow-blue transition-all flex items-center gap-2"
+                className="px-6 py-2.5 rounded-xl bg-vivo-600 hover:bg-vivo-700 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-2"
               >
                 <Check className="w-4 h-4" />
                 <span>{editingProductId ? 'Save Product Changes' : 'Publish Product to Showroom'}</span>
@@ -1825,29 +1825,27 @@ export default function AdminProductsPage() {
 
       {/* Brand Management Modal */}
       {isBrandModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-          <div className="w-full max-w-3xl bg-[#0a0f1d] border border-white/10 rounded-3xl shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col animate-in zoom-in-95">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+          <div className="w-full max-w-3xl bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col animate-in zoom-in-95">
             
             {/* Sticky Modal Header */}
-            <div className="p-4 sm:p-5 border-b border-white/10 flex items-center justify-between bg-slate-900/90 backdrop-blur-md flex-shrink-0">
+            <div className="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between bg-white flex-shrink-0">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-vivo-600/20 border border-vivo-500/30 flex items-center justify-center text-vivo-400">
+                <div className="w-10 h-10 rounded-xl bg-vivo-50 border border-vivo-200 flex items-center justify-center text-vivo-600">
                   <Layers className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base sm:text-lg font-bold text-white font-display">
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900 font-display">
                     {editingBrandId ? 'Edit Brand Details' : 'Brand Management & Addition'}
                   </h3>
-                  <p className="text-xs text-slate-400">
-                    Manage authorized showroom brands, upload logos, and register new smartphone brands.
-                  </p>
+                  <p className="text-xs text-slate-500">Manage showroom brands, upload logos from phone/PC or select presets.</p>
                 </div>
               </div>
 
               <button
                 type="button"
                 onClick={() => setIsBrandModalOpen(false)}
-                className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-colors"
                 title="Close Modal"
               >
                 <X className="w-4 h-4" />

@@ -127,8 +127,8 @@ export default function AdminInventoryPage() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-white font-display">Inventory & Stock Control</h1>
-          <p className="text-xs text-slate-400">Manage real-time physical store stock, incoming shipments, and audit trails.</p>
+          <h1 className="text-2xl font-extrabold text-slate-900 font-display">Inventory & Stock Control</h1>
+          <p className="text-xs text-slate-500">Manage real-time physical store stock, incoming shipments, and audit trails.</p>
         </div>
 
         <div className="flex flex-wrap gap-2">
@@ -147,7 +147,7 @@ export default function AdminInventoryPage() {
                 setAdjustModalOpen(true);
               }
             }}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 text-xs font-semibold"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-semibold shadow-sm transition-all"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Adjust Stock Level</span>
@@ -164,7 +164,7 @@ export default function AdminInventoryPage() {
                 setIncomingModalOpen(true);
               }
             }}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold shadow-glow-blue"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-vivo-600 hover:bg-vivo-700 text-white text-xs font-semibold shadow-sm transition-all"
           >
             <Truck className="w-3.5 h-3.5" />
             <span>+ Add Incoming Shipment</span>
@@ -173,11 +173,11 @@ export default function AdminInventoryPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-white/10 gap-4 text-xs font-semibold">
+      <div className="flex border-b border-slate-200 gap-4 text-xs font-semibold overflow-x-auto">
         <button
           onClick={() => setActiveTab('current')}
-          className={`pb-3 transition-colors flex items-center gap-2 ${
-            activeTab === 'current' ? 'text-vivo-400 border-b-2 border-vivo-500 font-bold' : 'text-slate-400 hover:text-white'
+          className={`pb-3 transition-colors flex items-center gap-2 whitespace-nowrap ${
+            activeTab === 'current' ? 'text-vivo-600 border-b-2 border-vivo-600 font-bold' : 'text-slate-500 hover:text-slate-800'
           }`}
         >
           <Boxes className="w-4 h-4" />
@@ -186,8 +186,8 @@ export default function AdminInventoryPage() {
 
         <button
           onClick={() => setActiveTab('incoming')}
-          className={`pb-3 transition-colors flex items-center gap-2 ${
-            activeTab === 'incoming' ? 'text-cyan-400 border-b-2 border-cyan-500 font-bold' : 'text-slate-400 hover:text-white'
+          className={`pb-3 transition-colors flex items-center gap-2 whitespace-nowrap ${
+            activeTab === 'incoming' ? 'text-sky-600 border-b-2 border-sky-600 font-bold' : 'text-slate-500 hover:text-slate-800'
           }`}
         >
           <Truck className="w-4 h-4" />
@@ -196,8 +196,8 @@ export default function AdminInventoryPage() {
 
         <button
           onClick={() => setActiveTab('history')}
-          className={`pb-3 transition-colors flex items-center gap-2 ${
-            activeTab === 'history' ? 'text-origin-violet border-b-2 border-origin-violet font-bold' : 'text-slate-400 hover:text-white'
+          className={`pb-3 transition-colors flex items-center gap-2 whitespace-nowrap ${
+            activeTab === 'history' ? 'text-indigo-600 border-b-2 border-indigo-600 font-bold' : 'text-slate-500 hover:text-slate-800'
           }`}
         >
           <History className="w-4 h-4" />
@@ -210,7 +210,7 @@ export default function AdminInventoryPage() {
         <div className="space-y-4">
           
           {/* Filters */}
-          <div className="p-4 rounded-2xl glass-panel border border-white/10 flex flex-wrap items-center justify-between gap-4">
+          <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4">
             <div className="relative flex-1 min-w-[240px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
@@ -218,16 +218,16 @@ export default function AdminInventoryPage() {
                 placeholder="Search by model, SKU or color..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-900 border border-white/10 text-white text-xs placeholder-slate-500 focus:outline-none focus:border-vivo-500"
+                className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs placeholder-slate-400 focus:outline-none focus:border-vivo-600 focus:bg-white transition-colors"
               />
             </div>
 
             <div className="flex items-center gap-2 text-xs">
-              <span className="text-slate-400">Status:</span>
+              <span className="text-slate-600 font-medium">Status:</span>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="bg-slate-900 border border-white/10 rounded-xl px-3 py-1.5 text-white text-xs"
+                className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-slate-800 text-xs focus:outline-none focus:border-vivo-600 focus:bg-white"
               >
                 <option value="all">All Statuses</option>
                 <option value="IN_STOCK">In Stock</option>
@@ -239,10 +239,10 @@ export default function AdminInventoryPage() {
           </div>
 
           {/* Table */}
-          <div className="rounded-2xl glass-panel border border-white/10 overflow-hidden shadow-xl">
+          <div className="rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
-                <thead className="bg-slate-900/90 border-b border-white/10 text-slate-400 uppercase tracking-wider">
+                <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider">
                   <tr>
                     <th className="p-4">SKU / Model</th>
                     <th className="p-4">Variant (RAM/Storage/Color)</th>
@@ -254,44 +254,44 @@ export default function AdminInventoryPage() {
                   </tr>
                 </thead>
 
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-slate-100">
                   {filteredVariants.map(v => {
                     const statusConfig = getStatusBadgeConfig(v.computed_status);
 
                     return (
-                      <tr key={v.id} className="hover:bg-white/[0.02]">
+                      <tr key={v.id} className="hover:bg-slate-50/70 transition-colors">
                         
                         <td className="p-4">
-                          <p className="font-bold text-white text-sm">{v.productName}</p>
-                          <p className="text-[11px] text-vivo-400 font-mono">{v.sku}</p>
+                          <p className="font-bold text-slate-900 text-sm">{v.productName}</p>
+                          <p className="text-[11px] text-vivo-600 font-mono">{v.sku}</p>
                         </td>
 
-                        <td className="p-4 text-slate-300">
-                          <span className="font-semibold text-white">
+                        <td className="p-4 text-slate-700">
+                          <span className="font-semibold text-slate-900">
                             {v.ram ? `${v.ram}/` : ''}{v.storage || ''} {v.color}
                           </span>
                         </td>
 
                         <td className="p-4">
                           <span className={`text-base font-extrabold ${
-                            v.current_stock === 0 ? 'text-red-400' : v.current_stock <= v.low_stock_threshold ? 'text-amber-400' : 'text-emerald-400'
+                            v.current_stock === 0 ? 'text-red-600' : v.current_stock <= v.low_stock_threshold ? 'text-amber-600' : 'text-emerald-600'
                           }`}>
                             {v.current_stock}
                           </span>
                           <span className="text-slate-500 text-[11px]"> units</span>
                         </td>
 
-                        <td className="p-4 text-slate-400">
+                        <td className="p-4 text-slate-600">
                           ≤ {v.low_stock_threshold} units
                         </td>
 
                         <td className="p-4">
                           {v.incoming_stock > 0 ? (
-                            <span className="text-cyan-400 font-bold text-xs">
+                            <span className="text-sky-700 font-bold text-xs">
                               +{v.incoming_stock} (Due: {v.expected_arrival_date || 'Soon'})
                             </span>
                           ) : (
-                            <span className="text-slate-600">0</span>
+                            <span className="text-slate-400">0</span>
                           )}
                         </td>
 
@@ -315,7 +315,7 @@ export default function AdminInventoryPage() {
                               });
                               setAdjustModalOpen(true);
                             }}
-                            className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 text-[11px] font-medium transition-colors"
+                            className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-[11px] font-medium transition-colors"
                           >
                             Update Stock
                           </button>
@@ -335,10 +335,10 @@ export default function AdminInventoryPage() {
       {/* Tab 2: Incoming Shipments */}
       {activeTab === 'incoming' && (
         <div className="space-y-4">
-          <div className="rounded-2xl glass-panel border border-white/10 overflow-hidden shadow-xl">
+          <div className="rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
-                <thead className="bg-slate-900/90 border-b border-white/10 text-slate-400 uppercase tracking-wider">
+                <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider">
                   <tr>
                     <th className="p-4">PO / Reference</th>
                     <th className="p-4">Product & Variant</th>
@@ -350,22 +350,22 @@ export default function AdminInventoryPage() {
                   </tr>
                 </thead>
 
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-slate-100">
                   {incomingStockList.map(ship => (
-                    <tr key={ship.id} className="hover:bg-white/[0.02]">
-                      <td className="p-4 font-mono text-cyan-400 font-bold">{ship.reference_no || 'N/A'}</td>
+                    <tr key={ship.id} className="hover:bg-slate-50/70 transition-colors">
+                      <td className="p-4 font-mono text-sky-700 font-bold">{ship.reference_no || 'N/A'}</td>
                       <td className="p-4">
-                        <p className="font-bold text-white">{ship.product_name}</p>
-                        <p className="text-[11px] text-slate-400">{ship.variant_label}</p>
+                        <p className="font-bold text-slate-900">{ship.product_name}</p>
+                        <p className="text-[11px] text-slate-500">{ship.variant_label}</p>
                       </td>
-                      <td className="p-4 text-slate-300">{ship.supplier}</td>
+                      <td className="p-4 text-slate-700">{ship.supplier}</td>
                       <td className="p-4">
-                        <span className="text-base font-extrabold text-cyan-400">+{ship.incoming_quantity}</span>
+                        <span className="text-base font-extrabold text-sky-700">+{ship.incoming_quantity}</span>
                       </td>
-                      <td className="p-4 text-slate-300 font-semibold">{ship.expected_arrival_date}</td>
+                      <td className="p-4 text-slate-700 font-semibold">{ship.expected_arrival_date}</td>
                       <td className="p-4">
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                          ship.status === 'RECEIVED' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-cyan-500/20 text-cyan-400'
+                          ship.status === 'RECEIVED' ? 'bg-emerald-100 text-emerald-800' : 'bg-sky-100 text-sky-800'
                         }`}>
                           {ship.status}
                         </span>
@@ -375,7 +375,7 @@ export default function AdminInventoryPage() {
                           <button
                             type="button"
                             onClick={() => receiveIncomingStock(ship.id)}
-                            className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow transition-all"
+                            className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-sm transition-all"
                           >
                             ✓ Receive Stock
                           </button>
@@ -395,10 +395,10 @@ export default function AdminInventoryPage() {
       {/* Tab 3: Stock Movement Audit History */}
       {activeTab === 'history' && (
         <div className="space-y-4">
-          <div className="rounded-2xl glass-panel border border-white/10 overflow-hidden shadow-xl">
+          <div className="rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
-                <thead className="bg-slate-900/90 border-b border-white/10 text-slate-400 uppercase tracking-wider">
+                <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider">
                   <tr>
                     <th className="p-4">Timestamp</th>
                     <th className="p-4">Product & Variant</th>
@@ -410,29 +410,29 @@ export default function AdminInventoryPage() {
                   </tr>
                 </thead>
 
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-slate-100">
                   {stockMovements.map(sm => (
-                    <tr key={sm.id} className="hover:bg-white/[0.02]">
-                      <td className="p-4 text-slate-400 whitespace-nowrap">{formatDateTime(sm.created_at)}</td>
+                    <tr key={sm.id} className="hover:bg-slate-50/70 transition-colors">
+                      <td className="p-4 text-slate-500 whitespace-nowrap">{formatDateTime(sm.created_at)}</td>
                       <td className="p-4">
-                        <p className="font-bold text-white">{sm.product_name}</p>
-                        <p className="text-[11px] text-slate-400">{sm.variant_label}</p>
+                        <p className="font-bold text-slate-900">{sm.product_name}</p>
+                        <p className="text-[11px] text-slate-500">{sm.variant_label}</p>
                       </td>
                       <td className="p-4">
                         <span className={`px-2 py-0.5 rounded text-xs font-bold ${
-                          sm.quantity_change > 0 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
+                          sm.quantity_change > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
                         }`}>
                           {sm.quantity_change > 0 ? `+${sm.quantity_change}` : sm.quantity_change}
                         </span>
                       </td>
-                      <td className="p-4 text-slate-300 font-semibold">
-                        {sm.previous_stock} → <strong className="text-white">{sm.new_stock}</strong>
+                      <td className="p-4 text-slate-700 font-semibold">
+                        {sm.previous_stock} → <strong className="text-slate-900">{sm.new_stock}</strong>
                       </td>
                       <td className="p-4">
-                        <span className="capitalize text-slate-200">{sm.reason.replace(/_/g, ' ')}</span>
+                        <span className="capitalize text-slate-800">{sm.reason.replace(/_/g, ' ')}</span>
                       </td>
-                      <td className="p-4 text-slate-400">{sm.admin_email}</td>
-                      <td className="p-4 text-slate-400 italic max-w-xs truncate">{sm.notes || '—'}</td>
+                      <td className="p-4 text-slate-600">{sm.admin_email}</td>
+                      <td className="p-4 text-slate-500 italic max-w-xs truncate">{sm.notes || '—'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -444,14 +444,14 @@ export default function AdminInventoryPage() {
 
       {/* Adjust Stock Level Modal */}
       {adjustModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-full max-w-md rounded-3xl glass-panel border border-white/10 p-6 sm:p-8 space-y-6">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <h3 className="text-base font-bold text-white">Adjust Stock Level</h3>
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-md rounded-3xl bg-white border border-slate-200 p-6 sm:p-8 space-y-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="text-base font-bold text-slate-900">Adjust Stock Level</h3>
               <button
                 type="button"
                 onClick={() => setAdjustModalOpen(false)}
-                className="p-1 text-slate-400 hover:text-white"
+                className="p-1 text-slate-400 hover:text-slate-600"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -459,7 +459,7 @@ export default function AdminInventoryPage() {
 
             <form onSubmit={handleAdjustSubmit} className="space-y-4 text-xs">
               <div className="space-y-1">
-                <label className="text-slate-300 font-medium">Select Product Variant *</label>
+                <label className="text-slate-700 font-medium">Select Product Variant *</label>
                 <select
                   value={adjustData.variantId}
                   onChange={(e) => {
@@ -473,7 +473,7 @@ export default function AdminInventoryPage() {
                       });
                     }
                   }}
-                  className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:border-vivo-600 focus:bg-white"
                 >
                   {allVariantsWithProd.map(v => (
                     <option key={v.id} value={v.id}>
@@ -484,7 +484,7 @@ export default function AdminInventoryPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-slate-300 font-medium">New Current Physical Stock (Units) *</label>
+                <label className="text-slate-700 font-medium">New Current Physical Stock (Units) *</label>
                 <input
                   type="number"
                   min="0"
@@ -493,16 +493,16 @@ export default function AdminInventoryPage() {
                   placeholder="0"
                   value={adjustData.newStock === 0 ? '' : adjustData.newStock}
                   onChange={(e) => setAdjustData({ ...adjustData, newStock: e.target.value === '' ? 0 : Number(e.target.value) })}
-                  className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold text-base text-emerald-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-bold text-base text-emerald-600 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none focus:border-vivo-600 focus:bg-white"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-slate-300 font-medium">Reason Code for Audit Log *</label>
+                <label className="text-slate-700 font-medium">Reason Code for Audit Log *</label>
                 <select
                   value={adjustData.reason}
                   onChange={(e) => setAdjustData({ ...adjustData, reason: e.target.value as StockMovementReason })}
-                  className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:border-vivo-600 focus:bg-white"
                 >
                   <option value="sold_in_store">Sold in Store (Customer Purchase)</option>
                   <option value="stock_received">Stock Received from Supplier</option>
@@ -514,27 +514,27 @@ export default function AdminInventoryPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-slate-300 font-medium">Notes / Invoice Ref</label>
+                <label className="text-slate-700 font-medium">Notes / Invoice Ref</label>
                 <input
                   type="text"
                   placeholder="e.g. Physical count discrepancy verified"
                   value={adjustData.notes}
                   onChange={(e) => setAdjustData({ ...adjustData, notes: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-vivo-600 focus:bg-white"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setAdjustModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-white/5 text-slate-300"
+                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-vivo-600 hover:bg-vivo-500 text-white font-bold shadow-glow-blue"
+                  className="px-5 py-2.5 rounded-xl bg-vivo-600 hover:bg-vivo-700 text-white font-bold shadow-sm transition-all"
                 >
                   Save Stock & Record Movement
                 </button>
@@ -546,14 +546,14 @@ export default function AdminInventoryPage() {
 
       {/* Add Incoming Shipment Modal */}
       {incomingModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="w-full max-w-md rounded-3xl glass-panel border border-cyan-500/40 p-6 sm:p-8 space-y-6">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <h3 className="text-base font-bold text-white">Record Incoming Shipment</h3>
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-md rounded-3xl bg-white border border-slate-200 p-6 sm:p-8 space-y-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="text-base font-bold text-slate-900">Record Incoming Shipment</h3>
               <button
                 type="button"
                 onClick={() => setIncomingModalOpen(false)}
-                className="p-1 text-slate-400 hover:text-white"
+                className="p-1 text-slate-400 hover:text-slate-600"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -561,11 +561,11 @@ export default function AdminInventoryPage() {
 
             <form onSubmit={handleIncomingSubmit} className="space-y-4 text-xs">
               <div className="space-y-1">
-                <label className="text-slate-300 font-medium">Target Phone / Accessory Variant *</label>
+                <label className="text-slate-700 font-medium">Target Phone / Accessory Variant *</label>
                 <select
                   value={incomingData.variantId}
                   onChange={(e) => setIncomingData({ ...incomingData, variantId: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:border-vivo-600 focus:bg-white"
                 >
                   {allVariantsWithProd.map(v => (
                     <option key={v.id} value={v.id}>
@@ -577,7 +577,7 @@ export default function AdminInventoryPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-medium">Quantity *</label>
+                  <label className="text-slate-700 font-medium">Quantity *</label>
                   <input
                     type="number"
                     min="1"
@@ -586,54 +586,54 @@ export default function AdminInventoryPage() {
                     placeholder="1"
                     value={incomingData.quantity === 0 ? '' : incomingData.quantity}
                     onChange={(e) => setIncomingData({ ...incomingData, quantity: e.target.value === '' ? 0 : Number(e.target.value) })}
-                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white font-bold text-cyan-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-bold text-sky-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none focus:border-vivo-600 focus:bg-white"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-medium">Expected Arrival Date *</label>
+                  <label className="text-slate-700 font-medium">Expected Arrival Date *</label>
                   <input
                     type="date"
                     required
                     value={incomingData.expectedDate}
                     onChange={(e) => setIncomingData({ ...incomingData, expectedDate: e.target.value })}
-                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white"
+                    className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:outline-none focus:border-vivo-600 focus:bg-white"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-slate-300 font-medium">Supplier *</label>
+                <label className="text-slate-700 font-medium">Supplier *</label>
                 <input
                   type="text"
                   required
                   value={incomingData.supplier}
                   onChange={(e) => setIncomingData({ ...incomingData, supplier: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-vivo-600 focus:bg-white"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-slate-300 font-medium">Purchase Order / Reference No</label>
+                <label className="text-slate-700 font-medium">Purchase Order / Reference No</label>
                 <input
                   type="text"
                   value={incomingData.referenceNo}
                   onChange={(e) => setIncomingData({ ...incomingData, referenceNo: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-900 border border-white/10 text-white"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-vivo-600 focus:bg-white"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setIncomingModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-white/5 text-slate-300"
+                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold shadow-lg"
+                  className="px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold shadow-sm transition-all"
                 >
                   Save Incoming Shipment
                 </button>
