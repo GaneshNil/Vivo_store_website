@@ -15,7 +15,7 @@ export function getBaseUrl(requestHost?: string | null, requestProto?: string | 
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`;
   }
-  return 'https://galaxymobilegallery.com';
+  return 'https://galaxymobilegallery.vercel.app';
 }
 
 export const SITE_CONFIG = {
