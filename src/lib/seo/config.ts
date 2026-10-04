@@ -126,40 +126,42 @@ export function generateLocalBusinessSchema(settings?: Partial<StoreSettings>) {
       { '@type': 'AdministrativeArea', name: 'Pandharpur' },
       { '@type': 'AdministrativeArea', name: 'Mangalwedha' },
     ],
-    hasOfferCatalog: {
-      '@type': 'OfferCatalog',
-      name: 'Smartphones and Mobile Accessories',
-      itemListElement: [
-        {
-          '@type': 'OfferCatalog',
-          name: 'VIVO Smartphones',
-          itemListElement: [
-            { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'VIVO X Series' } },
-            { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'VIVO V Series' } },
-            { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'VIVO T Series' } },
-            { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'VIVO Y Series' } },
-          ],
+    knowsAbout: [
+      'VIVO X Series Smartphones',
+      'VIVO V Series Smartphones',
+      'VIVO T Series Smartphones',
+      'VIVO Y Series Smartphones',
+      'Samsung Galaxy Smartphones',
+      'OPPO Smartphones',
+      'Realme Smartphones',
+      'Fast Chargers & Mobile Adapters',
+      'UV Curved Tempered Glass',
+      'TWS Earbuds & Audio Accessories',
+      'Bajaj Finance EMI Mobile Financing',
+    ],
+    makesOffer: [
+      {
+        '@type': 'Offer',
+        itemOffered: {
+          '@type': 'Service',
+          name: 'VIVO Authorized Experience Showroom & Live Demo',
         },
-        {
-          '@type': 'OfferCatalog',
-          name: 'Multi-Brand Smartphones',
-          itemListElement: [
-            { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'Samsung Galaxy Smartphones' } },
-            { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'OPPO Smartphones' } },
-            { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'Realme Smartphones' } },
-          ],
+      },
+      {
+        '@type': 'Offer',
+        itemOffered: {
+          '@type': 'Service',
+          name: 'Bajaj Finance 10-Minute Paperless Instant In-Store EMI Approval',
         },
-        {
-          '@type': 'OfferCatalog',
-          name: 'Genuine Mobile Accessories',
-          itemListElement: [
-            { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'Fast Chargers & Adapters' } },
-            { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'UV Curved Tempered Glass' } },
-            { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'TWS Earbuds & Audio' } },
-          ],
+      },
+      {
+        '@type': 'Offer',
+        itemOffered: {
+          '@type': 'Service',
+          name: 'Multi-Brand Mobile Sales, Data Transfer & Screen Protection',
         },
-      ],
-    },
+      },
+    ],
   };
 }
 
