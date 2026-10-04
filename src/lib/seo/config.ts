@@ -1,7 +1,11 @@
 import { Product, StoreSettings } from '@/lib/types';
 import { INITIAL_STORE_SETTINGS } from '@/lib/data/seed-data';
 
-export function getBaseUrl(): string {
+export function getBaseUrl(requestHost?: string | null, requestProto?: string | null): string {
+  if (requestHost) {
+    const proto = requestProto || (requestHost.includes('localhost') ? 'http' : 'https');
+    return `${proto}://${requestHost}`.replace(/\/$/, '');
+  }
   if (process.env.NEXT_PUBLIC_SITE_URL) {
     return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, '');
   }

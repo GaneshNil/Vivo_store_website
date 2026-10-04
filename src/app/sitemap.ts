@@ -1,9 +1,20 @@
 import { MetadataRoute } from 'next';
+import { headers } from 'next/headers';
 import { getBaseUrl } from '@/lib/seo/config';
 import { getAllProducts } from '@/lib/data/products-server';
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = getBaseUrl();
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  let host: string | null = null;
+  let proto: string | null = null;
+  try {
+    const headerList = await headers();
+    host = headerList.get('x-forwarded-host') || headerList.get('host');
+    proto = headerList.get('x-forwarded-proto') || (host?.includes('localhost') ? 'http' : 'https');
+  } catch {
+    // Falls back gracefully during static build phase
+  }
+
+  const baseUrl = getBaseUrl(host, proto);
   const currentDate = new Date().toISOString();
 
   // Static high-priority core routes
