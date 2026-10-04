@@ -83,10 +83,10 @@ export const Header: React.FC = () => {
       {/* Main Glass Header */}
       <header className="sticky top-0 z-40 glass-nav">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-20 gap-3">
+          <div className="flex items-center justify-between h-16 sm:h-20 gap-3 xl:gap-6">
             
             {/* Store Brand & Logo */}
-            <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group min-w-0 pr-1">
+            <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group flex-shrink-0">
               <div className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-xl overflow-hidden border border-slate-200 bg-white shadow-sm flex-shrink-0 group-hover:border-vivo-500 transition-all">
                 <Image
                   src="/assets/store-logo/IMG-20260822-WA0004.jpg"
@@ -97,30 +97,34 @@ export const Header: React.FC = () => {
                   priority
                 />
               </div>
-              <div className="flex flex-col min-w-0 justify-center">
+              <div className="flex flex-col justify-center">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-display font-bold text-sm sm:text-lg md:text-xl tracking-tight text-slate-900 group-hover:text-vivo-600 transition-colors truncate">
+                  <span className="font-display font-bold text-sm sm:text-base xl:text-lg tracking-tight text-slate-900 group-hover:text-vivo-600 transition-colors whitespace-nowrap">
                     GALAXY MOBILE
                   </span>
-                  <span className="text-[8.5px] sm:text-[10px] uppercase font-extrabold tracking-wider bg-vivo-50 text-vivo-700 px-1.5 py-0.5 rounded border border-vivo-200 flex-shrink-0">
+                  <span className="text-[8px] sm:text-[9.5px] uppercase font-extrabold tracking-wider bg-vivo-50 text-vivo-700 px-1.5 py-0.5 rounded border border-vivo-200 whitespace-nowrap">
                     VIVO SHOWROOM
                   </span>
                 </div>
-                <span className="text-[10px] sm:text-xs text-slate-500 tracking-normal truncate">
+                <span className="hidden sm:block text-[10px] xl:text-[11px] text-slate-500 tracking-normal whitespace-nowrap">
                   Official Experience Gallery & Accessories · Begampur
                 </span>
               </div>
             </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center space-x-1">
+            <nav className="hidden lg:flex items-center space-x-0.5 xl:space-x-1 flex-shrink-0">
               {navLinks.map(link => {
                 const isActive = pathname === link.href;
+                // Compare and Visit Store have dedicated buttons in the right actions bar, so keep nav compact on standard desktop
+                const isAuxiliary = link.href === '/compare' || link.href === '/store';
                 return (
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`relative px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    className={`relative px-2.5 xl:px-3 py-1.5 rounded-lg text-xs xl:text-sm font-medium transition-all ${
+                      isAuxiliary ? 'hidden 2xl:inline-flex' : 'inline-flex'
+                    } items-center ${
                       isActive
                         ? 'text-vivo-700 bg-vivo-50/80 font-semibold border border-vivo-200/80 shadow-xs'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
@@ -138,19 +142,19 @@ export const Header: React.FC = () => {
             </nav>
 
             {/* Header Right Action Utilities */}
-            <div className="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
               {/* Prominent Quick Search Button (Desktop + Tablet) */}
               <button
                 type="button"
                 onClick={() => setSearchModalOpen(true)}
-                className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl text-slate-500 hover:text-slate-900 bg-slate-100 hover:bg-slate-200/80 border border-slate-200 text-xs font-medium transition-all"
+                className="hidden sm:flex items-center gap-1.5 xl:gap-2 px-2.5 xl:px-3 py-1.5 rounded-xl text-slate-500 hover:text-slate-900 bg-slate-100 hover:bg-slate-200/80 border border-slate-200 text-xs font-medium transition-all"
                 title="Search Vivo & phones (Press ⌘K or Ctrl+K)"
                 aria-label="Open search dialog"
               >
                 <Search className="w-3.5 h-3.5 text-slate-500" />
-                <span className="text-slate-500 hidden md:inline">Search Vivo & phones...</span>
-                <span className="text-slate-500 md:hidden">Search...</span>
-                <kbd className="hidden md:inline-block px-1.5 py-0.5 text-[10px] font-mono text-slate-400 bg-white rounded border border-slate-200 shadow-xs">
+                <span className="text-slate-500 hidden xl:inline">Search Vivo & phones...</span>
+                <span className="text-slate-500 xl:hidden">Search</span>
+                <kbd className="hidden xl:inline-block px-1.5 py-0.5 text-[10px] font-mono text-slate-400 bg-white rounded border border-slate-200 shadow-xs">
                   ⌘K
                 </kbd>
               </button>
@@ -184,10 +188,11 @@ export const Header: React.FC = () => {
               {/* Store Directions CTA (Desktop & Tablet only) */}
               <Link
                 href="/store"
-                className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-xl bg-vivo-600 hover:bg-vivo-700 text-white text-xs sm:text-sm font-semibold shadow-sm hover:shadow transition-all"
+                className="hidden sm:flex items-center gap-1.5 px-3 xl:px-4 py-2 rounded-xl bg-vivo-600 hover:bg-vivo-700 text-white text-xs sm:text-sm font-semibold shadow-sm hover:shadow transition-all whitespace-nowrap"
               >
                 <MapPin className="w-4 h-4 text-white" />
-                <span>Visit Showroom</span>
+                <span className="hidden xl:inline">Visit Showroom</span>
+                <span className="xl:hidden">Store</span>
               </Link>
 
               {/* Mobile Menu Toggle (Three Lines) */}
