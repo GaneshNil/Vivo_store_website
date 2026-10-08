@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useStore } from '@/lib/store/store-context';
 import { formatPrice, getStatusBadgeConfig, calculateEMI } from '@/lib/utils/formatters';
+import { Product } from '@/lib/types';
 import { ProductCard } from '@/components/customer/ProductCard';
 import { 
   MapPin, 
@@ -36,7 +37,11 @@ import {
 } from 'lucide-react';
 import { fireConfetti } from '@/lib/utils/confetti';
 
-export function ProductDetailClient() {
+interface ProductDetailClientProps {
+  initialProduct?: Product;
+}
+
+export function ProductDetailClient({ initialProduct }: ProductDetailClientProps = {}) {
   const { slug } = useParams();
   const { products, storeSettings, addToCompare, compareList, toggleWishlist, isInWishlist, submitNotifyRequest, isLoaded } = useStore();
 
@@ -44,7 +49,8 @@ export function ProductDetailClient() {
   const decodedSlug = decodeURIComponent(rawSlug).toLowerCase().trim();
 
   const product = useMemo(() => {
-    return products.find(p => {
+    // 1. Live store context product (reacts to live price/stock changes)
+    const storeProduct = products.find(p => {
       if (!p) return false;
       const pSlug = (p.slug || '').toLowerCase().trim();
       const pId = (p.id || '').toLowerCase().trim();
@@ -56,7 +62,27 @@ export function ProductDetailClient() {
              pName === decodedSlug ||
              p.slug === rawSlug;
     });
-  }, [products, rawSlug, decodedSlug]);
+
+    if (storeProduct) return storeProduct;
+
+    // 2. SSR product from Supabase (immediate display with zero layout shift)
+    if (initialProduct) {
+      const initSlug = (initialProduct.slug || '').toLowerCase().trim();
+      const initId = (initialProduct.id || '').toLowerCase().trim();
+      const initName = (initialProduct.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').trim();
+      if (
+        initSlug === decodedSlug ||
+        initId === decodedSlug ||
+        initSlug === rawSlug.toLowerCase().trim() ||
+        initName === decodedSlug ||
+        initialProduct.slug === rawSlug
+      ) {
+        return initialProduct;
+      }
+    }
+
+    return undefined;
+  }, [products, rawSlug, decodedSlug, initialProduct]);
 
   // Active Variant State
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
@@ -108,7 +134,7 @@ export function ProductDetailClient() {
   const tenureMonths = product?.bajaj_emi_tenure_months || 6;
   const emiAmount = activeVariant ? calculateEMI(activeVariant.selling_price, tenureMonths, interestRate) : 0;
 
-  if (!isLoaded) {
+  if (!isLoaded && !product) {
     return (
       <div className="py-24 max-w-5xl mx-auto px-4 space-y-8 animate-pulse">
         <div className="h-8 bg-slate-200 rounded-2xl w-48 mx-auto" />

@@ -17,8 +17,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function StorePage() {
-  const settings = getStoreSettings();
+export default async function StorePage() {
+  const settings = await getStoreSettings();
   const localBusinessSchema = generateLocalBusinessSchema(settings);
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: '/' },

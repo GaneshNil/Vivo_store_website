@@ -9,14 +9,17 @@ interface ProductPageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const dynamicParams = true;
+export const revalidate = 0;
+
 export async function generateStaticParams() {
-  const slugs = getAllProductSlugs();
+  const slugs = await getAllProductSlugs();
   return slugs.map(slug => ({ slug }));
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const product = getProductBySlug(resolvedParams.slug);
+  const product = await getProductBySlug(resolvedParams.slug);
 
   if (!product) {
     return {
@@ -66,7 +69,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
 export default async function ProductDetailPage({ params }: ProductPageProps) {
   const resolvedParams = await params;
-  const product = getProductBySlug(resolvedParams.slug);
+  const product = await getProductBySlug(resolvedParams.slug);
 
   if (!product) {
     notFound();
@@ -95,7 +98,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
         />
       )}
-      <ProductDetailClient />
+      <ProductDetailClient initialProduct={product} />
     </>
   );
 }
