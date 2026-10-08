@@ -260,9 +260,7 @@ export default function AdminProductsPage() {
   const [bajajTenureMonths, setBajajTenureMonths] = useState<number>(6);
 
   // Multiple Images State
-  const [images, setImages] = useState<string[]>([
-    'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80'
-  ]);
+  const [images, setImages] = useState<string[]>([]);
   const [primaryImageIndex, setPrimaryImageIndex] = useState<number>(0);
   const [manualImageUrl, setManualImageUrl] = useState<string>('');
   const [isUploadingImages, setIsUploadingImages] = useState(false);
@@ -274,40 +272,20 @@ export default function AdminProductsPage() {
   const [variants, setVariants] = useState<VariantDraft[]>([
     {
       id: `var-init-1`,
-      ram: '8GB',
-      storage: '128GB',
-      color: 'Titanium Blue',
-      mrp: 34999,
-      selling_price: 29999,
-      current_stock: 5,
+      ram: '',
+      storage: '',
+      color: '',
+      mrp: 0,
+      selling_price: 0,
+      current_stock: 0,
       low_stock_threshold: 2,
-      sku: `PROD-${Date.now().toString().slice(-4)}-128GB`,
+      sku: '',
     }
   ]);
 
   // Technical Specifications & Hardware State
   const [specsData, setSpecsData] = useState({
-    // Display
-    screen_size: '6.78 inches',
-    resolution: '1.5K AMOLED (2800 × 1260)',
-    refresh_rate: '120Hz LTPO',
-    peak_brightness: '4500 nits Peak',
-    // Processor & Performance
-    chipset: 'Qualcomm Snapdragon 7 Gen 3 (4nm)',
-    gpu: 'Adreno 720',
-    operating_system: 'OriginOS 4 / Funtouch OS 15 (Android 15)',
-    network: 'Dual 5G (SA/NSA) + Wi-Fi 6',
-    // Camera
-    rear_primary: '50 MP Sony IMX921 with OIS',
-    rear_secondary: '50 MP ZEISS Ultra Wide Angle',
-    front_camera: '50 MP Group Selfie with AF',
-    video_recording: '4K @ 60fps / 1080p @ 120fps Studio Mode',
-    // Battery & Charging
-    battery_capacity: '5500 mAh BlueVolt Battery',
-    charging_speed: '80W FlashCharge (0 to 100% in 35 mins)',
-    usb_port: 'Type-C USB 2.0 / OTG Support',
-    // In-The-Box
-    in_the_box: 'Handset, 80W Power Adapter, USB Type-C Cable, Transparent Protective Case, SIM Ejector Pin, Warranty Card, Quick Start Guide',
+    in_the_box: '',
   });
 
   // Dynamic Category Specifications & Custom Key-Value Specs
@@ -374,38 +352,23 @@ export default function AdminProductsPage() {
     setIsBajajEmiEnabled(true);
     setBajajInterestRate(0);
     setBajajTenureMonths(6);
-    setImages(['https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80']);
+    setImages([]);
     setPrimaryImageIndex(0);
     setVariants([
       {
         id: `var-init-1`,
-        ram: '8GB',
-        storage: '128GB',
-        color: 'Titanium Blue',
-        mrp: 34999,
-        selling_price: 29999,
-        current_stock: 5,
+        ram: '',
+        storage: '',
+        color: '',
+        mrp: 0,
+        selling_price: 0,
+        current_stock: 0,
         low_stock_threshold: 2,
-        sku: `PROD-${Date.now().toString().slice(-4)}-128GB`,
+        sku: '',
       }
     ]);
     setSpecsData({
-      screen_size: '6.78 inches',
-      resolution: '1.5K AMOLED (2800 × 1260)',
-      refresh_rate: '120Hz LTPO',
-      peak_brightness: '4500 nits Peak',
-      chipset: 'Qualcomm Snapdragon 7 Gen 3 (4nm)',
-      gpu: 'Adreno 720',
-      operating_system: 'OriginOS 4 / Funtouch OS 15 (Android 15)',
-      network: 'Dual 5G (SA/NSA) + Wi-Fi 6',
-      rear_primary: '50 MP Sony IMX921 with OIS',
-      rear_secondary: '50 MP ZEISS Ultra Wide Angle',
-      front_camera: '50 MP Group Selfie with AF',
-      video_recording: '4K @ 60fps / 1080p @ 120fps Studio Mode',
-      battery_capacity: '5500 mAh BlueVolt Battery',
-      charging_speed: '80W FlashCharge (0 to 100% in 35 mins)',
-      usb_port: 'Type-C USB 2.0 / OTG Support',
-      in_the_box: 'Handset, 80W Power Adapter, USB Type-C Cable, Transparent Protective Case, SIM Ejector Pin, Warranty Card, Quick Start Guide',
+      in_the_box: '',
     });
     setCategorySpecs({});
     setCustomSpecs([]);
@@ -438,18 +401,18 @@ export default function AdminProductsPage() {
     // Images
     const prodImages = product.images && product.images.length > 0
       ? product.images.map(img => img.image_url)
-      : ['https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=600&q=80'];
+      : [];
     setImages(prodImages);
-    const primaryIdx = product.images.findIndex(img => img.is_primary);
+    const primaryIdx = product.images?.findIndex(img => img.is_primary) ?? -1;
     setPrimaryImageIndex(primaryIdx >= 0 ? primaryIdx : 0);
 
     // Variants
     if (product.variants && product.variants.length > 0) {
       setVariants(product.variants.map((v, i) => ({
         id: v.id || `var-edit-${i}`,
-        ram: v.ram || '8GB',
-        storage: v.storage || '128GB',
-        color: v.color || 'Standard',
+        ram: v.ram || '',
+        storage: v.storage || '',
+        color: v.color || '',
         mrp: v.mrp,
         selling_price: v.selling_price,
         current_stock: v.current_stock,
@@ -469,22 +432,7 @@ export default function AdminProductsPage() {
     }
     const s: any = (rawS && typeof rawS === 'object') ? rawS : {};
     setSpecsData({
-      screen_size: s.display?.size || s.display?.screen_size || '6.78 inches',
-      resolution: s.display?.resolution || '1.5K AMOLED',
-      refresh_rate: s.display?.refresh_rate || '120Hz',
-      peak_brightness: s.display?.brightness || s.display?.peak_brightness || '4500 nits',
-      chipset: s.processor?.chipset || 'Snapdragon 5G',
-      gpu: s.processor?.gpu || 'Adreno',
-      operating_system: s.operating_system?.os_name || s.processor?.operating_system || 'Android 15',
-      network: s.connectivity?.network || s.processor?.network_connectivity || '5G Dual SIM',
-      rear_primary: s.camera?.rear_main || '50 MP with OIS',
-      rear_secondary: s.camera?.rear_secondary || '50 MP Ultra Wide',
-      front_camera: s.camera?.front_camera || '50 MP Selfie',
-      video_recording: s.camera?.video_recording || '4K @ 60fps',
-      battery_capacity: s.battery_charging?.capacity || '5500 mAh',
-      charging_speed: s.battery_charging?.charging_speed || '80W FlashCharge',
-      usb_port: s.connectivity?.usb_type || s.battery_charging?.usb_port || 'USB Type-C',
-      in_the_box: Array.isArray(s.in_the_box) ? s.in_the_box.join(', ') : 'Handset, Charger, Cable, Case, SIM Pin, Manual',
+      in_the_box: Array.isArray(s.in_the_box) ? s.in_the_box.join(', ') : (typeof s.in_the_box === 'string' ? s.in_the_box : ''),
     });
 
     // Populate Category-Specific Specs & Custom Key/Values
@@ -495,20 +443,28 @@ export default function AdminProductsPage() {
     const schema = getCategorySpecSchema(productCat?.slug || product.category_id || productCat?.name);
 
     if (schema.id === 'cat-smartphones' || product.is_phone) {
-      initialCategorySpecs['display'] = s.display 
-        ? (typeof s.display === 'string' ? s.display : `${s.display.size || s.display.screen_size || ''} ${s.display.resolution || ''} ${s.display.refresh_rate || ''}`.trim()) 
-        : (s.display_specs || '');
-      initialCategorySpecs['processor'] = s.processor 
-        ? (typeof s.processor === 'string' ? s.processor : `${s.processor.chipset || ''} ${s.processor.gpu ? `(${s.processor.gpu})` : ''}`.trim()) 
-        : (s.processor_specs || '');
-      initialCategorySpecs['camera'] = s.camera 
-        ? (typeof s.camera === 'string' ? s.camera : `${s.camera.rear_main || ''} + ${s.camera.rear_secondary || ''} / ${s.camera.front_camera || ''}`.trim()) 
-        : (s.camera_specs || '');
-      initialCategorySpecs['battery'] = s.battery_charging?.capacity || s.battery || '';
-      initialCategorySpecs['charging'] = s.battery_charging?.charging_speed || s.charging || '';
-      initialCategorySpecs['connectivity'] = s.connectivity?.network || s.processor?.network_connectivity || s.connectivity || '';
-      initialCategorySpecs['os'] = s.operating_system?.os_name || s.processor?.operating_system || s.os || '';
-      initialCategorySpecs['sensors'] = s.sensors || '';
+      initialCategorySpecs['display'] = typeof s.display === 'string'
+        ? s.display
+        : (s.display?.screen_size || s.display?.size || s.display_specs || '');
+      initialCategorySpecs['processor'] = typeof s.processor === 'string'
+        ? s.processor
+        : (s.processor?.chipset || s.processor_specs || '');
+      initialCategorySpecs['camera'] = typeof s.camera === 'string'
+        ? s.camera
+        : (s.camera?.rear_main || s.camera_specs || '');
+      initialCategorySpecs['battery'] = typeof s.battery === 'string'
+        ? s.battery
+        : (s.battery_charging?.capacity || s.battery_capacity || '');
+      initialCategorySpecs['charging'] = typeof s.charging === 'string'
+        ? s.charging
+        : (s.battery_charging?.charging_speed || s.charging_speed || '');
+      initialCategorySpecs['connectivity'] = typeof s.connectivity === 'string'
+        ? s.connectivity
+        : (s.connectivity?.network || s.processor?.network_connectivity || '');
+      initialCategorySpecs['os'] = typeof s.os === 'string'
+        ? s.os
+        : (s.operating_system?.os_name || s.processor?.operating_system || '');
+      initialCategorySpecs['sensors'] = typeof s.sensors === 'string' ? s.sensors : '';
     } else {
       schema.fields.forEach(f => {
         if (s[f.key] !== undefined) {
@@ -743,39 +699,22 @@ export default function AdminProductsPage() {
     });
 
     // Build Specifications Object dynamically based on category and custom specs
-    let specificationsObj: any = {
-      ...categorySpecs,
-      in_the_box: specsData.in_the_box.split(',').map(s => s.trim()).filter(Boolean),
+    const cleanCategorySpecs: Record<string, string> = {};
+    Object.entries(categorySpecs).forEach(([k, v]) => {
+      if (typeof v === 'string' && v.trim()) {
+        cleanCategorySpecs[k] = v.trim();
+      }
+    });
+
+    const specificationsObj: any = {
+      ...cleanCategorySpecs,
     };
 
-    if (formData.is_phone || activeSpecSchema.id === 'cat-smartphones') {
-      specificationsObj = {
-        ...specificationsObj,
-        display: {
-          screen_size: categorySpecs.display || specsData.screen_size,
-          resolution: specsData.resolution,
-          refresh_rate: specsData.refresh_rate,
-          peak_brightness: specsData.peak_brightness,
-        },
-        processor: {
-          chipset: categorySpecs.processor || specsData.chipset,
-          gpu: specsData.gpu,
-          operating_system: categorySpecs.os || specsData.operating_system,
-          network_connectivity: categorySpecs.connectivity || specsData.network,
-        },
-        camera: {
-          rear_main: categorySpecs.camera || specsData.rear_primary,
-          rear_secondary: specsData.rear_secondary,
-          front_camera: specsData.front_camera,
-          video_recording: specsData.video_recording,
-        },
-        battery_charging: {
-          capacity: categorySpecs.battery || specsData.battery_capacity,
-          charging_speed: categorySpecs.charging || specsData.charging_speed,
-          usb_port: specsData.usb_port,
-        },
-        in_the_box: specsData.in_the_box.split(',').map(s => s.trim()).filter(Boolean),
-      };
+    if (specsData.in_the_box && specsData.in_the_box.trim()) {
+      specificationsObj.in_the_box = specsData.in_the_box
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean);
     }
 
     if (customSpecs.length > 0) {
@@ -786,7 +725,10 @@ export default function AdminProductsPage() {
           value: cs.value.trim(),
         }));
         validCustom.forEach(cs => {
-          specificationsObj[cs.key.trim().toLowerCase().replace(/\s+/g, '_')] = cs.value.trim();
+          const formattedKey = cs.key.trim().toLowerCase().replace(/\s+/g, '_');
+          if (!specificationsObj[formattedKey]) {
+            specificationsObj[formattedKey] = cs.value.trim();
+          }
         });
       }
     }

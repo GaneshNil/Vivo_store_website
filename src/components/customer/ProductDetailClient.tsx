@@ -608,10 +608,10 @@ export function ProductDetailClient({ initialProduct }: ProductDetailClientProps
           }
 
           // Helper to extract key-values from group or string
-          const extractGroupItems = (val: any): Array<{ label: string; value: string }> => {
+          const extractGroupItems = (val: any, defaultLabel = 'Specification'): Array<{ label: string; value: string }> => {
             if (!val) return [];
             if (typeof val === 'string' && val.trim().length > 0) {
-              return [{ label: 'Specification', value: val.trim() }];
+              return [{ label: defaultLabel, value: val.trim() }];
             }
             if (typeof val === 'object' && !Array.isArray(val)) {
               return Object.entries(val)
@@ -642,16 +642,46 @@ export function ProductDetailClient({ initialProduct }: ProductDetailClientProps
             'connectivity',
             'build_dimensions',
             'audio',
-            'sound'
+            'sound',
+            'os',
+            'operating_system'
           ]);
 
-          const displayItems = extractGroupItems(s.display || s.display_specs);
-          const cameraItems = extractGroupItems(s.camera || s.camera_specs);
-          const processorItems = extractGroupItems(s.processor || s.processor_specs);
-          const batteryItems = extractGroupItems(s.battery_charging || s.battery || s.charging);
-          const connectivityItems = extractGroupItems(s.connectivity);
-          const buildItems = extractGroupItems(s.build_dimensions);
-          const audioItems = extractGroupItems(s.audio || s.sound);
+          const displayItems = extractGroupItems(s.display || s.display_specs, 'Screen & Display');
+          const cameraItems = extractGroupItems(s.camera || s.camera_specs, 'Camera System');
+          const processorItems = extractGroupItems(s.processor || s.processor_specs, 'Processor & Chipset');
+
+          // Support standalone OS under processor if not already included
+          if (s.os && typeof s.os === 'string' && s.os.trim()) {
+            if (!processorItems.some(i => i.label.toLowerCase().includes('os') || i.label.toLowerCase().includes('operating'))) {
+              processorItems.push({ label: 'Operating System', value: s.os.trim() });
+            }
+          }
+
+          // Battery items: handle battery_charging object or standalone battery/charging strings cleanly
+          const batteryItems: Array<{ label: string; value: string }> = [];
+          if (s.battery_charging && typeof s.battery_charging === 'object' && !Array.isArray(s.battery_charging)) {
+            batteryItems.push(...extractGroupItems(s.battery_charging));
+          }
+          if (s.battery && typeof s.battery === 'string' && s.battery.trim()) {
+            if (!batteryItems.some(i => i.label.toLowerCase().includes('battery') || i.label.toLowerCase().includes('capacity'))) {
+              batteryItems.push({ label: 'Battery Capacity', value: s.battery.trim() });
+            }
+          }
+          if (s.charging && typeof s.charging === 'string' && s.charging.trim()) {
+            if (!batteryItems.some(i => i.label.toLowerCase().includes('charging') || i.label.toLowerCase().includes('speed'))) {
+              batteryItems.push({ label: 'Charging Speed', value: s.charging.trim() });
+            }
+          }
+
+          const connectivityItems = extractGroupItems(s.connectivity, 'Connectivity & Ports');
+          const buildItems = extractGroupItems(s.build_dimensions, 'Design & Build');
+          const audioItems = extractGroupItems(s.audio || s.sound, 'Audio & Sound');
+
+          const alreadyDisplayedValues = new Set(
+            [...displayItems, ...cameraItems, ...processorItems, ...batteryItems, ...connectivityItems, ...buildItems, ...audioItems]
+              .map(i => i.value.toLowerCase().trim())
+          );
 
           // Category-specific & custom flat specs
           const flatCategoryItems: Array<{ label: string; value: string }> = [];
@@ -660,29 +690,36 @@ export function ProductDetailClient({ initialProduct }: ProductDetailClientProps
             if (val === undefined || val === null) return;
 
             if (typeof val === 'string' && val.trim().length > 0) {
-              flatCategoryItems.push({
-                label: k.replace(/_/g, ' '),
-                value: val.trim(),
-              });
+              const cleanVal = val.trim();
+              if (!alreadyDisplayedValues.has(cleanVal.toLowerCase())) {
+                flatCategoryItems.push({
+                  label: k.replace(/_/g, ' '),
+                  value: cleanVal,
+                });
+                alreadyDisplayedValues.add(cleanVal.toLowerCase());
+              }
             } else if (typeof val === 'number' || typeof val === 'boolean') {
               flatCategoryItems.push({
                 label: k.replace(/_/g, ' '),
                 value: String(val),
               });
             } else if (typeof val === 'object' && !Array.isArray(val)) {
-              const nested = extractGroupItems(val);
+              const nested = extractGroupItems(val, k.replace(/_/g, ' '));
               nested.forEach(n => {
-                flatCategoryItems.push({
-                  label: `${k.replace(/_/g, ' ')} - ${n.label}`,
-                  value: n.value,
-                });
+                if (!alreadyDisplayedValues.has(n.value.toLowerCase())) {
+                  flatCategoryItems.push({
+                    label: `${k.replace(/_/g, ' ')} - ${n.label}`,
+                    value: n.value,
+                  });
+                  alreadyDisplayedValues.add(n.value.toLowerCase());
+                }
               });
             }
           });
 
           // Merge custom specs
           customSpecsList.forEach(cs => {
-            if (!flatCategoryItems.some(f => f.label.toLowerCase() === cs.label.toLowerCase())) {
+            if (!flatCategoryItems.some(f => f.label.toLowerCase() === cs.label.toLowerCase() || f.value.toLowerCase() === cs.value.toLowerCase())) {
               flatCategoryItems.push(cs);
             }
           });

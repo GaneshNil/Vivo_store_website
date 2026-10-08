@@ -189,17 +189,19 @@ export function CompareClient() {
                   </td>
                   {compareList.map(p => {
                     const specs = (p.specifications || {}) as any;
-                    const cap = specs.battery_charging?.capacity || specs.battery || specs.battery_capacity || '5000 mAh';
-                    const gauge = getBatteryGauge(String(cap));
+                    const cap = specs.battery_charging?.capacity || specs.battery || specs.battery_capacity;
+                    const gauge = cap ? getBatteryGauge(String(cap)) : 0;
                     return (
                       <td key={p.id} className="p-4 border-l border-slate-100 text-center space-y-2">
-                        <span className="font-extrabold text-slate-900 text-sm">{String(cap)}</span>
-                        <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden border border-slate-200/60">
-                          <div
-                            className="bg-emerald-500 h-full rounded-full transition-all duration-500"
-                            style={{ width: `${gauge}%` }}
-                          />
-                        </div>
+                        <span className="font-extrabold text-slate-900 text-sm">{cap ? String(cap) : '—'}</span>
+                        {cap && (
+                          <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden border border-slate-200/60">
+                            <div
+                              className="bg-emerald-500 h-full rounded-full transition-all duration-500"
+                              style={{ width: `${gauge}%` }}
+                            />
+                          </div>
+                        )}
                       </td>
                     );
                   })}
@@ -216,17 +218,19 @@ export function CompareClient() {
                   </td>
                   {compareList.map(p => {
                     const specs = (p.specifications || {}) as any;
-                    const spd = specs.battery_charging?.charging_speed || specs.charging || specs.charging_speed || '44W FlashCharge';
-                    const gauge = getChargingGauge(String(spd));
+                    const spd = specs.battery_charging?.charging_speed || specs.charging || specs.charging_speed;
+                    const gauge = spd ? getChargingGauge(String(spd)) : 0;
                     return (
                       <td key={p.id} className="p-4 border-l border-slate-100 text-center space-y-2">
-                        <span className="font-extrabold text-slate-900">{String(spd)}</span>
-                        <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden border border-slate-200/60">
-                          <div
-                            className="bg-amber-500 h-full rounded-full transition-all duration-500"
-                            style={{ width: `${gauge}%` }}
-                          />
-                        </div>
+                        <span className="font-extrabold text-slate-900">{spd ? String(spd) : '—'}</span>
+                        {spd && (
+                          <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden border border-slate-200/60">
+                            <div
+                              className="bg-amber-500 h-full rounded-full transition-all duration-500"
+                              style={{ width: `${gauge}%` }}
+                            />
+                          </div>
+                        )}
                       </td>
                     );
                   })}
@@ -239,11 +243,13 @@ export function CompareClient() {
                   {compareList.map(p => {
                     const specs = (p.specifications || {}) as any;
                     const disp = specs.display;
-                    const dispSize = typeof disp === 'string' ? disp : (disp?.size || disp?.screen_size || specs.screen_size || '6.7 inches');
-                    const dispSub = typeof disp === 'object' ? [disp?.resolution, disp?.refresh_rate].filter(Boolean).join(' · ') : '';
+                    const dispSize = typeof disp === 'string' ? disp : (disp?.size || disp?.screen_size || specs.screen_size || '');
+                    const dispSub = typeof disp === 'object' && disp !== null
+                      ? [disp?.resolution, disp?.refresh_rate].filter(r => Boolean(r) && !dispSize.includes(String(r))).join(' · ')
+                      : '';
                     return (
                       <td key={p.id} className="p-4 border-l border-slate-100 text-center space-y-1">
-                        <p className="font-bold text-slate-900">{dispSize}</p>
+                        <p className="font-bold text-slate-900">{dispSize || '—'}</p>
                         {dispSub && <p className="text-slate-500 text-[11px]">{dispSub}</p>}
                       </td>
                     );
@@ -262,11 +268,11 @@ export function CompareClient() {
                   {compareList.map(p => {
                     const specs = (p.specifications || {}) as any;
                     const cam = specs.camera;
-                    const rearMain = typeof cam === 'string' ? cam : (cam?.rear_main || specs.rear_primary || '50 MP OIS');
-                    const hasZeiss = typeof cam === 'object' && cam?.zeiss_optics;
+                    const rearMain = typeof cam === 'string' ? cam : (cam?.rear_main || specs.rear_primary || '');
+                    const hasZeiss = typeof cam === 'object' && Boolean(cam?.zeiss_optics);
                     return (
                       <td key={p.id} className="p-4 border-l border-slate-100 text-center space-y-1">
-                        <p className="font-bold text-slate-900">{rearMain}</p>
+                        <p className="font-bold text-slate-900">{rearMain || '—'}</p>
                         {hasZeiss && (
                           <span className="text-[10px] bg-vivo-50 text-vivo-700 border border-vivo-200 px-1.5 py-0.5 rounded font-semibold inline-block">
                             ZEISS Co-engineered Optics
@@ -284,10 +290,10 @@ export function CompareClient() {
                   {compareList.map(p => {
                     const specs = (p.specifications || {}) as any;
                     const cam = specs.camera;
-                    const front = typeof cam === 'object' ? (cam?.front_camera || specs.front_camera || '32 MP') : (specs.front_camera || '32 MP');
+                    const front = typeof cam === 'object' && cam !== null ? (cam?.front_camera || specs.front_camera || '') : (specs.front_camera || '');
                     return (
                       <td key={p.id} className="p-4 border-l border-slate-100 text-center font-semibold text-slate-800">
-                        {front}
+                        {front || '—'}
                       </td>
                     );
                   })}
@@ -305,10 +311,10 @@ export function CompareClient() {
                   {compareList.map(p => {
                     const specs = (p.specifications || {}) as any;
                     const proc = specs.processor;
-                    const chipset = typeof proc === 'string' ? proc : (proc?.chipset || specs.chipset || 'Octa-core 5G');
+                    const chipset = typeof proc === 'string' ? proc : (proc?.chipset || specs.chipset || '');
                     return (
                       <td key={p.id} className="p-4 border-l border-slate-100 text-center font-bold text-slate-900">
-                        {chipset}
+                        {chipset || '—'}
                       </td>
                     );
                   })}
@@ -338,10 +344,12 @@ export function CompareClient() {
                   {compareList.map(p => {
                     const specs = (p.specifications || {}) as any;
                     const build = specs.build_dimensions;
-                    const rating = typeof build === 'object' ? (build?.ip_rating || specs.ip_rating || 'IP54 Splash Resistant') : (specs.ip_rating || 'IP54 Splash Resistant');
+                    const rating = typeof build === 'object' && build !== null
+                      ? (build?.ip_rating || specs.ip_rating || '')
+                      : (specs.ip_rating || specs.durability || '');
                     return (
                       <td key={p.id} className="p-4 border-l border-slate-100 text-center font-semibold text-slate-800">
-                        {rating}
+                        {rating || '—'}
                       </td>
                     );
                   })}
