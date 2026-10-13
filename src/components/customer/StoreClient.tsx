@@ -80,7 +80,7 @@ export function StoreClient() {
           <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200/90 shadow-2xs space-y-6">
             <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
               <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-slate-50 border border-slate-200 flex-shrink-0 shadow-2xs">
-                <Image src="/assets/store-logo/IMG-20260822-WA0004.jpg" alt="Logo" fill className="object-cover" />
+                <Image src="/assets/store-logo/IMG-20260822-WA0004.jpg" alt="Galaxy Mobile Gallery Begampur Showroom Logo" fill className="object-cover" />
               </div>
               <div>
                 <h3 className="font-display font-bold text-lg text-slate-900">GALAXY MOBILE GALLERY</h3>

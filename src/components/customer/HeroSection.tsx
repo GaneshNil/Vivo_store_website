@@ -72,7 +72,7 @@ export const HeroSection: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.15]"
             >
-              Experience the Future of{' '}
+              Galaxy Mobile Gallery –{' '}
               <span className="text-gradient-vivo">VIVO Flagships</span>{' '}
               & Smart Tech
             </motion.h1>
@@ -84,7 +84,7 @@ export const HeroSection: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed"
             >
-              Explore live demo units of the latest <strong className="text-slate-900 font-semibold">{heroProduct?.name || 'VIVO Flagship'}</strong> and popular multi-brand smartphones. Compare specifications online, check live store stock, and visit our Begampur showroom for instant purchase.
+              Explore smartphones, mobile accessories, and live demo units of the latest <strong className="text-slate-900 font-semibold">{heroProduct?.name || 'VIVO Flagship'}</strong> at Galaxy Mobile Gallery in Begampur, Solapur. Compare specifications online, check live store stock, and visit our showroom for instant purchase.
             </motion.p>
 
             {/* In-Store CTAs */}

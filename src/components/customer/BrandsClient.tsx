@@ -47,7 +47,7 @@ export function BrandsClient() {
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-slate-50 border border-slate-200 flex-shrink-0 p-2 flex items-center justify-center shadow-inner">
-                    <Image src={b.logo_url} alt={b.name} fill className="object-contain p-2" />
+                    <Image src={b.logo_url} alt={`${b.name} brand logo`} fill className="object-contain p-2" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">

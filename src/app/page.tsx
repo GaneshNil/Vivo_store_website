@@ -3,14 +3,16 @@ import { HomePageClient } from '@/components/customer/HomePageClient';
 import { getBaseUrl } from '@/lib/seo/config';
 
 export const metadata: Metadata = {
-  title: 'Galaxy Mobile Gallery | VIVO Authorized Showroom & Multi-Brand Mobiles Begampur',
-  description: 'Official VIVO showroom & multi-brand smartphone hub in Begampur, Solapur. Experience live demo phones, genuine accessories, and instant Bajaj Finance 0% EMI.',
+  title: {
+    absolute: 'Galaxy Mobile Gallery | Mobile Shop in Begampur, Solapur',
+  },
+  description: 'Explore smartphones and mobile accessories at Galaxy Mobile Gallery in Begampur, Solapur. Browse available products, compare specifications, and discover current prices.',
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: 'Galaxy Mobile Gallery | VIVO Authorized Showroom & Multi-Brand Mobiles Begampur',
-    description: 'Explore latest VIVO X Series, V Series, T Series & multi-brand smartphones and genuine accessories at Galaxy Mobile Gallery, Begampur, Solapur.',
+    title: 'Galaxy Mobile Gallery | Mobile Shop in Begampur, Solapur',
+    description: 'Explore smartphones and mobile accessories at Galaxy Mobile Gallery in Begampur, Solapur. Browse available products, compare specifications, and discover current prices.',
     url: getBaseUrl(),
     type: 'website',
   },

@@ -2,9 +2,9 @@ import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Galaxy Mobile Gallery | VIVO Experience Showroom',
+    name: 'Galaxy Mobile Gallery | Mobile Shop in Begampur, Solapur',
     short_name: 'Galaxy Mobile',
-    description: 'VIVO Authorized Showroom & Multi-Brand Mobile Hub in Begampur, Solapur.',
+    description: 'Explore smartphones and mobile accessories at Galaxy Mobile Gallery in Begampur, Solapur.',
     start_url: '/',
     display: 'standalone',
     background_color: '#FAFAFB',

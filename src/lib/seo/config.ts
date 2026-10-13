@@ -1,28 +1,24 @@
 import { Product, StoreSettings } from '@/lib/types';
 import { INITIAL_STORE_SETTINGS } from '@/lib/data/seed-data';
 
+export const SITE_DOMAIN = 'https://galaxymobilegallery.vercel.app';
+
 export function getBaseUrl(requestHost?: string | null, requestProto?: string | null): string {
-  if (requestHost) {
-    const proto = requestProto || (requestHost.includes('localhost') ? 'http' : 'https');
-    return `${proto}://${requestHost}`.replace(/\/$/, '');
-  }
   if (process.env.NEXT_PUBLIC_SITE_URL) {
     return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, '');
   }
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+  if (requestHost && requestHost.includes('localhost')) {
+    const proto = requestProto || 'http';
+    return `${proto}://${requestHost}`.replace(/\/$/, '');
   }
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-  return 'https://galaxymobilegallery.vercel.app';
+  return SITE_DOMAIN;
 }
 
 export const SITE_CONFIG = {
   name: 'Galaxy Mobile Gallery',
   legalName: 'Galaxy Mobile Gallery Begampur',
-  tagline: 'VIVO Authorized Experience Showroom & Multi-Brand Mobile Hub',
-  description: 'Explore latest VIVO X Series, V Series, T Series & multi-brand smartphones and genuine accessories at Galaxy Mobile Gallery, Begampur, Solapur. Bajaj Finance EMI Available in store.',
+  tagline: 'Mobile Shop & VIVO Experience Showroom in Begampur, Solapur',
+  description: 'Explore smartphones and mobile accessories at Galaxy Mobile Gallery in Begampur, Solapur. Browse available products, compare specifications, and discover current prices.',
   url: getBaseUrl(),
   telephone: '+91-9067228008',
   email: 'galaxymobile09@gmail.com',
@@ -50,9 +46,20 @@ export function generateWebSiteSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
+    '@id': `${baseUrl}/#website`,
     name: SITE_CONFIG.name,
-    alternateName: ['Galaxy Mobile', 'Galaxy Mobile Begampur', 'Vivo Showroom Begampur'],
+    alternateName: [
+      'Galaxy Mobile',
+      'Galaxy Mobile Begampur',
+      'Galaxy Mobile Gallery Begampur',
+      'Galaxy Mobile Gallery Solapur',
+      'Vivo Showroom Begampur',
+      'Mobile shop in Begampur, Solapur',
+    ],
     url: baseUrl,
+    publisher: {
+      '@id': `${baseUrl}/#localbusiness`,
+    },
     potentialAction: {
       '@type': 'SearchAction',
       target: {
@@ -81,6 +88,13 @@ export function generateLocalBusinessSchema(settings?: Partial<StoreSettings>) {
     '@id': `${baseUrl}/#localbusiness`,
     name: SITE_CONFIG.name,
     legalName: SITE_CONFIG.legalName,
+    alternateName: [
+      'Galaxy Mobile',
+      'Galaxy Mobile Gallery Begampur',
+      'Galaxy Mobile Gallery Solapur',
+      'Vivo showroom in Begampur',
+      'Mobile shop in Begampur, Solapur',
+    ],
     description: SITE_CONFIG.description,
     url: baseUrl,
     telephone: `+91${phone}`,
@@ -100,6 +114,7 @@ export function generateLocalBusinessSchema(settings?: Partial<StoreSettings>) {
       latitude: SITE_CONFIG.geo.latitude,
       longitude: SITE_CONFIG.geo.longitude,
     },
+    hasMap: settings?.google_maps_url || 'https://maps.google.com/?q=Galaxy+Mobile+Gallery+Begampur',
     openingHoursSpecification: [
       {
         '@type': 'OpeningHoursSpecification',
@@ -127,6 +142,9 @@ export function generateLocalBusinessSchema(settings?: Partial<StoreSettings>) {
       { '@type': 'AdministrativeArea', name: 'Mangalwedha' },
     ],
     knowsAbout: [
+      'Galaxy Mobile Gallery',
+      'Vivo showroom in Begampur',
+      'Mobile shop in Begampur, Solapur',
       'VIVO X Series Smartphones',
       'VIVO V Series Smartphones',
       'VIVO T Series Smartphones',
