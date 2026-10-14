@@ -12,6 +12,7 @@ export const metadata: Metadata = {
     title: 'Latest VIVO & Multi-Brand Smartphones | Galaxy Mobile Gallery Begampur',
     description: 'Explore 5G smartphones from VIVO X Series, V Series, T Series, Y Series, Samsung Galaxy & Oppo. In-store demo & Bajaj Finance EMI.',
     url: `${getBaseUrl()}/mobiles`,
+    siteName: 'Galaxy Mobile Gallery',
     type: 'website',
   },
 };

@@ -13,6 +13,7 @@ export const metadata: Metadata = {
     title: 'Visit Galaxy Mobile Gallery in Begampur, Solapur | Official VIVO Showroom',
     description: 'Walk into our Begampur showroom for hands-on flagship smartphone demos, instant Bajaj Finance 0% EMI, and genuine accessories.',
     url: `${getBaseUrl()}/store`,
+    siteName: 'Galaxy Mobile Gallery',
     type: 'website',
   },
 };

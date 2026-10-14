@@ -12,6 +12,7 @@ export const metadata: Metadata = {
     title: 'Exclusive Smartphone Offers & EMI Schemes | Galaxy Mobile Gallery',
     description: 'Explore live store discounts, 0% Bajaj Finance EMI approvals, and festive bonuses on VIVO, Samsung, and Oppo smartphones.',
     url: `${getBaseUrl()}/offers`,
+    siteName: 'Galaxy Mobile Gallery',
     type: 'website',
   },
 };

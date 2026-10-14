@@ -2,8 +2,8 @@ import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Galaxy Mobile Gallery | Mobile Shop in Begampur, Solapur',
-    short_name: 'Galaxy Mobile',
+    name: 'Galaxy Mobile Gallery',
+    short_name: 'Galaxy Mobile Gallery',
     description: 'Explore smartphones and mobile accessories at Galaxy Mobile Gallery in Begampur, Solapur.',
     start_url: '/',
     display: 'standalone',
@@ -11,9 +11,14 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: '#0066FF',
     icons: [
       {
-        src: '/assets/store-logo/IMG-20260822-WA0004.jpg',
+        src: '/icon-192.png',
         sizes: '192x192',
-        type: 'image/jpeg',
+        type: 'image/png',
+      },
+      {
+        src: '/icon-512.png',
+        sizes: '512x512',
+        type: 'image/png',
       },
       {
         src: '/assets/store-logo/IMG-20260822-WA0004.jpg',

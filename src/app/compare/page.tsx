@@ -12,6 +12,7 @@ export const metadata: Metadata = {
     title: 'Compare Smartphone Specifications Side by Side | Galaxy Mobile Gallery',
     description: 'Direct spec-by-spec comparison of VIVO, Samsung, and OPPO flagships. Check benchmarks, camera sensors, and battery charging speeds.',
     url: `${getBaseUrl()}/compare`,
+    siteName: 'Galaxy Mobile Gallery',
     type: 'website',
   },
 };

@@ -43,28 +43,22 @@ export const SITE_CONFIG = {
 
 export function generateWebSiteSchema() {
   const baseUrl = getBaseUrl();
+  const canonicalUrl = `${baseUrl.replace(/\/$/, '')}/`;
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    '@id': `${baseUrl}/#website`,
-    name: SITE_CONFIG.name,
-    alternateName: [
-      'Galaxy Mobile',
-      'Galaxy Mobile Begampur',
-      'Galaxy Mobile Gallery Begampur',
-      'Galaxy Mobile Gallery Solapur',
-      'Vivo Showroom Begampur',
-      'Mobile shop in Begampur, Solapur',
-    ],
-    url: baseUrl,
+    '@id': `${canonicalUrl}#website`,
+    name: 'Galaxy Mobile Gallery',
+    alternateName: 'Galaxy Mobile Gallery Begampur',
+    url: canonicalUrl,
     publisher: {
-      '@id': `${baseUrl}/#localbusiness`,
+      '@id': `${canonicalUrl}#localbusiness`,
     },
     potentialAction: {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: `${baseUrl}/mobiles?q={search_term_string}`,
+        urlTemplate: `${canonicalUrl}mobiles?q={search_term_string}`,
       },
       'query-input': 'required name=search_term_string',
     },

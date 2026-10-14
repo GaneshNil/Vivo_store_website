@@ -12,6 +12,7 @@ export const metadata: Metadata = {
     title: 'New Smartphone Launches & In-Store Stock | Galaxy Mobile Gallery',
     description: 'Explore the newest 5G smartphones from VIVO, Samsung, and OPPO. Touch and feel live handsets in Begampur, Solapur.',
     url: `${getBaseUrl()}/new-arrivals`,
+    siteName: 'Galaxy Mobile Gallery',
     type: 'website',
   },
 };

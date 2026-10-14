@@ -48,6 +48,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
       title: `${product.name} - In-Store Live Demo & Stock | Galaxy Mobile Gallery`,
       description,
       url: `${baseUrl}/product/${product.slug}`,
+      siteName: 'Galaxy Mobile Gallery',
       type: 'website',
       images: [
         {

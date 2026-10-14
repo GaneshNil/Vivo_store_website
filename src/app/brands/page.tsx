@@ -12,6 +12,7 @@ export const metadata: Metadata = {
     title: 'Authorized Smartphone & Tech Brands | Galaxy Mobile Gallery',
     description: 'Explore brand collections for VIVO, Samsung, Oppo, and Realme with official manufacturer warranty and Bajaj Finance EMI.',
     url: `${getBaseUrl()}/brands`,
+    siteName: 'Galaxy Mobile Gallery',
     type: 'website',
   },
 };

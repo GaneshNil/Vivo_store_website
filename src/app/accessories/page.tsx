@@ -12,6 +12,7 @@ export const metadata: Metadata = {
     title: 'Genuine Mobile Accessories & Chargers | Galaxy Mobile Gallery Begampur',
     description: 'Original brand-certified adapters, screen protectors, durable cases, and audio accessories in Begampur, Solapur.',
     url: `${getBaseUrl()}/accessories`,
+    siteName: 'Galaxy Mobile Gallery',
     type: 'website',
   },
 };
