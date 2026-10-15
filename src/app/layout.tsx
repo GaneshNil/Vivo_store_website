@@ -97,6 +97,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
+      { url: '/favicon-48.png', sizes: '48x48', type: 'image/png' },
       { url: '/favicon.ico', sizes: '48x48 32x32 16x16', type: 'image/x-icon' },
       { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
       { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
@@ -119,6 +120,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={`scroll-smooth ${inter.variable} ${outfit.variable}`}>
       <head>
+        <meta name="application-name" content="Galaxy Mobile Gallery" />
+        <meta name="apple-mobile-web-app-title" content="Galaxy Mobile Gallery" />
         <meta name="google-site-verification" content="google4d3c870314da0453" />
         <meta name="google-site-verification" content="google4d3c870314da0453.html" />
         <script

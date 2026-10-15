@@ -11,19 +11,26 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: '#0066FF',
     icons: [
       {
+        src: '/favicon-48.png',
+        sizes: '48x48',
+        type: 'image/png',
+      },
+      {
         src: '/icon-192.png',
         sizes: '192x192',
         type: 'image/png',
+        purpose: 'any',
       },
       {
         src: '/icon-512.png',
         sizes: '512x512',
         type: 'image/png',
+        purpose: 'any',
       },
       {
-        src: '/assets/store-logo/IMG-20260822-WA0004.jpg',
-        sizes: '512x512',
-        type: 'image/jpeg',
+        src: '/apple-touch-icon.png',
+        sizes: '180x180',
+        type: 'image/png',
       },
     ],
   };
